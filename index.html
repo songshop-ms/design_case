@@ -1,0 +1,3227 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+    <title>케이스 피드 템플릿 · 영구오빠</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/Paperlogy/Paperlogy.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:wght@300;400;500&family=Noto+Serif+KR:wght@400;700&family=Great+Vibes&display=swap">
+    <style>
+        :root {
+            --paper: #E9E7E1;
+            --card: #FFFFFF;
+            --ink: #1A1A1C;
+            --muted: #6E6B64;
+            --line: #D3D0C8;
+            --line-soft: #E5E2DB;
+            --deep: #243A32;
+            --deep-2: #315145;
+            --kakao: #FEE500;
+            --r: 5px;
+            --bar: 78px;
+            --vvh: 100vh;
+            /* 캔버스 가로/세로 비(4:5 → .8, 3:4 → .75) */
+            --ar: .75;
+            --ars: 3/4;
+            /* 모바일 미리보기 높이: 화면의 30% (가로폭 기준 상한 60vw) */
+            --cvh: min(60vw, calc(var(--vvh) * .30));
+        }
+        @supports (height: 100dvh) {
+            :root {
+                --vvh: 100dvh;
+            }
+        }
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        /* 전체 화면 고정: 문서는 스크롤하지 않고, 위(미리보기)/아래(설정) 프레임이 각자 스크롤 */
+        html {
+            height: 100%;
+            overflow: hidden;
+            overscroll-behavior: none;
+        }
+        body {
+            height: var(--vvh);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background: var(--paper);
+            color: var(--ink);
+            font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        body.nokbar {
+            --bar: 0px;
+        }
+        button,
+        input,
+        select,
+        textarea {
+            font-family: inherit;
+            color: inherit;
+            font-size: 16px;
+        }
+        .eyebrow {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .16em;
+            color: var(--muted);
+        }
+
+        header {
+            flex: none;
+            padding: 7px 16px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            align-items: baseline;
+            gap: 9px;
+        }
+        header h1 {
+            margin: 0;
+            white-space: nowrap;
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: -.02em;
+        }
+        header .sub {
+            font-size: 11.5px;
+            color: var(--muted);
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        header .tag {
+            margin-left: auto;
+            white-space: nowrap;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .12em;
+            color: var(--muted);
+        }
+
+        .wrap {
+            max-width: 1160px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 위 프레임: 미리보기(왼쪽) + 버튼·슬라이드 열(오른쪽) */
+        .stage {
+            flex: none;
+            height: calc(var(--cvh) + 34px);
+            overflow: hidden;
+            background: var(--paper);
+            padding: 8px 14px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            gap: 10px;
+        }
+        .plate {
+            flex: none;
+            align-self: flex-start;
+            background: var(--card);
+            padding: 8px;
+            border: 1px solid var(--line);
+            box-shadow: 0 12px 28px -22px rgba(26, 26, 28, .6);
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            background: #111;
+            max-width: calc(var(--cvh) * var(--ar));
+            cursor: grab;
+            touch-action: none;
+        }
+        canvas.dragging {
+            cursor: grabbing;
+        }
+        .side {
+            flex: 1;
+            min-width: 0;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            scrollbar-width: none;
+        }
+        .side::-webkit-scrollbar {
+            display: none;
+        }
+        .stagebtns {
+            flex: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .stagebtns .btn.sm {
+            padding: 9px 6px;
+        }
+        .slotnote {
+            font-size: 11px;
+            color: var(--muted);
+            text-align: center;
+            line-height: 1.35;
+        }
+
+        .left {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .strip {
+            flex: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 6px 6px 0 0;
+        }
+        .frame {
+            flex: none;
+            width: 36px;
+            aspect-ratio: var(--ars);
+            border: 1px solid var(--line);
+            border-radius: 2px;
+            background: #141416 center/cover no-repeat;
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: flex-end;
+        }
+        .frame.active {
+            outline: 2px solid var(--deep);
+            outline-offset: 1px;
+        }
+        .frame .n {
+            font-size: 9px;
+            font-weight: 700;
+            color: #fff;
+            background: rgba(0, 0, 0, .6);
+            padding: 0 4px;
+            margin: 3px;
+            border-radius: 2px;
+        }
+        .frame .kill {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 17px;
+            height: 17px;
+            padding: 0;
+            border-radius: 50%;
+            border: 1px solid var(--line);
+            background: var(--card);
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1;
+            cursor: pointer;
+        }
+        .addframe {
+            flex: none;
+            width: 36px;
+            aspect-ratio: var(--ars);
+            border: 1px dashed var(--line);
+            background: none;
+            color: var(--muted);
+            font-size: 16px;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        .tabs {
+            flex: none;
+            display: flex;
+            border-bottom: 1px solid var(--line);
+            background: var(--paper);
+        }
+        .tabs button {
+            flex: 1;
+            padding: 11px 4px;
+            background: none;
+            border: 0;
+            border-bottom: 2px solid transparent;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--muted);
+            cursor: pointer;
+        }
+        .tabs button.on {
+            color: var(--ink);
+            border-bottom-color: var(--deep);
+            font-weight: 700;
+        }
+        .panels {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: calc(var(--bar) + 16px + env(safe-area-inset-bottom));
+        }
+        .panel {
+            padding: 16px 16px 28px;
+        }
+        .panel[hidden],
+        .grp[hidden],
+        .row[hidden],
+        .fld[hidden],
+        .tplgroup[hidden] {
+            display: none;
+        }
+
+        .tplgroup+.tplgroup {
+            margin-top: 14px;
+        }
+        .tplgroup>.gname {
+            display: block;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--ink);
+            margin: 0 0 7px;
+        }
+        .tpl {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .tplcard {
+            border: 1px solid var(--line);
+            background: var(--card);
+            border-radius: var(--r);
+            padding: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 12px;
+        }
+        .tplcard.on {
+            border-color: var(--deep);
+            box-shadow: 0 0 0 2px rgba(36, 58, 50, .14);
+        }
+        .tplcard canvas {
+            max-width: 100%;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+        .tplcard .nm {
+            display: block;
+            margin-top: 7px;
+            font-weight: 700;
+            font-size: 12.5px;
+            letter-spacing: -.01em;
+        }
+        .tplcard .ds {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 1px;
+        }
+
+        .grp {
+            border-bottom: 1px solid var(--line-soft);
+            padding: 14px 0;
+        }
+        .grp:first-child {
+            padding-top: 0;
+        }
+        .grp:last-child {
+            border-bottom: 0;
+            padding-bottom: 0;
+        }
+        .grp>.eyebrow {
+            display: block;
+            margin-bottom: 9px;
+        }
+        label.f {
+            display: block;
+            margin: 11px 0 5px;
+            font-size: 11.5px;
+            color: var(--muted);
+            font-weight: 600;
+        }
+        input[type=text],
+        textarea {
+            width: 100%;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--r);
+            padding: 10px 11px;
+            font-size: 15px;
+            line-height: 1.5;
+            outline: none;
+        }
+        input[type=text]:focus,
+        textarea:focus {
+            border-color: var(--deep);
+            box-shadow: 0 0 0 2px rgba(36, 58, 50, .1);
+        }
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        .hint {
+            font-size: 11.5px;
+            color: var(--muted);
+            margin-top: 5px;
+            line-height: 1.45;
+        }
+        .hint b {
+            color: var(--ink);
+        }
+
+        .seg {
+            display: flex;
+            border: 1px solid var(--line);
+            border-radius: var(--r);
+            overflow: hidden;
+            background: var(--card);
+        }
+        .seg button {
+            flex: 1;
+            padding: 10px 4px;
+            background: none;
+            border: 0;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--muted);
+        }
+        .seg button+button {
+            border-left: 1px solid var(--line);
+        }
+        .seg button.on {
+            background: var(--deep);
+            color: #fff;
+        }
+        .seg.wrap {
+            flex-wrap: wrap;
+        }
+        .seg.wrap button {
+            flex: 1 0 30%;
+            border-left: 0;
+            border-top: 1px solid var(--line);
+            margin-top: -1px;
+        }
+        .seg.wrap button+button {
+            border-left: 0;
+        }
+        .seg.wrap button:not(:nth-child(3n+1)) {
+            border-left: 1px solid var(--line);
+        }
+
+        .row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 12px 0;
+        }
+        .row .name {
+            width: 72px;
+            flex: none;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+        }
+        .row .val {
+            width: 40px;
+            flex: none;
+            text-align: right;
+            font-size: 11.5px;
+            color: var(--muted);
+            font-variant-numeric: tabular-nums;
+        }
+        input[type=range] {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 2px;
+            background: var(--line);
+            border-radius: 2px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--deep);
+            border: 3px solid var(--paper);
+            cursor: pointer;
+        }
+        input[type=range]::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--deep);
+            border: 3px solid var(--paper);
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex: 1;
+            padding: 13px 12px;
+            border: 1px solid var(--deep);
+            background: var(--deep);
+            color: #fff;
+            font-size: 13.5px;
+            font-weight: 700;
+            border-radius: var(--r);
+            cursor: pointer;
+        }
+        .btn.ghost {
+            background: transparent;
+            color: var(--deep);
+        }
+        .btn.sm {
+            padding: 10px;
+            font-size: 12.5px;
+            font-weight: 600;
+        }
+        .btns {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .drop {
+            width: 100%;
+            border: 1px dashed var(--line);
+            border-radius: var(--r);
+            background: none;
+            padding: 22px 14px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--muted);
+            cursor: pointer;
+            line-height: 1.5;
+            margin-top: 10px;
+        }
+        .drop.hot {
+            border-color: var(--deep);
+            color: var(--deep);
+            background: rgba(36, 58, 50, .05);
+        }
+
+        /* 크게 보기: 미리보기 전체 화면 */
+        .big {
+            position: fixed;
+            inset: 0;
+            z-index: 80;
+            background: rgba(20, 20, 22, .96);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            padding: 16px;
+        }
+        .big[hidden] {
+            display: none;
+        }
+        .big .plate {
+            align-self: center;
+        }
+        .big canvas {
+            max-width: min(92vw, calc((var(--vvh) - 120px) * var(--ar)));
+        }
+        .bigbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: rgba(255, 255, 255, .7);
+            font-size: 12.5px;
+        }
+        .bigbar .btn {
+            flex: none;
+            background: #fff;
+            color: var(--ink);
+            border-color: #fff;
+            padding: 9px 18px;
+        }
+
+        #mirror {
+            position: fixed;
+            left: -9999px;
+            top: 0;
+            opacity: 0;
+            pointer-events: none;
+            white-space: pre;
+        }
+
+        .kbar {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 60;
+            padding: 9px 12px calc(9px + env(safe-area-inset-bottom));
+            background: linear-gradient(to top, rgba(233, 231, 225, 1) 62%, rgba(233, 231, 225, 0));
+            display: flex;
+            justify-content: center;
+            transition: transform .25s ease, opacity .25s ease;
+        }
+        .kbar.gone {
+            transform: translateY(120%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .kinner {
+            width: 100%;
+            max-width: 520px;
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            background: var(--kakao);
+            color: #191600;
+            border-radius: 12px;
+            padding: 11px 13px;
+            text-decoration: none;
+            box-shadow: 0 10px 24px -12px rgba(26, 26, 28, .5);
+            position: relative;
+        }
+        .kinner:active {
+            transform: scale(.99);
+        }
+        .kic {
+            width: 32px;
+            height: 32px;
+            flex: none;
+            border-radius: 50%;
+            background: #191600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ktx {
+            flex: 1;
+            min-width: 0;
+            line-height: 1.25;
+        }
+        .ktx b {
+            display: block;
+            font-size: 13.5px;
+            font-weight: 800;
+            letter-spacing: -.02em;
+        }
+        .ktx small {
+            display: block;
+            font-size: 11.5px;
+            opacity: .68;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .kcta {
+            flex: none;
+            background: #191600;
+            color: var(--kakao);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+        .kx {
+            position: absolute;
+            top: -8px;
+            right: -6px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--card);
+            border: 1px solid var(--line);
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1;
+            padding: 0;
+            cursor: pointer;
+        }
+
+        @media (min-width:920px) {
+            .wrap {
+                flex-direction: row;
+            }
+            .stage {
+                flex: 1;
+                height: auto;
+                order: 1;
+                flex-direction: column;
+                align-items: center;
+                justify-content: safe center;
+                gap: 12px;
+                overflow-y: auto;
+                border-bottom: 0;
+                border-right: 1px solid var(--line);
+                padding: 28px 24px calc(28px + var(--bar));
+            }
+            .plate {
+                align-self: auto;
+            }
+            canvas {
+                max-width: min(400px, calc((var(--vvh) - var(--bar) - 270px) * var(--ar)));
+            }
+            .side {
+                flex: none;
+                width: 100%;
+                max-width: 420px;
+                overflow: visible;
+                gap: 12px;
+            }
+            .stagebtns {
+                flex-direction: row;
+                gap: 7px;
+            }
+            .strip {
+                justify-content: center;
+                padding: 6px 0 0;
+            }
+            .frame,
+            .addframe {
+                width: 44px;
+            }
+            .left {
+                flex: none;
+                width: 460px;
+                order: 2;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>케이스 피드 템플릿</h1>
+        <span class="sub">전후 사진 넣고 문구만 적으면 끝</span>
+        <span class="tag" id="sizeTag">1080 × 1440</span>
+    </header>
+
+    <div class="wrap">
+        <div class="stage" id="stage">
+            <div class="plate" id="plate"><canvas id="cv" width="1080" height="1440"></canvas></div>
+            <div class="side">
+                <div class="stagebtns">
+                    <button class="btn ghost sm" id="pickImg">사진 넣기</button>
+                    <button class="btn sm" id="dl">이 장 저장</button>
+                    <button class="btn ghost sm" id="bigView">크게 보기</button>
+                </div>
+                <div class="slotnote" id="slotNote"></div>
+                <div class="strip" id="strip"></div>
+            </div>
+        </div>
+
+        <div class="left">
+            <div class="tabs" id="tabs">
+                <button data-t="0" class="on">템플릿</button>
+                <button data-t="1">문구</button>
+                <button data-t="2">위치</button>
+                <button data-t="3">효과</button>
+            </div>
+
+            <div class="panels" id="panels">
+            <!-- 0. templates -->
+            <div class="panel" data-p="0">
+                <div class="grp">
+                    <span class="eyebrow">템플릿 고르기</span>
+                    <div id="tplList"></div>
+                    <div class="hint">템플릿을 누르면 현재 슬라이드의 배치·문구가 그 형식으로 바뀝니다. 사진은 그대로 유지돼요.</div>
+                </div>
+                <div class="grp">
+                    <span class="eyebrow">크기</span>
+                    <div class="seg" id="ratioSeg"><button data-v="34">3:4 · 1080×1440</button><button data-v="45">4:5 · 1080×1350</button></div>
+                    <div class="hint">요즘 프로필 격자는 3:4로 보여요. 모든 슬라이드에 한 번에 적용됩니다.</div>
+                </div>
+                <div class="grp">
+                    <span class="eyebrow">사진 업로드</span>
+                    <div class="seg wrap" id="slotSeg"></div>
+                    <button class="drop" id="drop">사진을 끌어놓거나 눌러서 고르세요<br><span style="font-size:11.5px" id="dropSub">위에서 고른 칸에 들어갑니다</span></button>
+                    <div class="row" style="margin-top:14px"><span class="name">확대</span><input type="range" id="zoom" min="100" max="400" value="100"><span class="val" id="zoomV">1.0×</span></div>
+                    <div class="hint">미리보기에서 사진을 손가락으로 끌어 위치를 잡으세요. 누른 칸이 자동으로 선택돼요.</div>
+                    <div class="btns"><button class="btn ghost sm" id="resetImg">위치·확대 초기화</button><button class="btn ghost sm" id="clearImg">이 칸 사진 빼기</button></div>
+                </div>
+                <div class="grp">
+                    <span class="eyebrow">아이디</span>
+                    <input type="text" id="handleTxt" placeholder="@아이디 (비우면 숨김)">
+                    <div class="hint">모든 슬라이드 오른쪽 위에 작게 들어갑니다.</div>
+                </div>
+                <div class="grp">
+                    <span class="eyebrow">저장</span>
+                    <div class="btns">
+                        <button class="btn ghost sm" id="dl2">이 장 저장</button>
+                        <button class="btn sm" id="dlAll">전체 저장</button>
+                    </div>
+                    <div class="hint" id="saveHint">1080×1440 PNG로 내려받습니다. 인스타에 그대로 올리세요.</div>
+                </div>
+            </div>
+
+            <!-- 1. copy -->
+            <div class="panel" data-p="1" hidden>
+                <div class="grp">
+                    <span class="eyebrow" id="copyTitle">문구</span>
+                    <div class="fld" data-f="label"><label class="f" data-lb="label">라벨</label><input type="text" id="f_label"></div>
+                    <div class="fld" data-f="title"><label class="f" data-lb="title">큰 문장</label><textarea id="f_title" rows="2"></textarea></div>
+                    <div class="fld" data-f="sub"><label class="f" data-lb="sub">아랫줄</label><textarea id="f_sub" rows="2"></textarea></div>
+                    <div class="fld" data-f="body"><label class="f" data-lb="body">본문</label><textarea id="f_body" rows="5"></textarea></div>
+                    <div class="fld" data-f="capL"><label class="f" data-lb="capL">왼쪽 설명</label><textarea id="f_capL" rows="3"></textarea></div>
+                    <div class="fld" data-f="capR"><label class="f" data-lb="capR">오른쪽 설명</label><textarea id="f_capR" rows="3"></textarea></div>
+                    <div class="fld" data-f="foot1"><label class="f" data-lb="foot1">연락처 1</label><input type="text" id="f_foot1"></div>
+                    <div class="fld" data-f="foot2"><label class="f" data-lb="foot2">연락처 2</label><input type="text" id="f_foot2"></div>
+                    <div class="hint"><b>**굵게**</b> 처럼 별표 두 개로 감싸면 그 부분만 굵어져요. 엔터로 줄을 바꿉니다.</div>
+                    <div class="hint" id="copyNote"></div>
+                </div>
+                <div class="grp" id="sizeGrp">
+                    <span class="eyebrow">글자 크기</span>
+                    <div class="row" data-sz="labelSize"><span class="name">라벨</span><input type="range" id="labelSize" min="16" max="72" value="40"><span class="val" id="labelSizeV">40</span></div>
+                    <div class="row" data-sz="titleSize"><span class="name">큰 문장</span><input type="range" id="titleSize" min="20" max="140" value="36"><span class="val" id="titleSizeV">36</span></div>
+                    <div class="row" data-sz="subSize"><span class="name">아랫줄</span><input type="range" id="subSize" min="16" max="48" value="27"><span class="val" id="subSizeV">27</span></div>
+                    <div class="row" data-sz="bodySize"><span class="name">본문</span><input type="range" id="bodySize" min="18" max="48" value="28"><span class="val" id="bodySizeV">28</span></div>
+                    <div class="row" data-sz="footSize"><span class="name">연락처</span><input type="range" id="footSize" min="16" max="36" value="26"><span class="val" id="footSizeV">26</span></div>
+                </div>
+            </div>
+
+            <!-- 2. position (내용은 JS에서 생성) -->
+            <div class="panel" data-p="2" id="posPanel" hidden></div>
+
+            <!-- 3. effects -->
+            <div class="panel" data-p="3" hidden>
+                <div class="grp">
+                    <span class="eyebrow">글꼴</span>
+                    <div class="seg" id="fontSeg"><button data-v="pre">프리텐다드</button><button data-v="pap">페이퍼로지</button></div>
+                    <div class="hint">모든 슬라이드에 한 번에 적용됩니다.</div>
+                </div>
+                <div class="grp" data-fx="photo">
+                    <span class="eyebrow">사진</span>
+                    <div class="row" data-fxr="dim"><span class="name">어둡게</span><input type="range" id="dim" min="0" max="70" value="0"><span class="val" id="dimV">0</span></div>
+                    <div class="row" data-fxr="grain"><span class="name">그레인</span><input type="range" id="grain" min="0" max="100" value="0"><span class="val" id="grainV">0</span></div>
+                    <div class="row" data-fxr="ghost"><span class="name">잔상</span><input type="range" id="ghost" min="0" max="100" value="60"><span class="val" id="ghostV">60</span></div>
+                </div>
+                <div class="grp" data-fx="grad">
+                    <span class="eyebrow" id="gradTitle">어두운 패널</span>
+                    <div class="row"><span class="name">시작</span><input type="range" id="gradA" min="10" max="90" value="46"><span class="val" id="gradAV">46</span></div>
+                    <div class="row"><span class="name">끝</span><input type="range" id="gradB" min="15" max="100" value="61"><span class="val" id="gradBV">61</span></div>
+                    <div class="hint" id="gradHint">화면 높이의 %입니다. 시작과 끝 사이가 부드럽게 넘어가요.</div>
+                </div>
+                <div class="grp" data-fx="seam">
+                    <span class="eyebrow">이음새</span>
+                    <div class="row" data-fxr="seamType"><div class="seg" style="flex:1" data-opt="seam"><button data-v="line">직선으로 자르기</button><button data-v="soft">부드럽게 섞기</button></div></div>
+                    <div class="row" data-fxr="seamY"><span class="name">높이</span><input type="range" id="seamY" min="30" max="70" value="50"><span class="val" id="seamYV">50</span></div>
+                    <div class="row" data-fxr="band"><span class="name">글 뒤 어둡게</span><input type="range" id="band" min="0" max="100" value="45"><span class="val" id="bandV">45</span></div>
+                </div>
+                <div class="grp" data-fx="divider">
+                    <span class="eyebrow">가운데 선</span>
+                    <div class="seg" data-opt="border"><button data-v="1">흰 선</button><button data-v="0">없음</button></div>
+                </div>
+                <div class="grp" data-fx="inset">
+                    <span class="eyebrow">인셋 · 표시</span>
+                    <div class="row"><span class="name">인셋 선</span>
+                        <div class="seg" style="flex:1" data-opt="border"><button data-v="1">1.5px 흰 선</button><button data-v="0">없음</button></div>
+                    </div>
+                    <div class="row" data-fxr="mark"><span class="name">원 표시</span>
+                        <div class="seg" style="flex:1" data-opt="mark"><button data-v="1">켜기</button><button data-v="0">끄기</button></div>
+                    </div>
+                    <div class="row" data-fxr="markW"><span class="name">원 가로</span><input type="range" id="markW" min="30" max="300" value="118"><span class="val" id="markWV">118</span></div>
+                    <div class="row" data-fxr="markH"><span class="name">원 세로</span><input type="range" id="markH" min="20" max="200" value="58"><span class="val" id="markHV">58</span></div>
+                    <div class="hint">원 위치는 위치 탭 '원 표시'에서 옮겨요.</div>
+                </div>
+                <div class="grp" data-fx="panel">
+                    <span class="eyebrow">배경색</span>
+                    <div class="seg wrap" data-opt="panel"><button data-v="paper">미색</button><button data-v="white">흰색</button><button data-v="gray">연회색</button><button data-v="ink">먹색</button><button data-v="navy">네이비</button><button data-v="terracotta">테라코타</button></div>
+                </div>
+                <div class="grp" data-fx="accent">
+                    <span class="eyebrow">포인트 색</span>
+                    <div class="seg wrap" data-opt="accent"><button data-v="paper">미색</button><button data-v="red">빨강</button><button data-v="lime">연두</button><button data-v="yellow">노랑</button><button data-v="sky">하늘</button><button data-v="ink">먹색</button></div>
+                    <div class="hint" id="accentHint">굵게 표시한 글자나 점 같은 작은 요소에만 들어가요.</div>
+                </div>
+                <div class="grp" data-fx="photofx">
+                    <span class="eyebrow">사진 처리</span>
+                    <div class="row" data-fxr="pfx"><div class="seg" style="flex:1" data-opt="photoFx"><button data-v="none">원본</button><button data-v="gray">흑백</button><button data-v="sil">실루엣</button></div></div>
+                    <div class="row" id="thrRow" data-fxr="thr"><span class="name">실루엣 기준</span><input type="range" id="thr" min="40" max="220" value="110"><span class="val" id="thrV">110</span></div>
+                    <div class="hint">실루엣은 역광으로 찍은 사진일수록 깔끔하게 나와요.</div>
+                </div>
+                <div class="grp" data-fx="grid">
+                    <span class="eyebrow">격자</span>
+                    <div class="row"><span class="name">칸 수</span>
+                        <div class="seg" style="flex:1" data-opt="cells"><button data-v="4">4칸</button><button data-v="6">6칸</button></div>
+                    </div>
+                    <div class="row"><span class="name">제목 띠</span>
+                        <div class="seg" style="flex:1" data-opt="bandPos"><button data-v="top">위</button><button data-v="bottom">아래</button></div>
+                    </div>
+                </div>
+                <div class="grp" id="alignGrp">
+                    <span class="eyebrow">정렬</span>
+                    <div class="row" data-al-row="align"><span class="name">큰 문장</span>
+                        <div class="seg" style="flex:1" data-al="align"><button data-v="left">왼쪽</button><button data-v="center">가운데</button><button data-v="right">오른쪽</button></div>
+                    </div>
+                    <div class="row" data-al-row="bAlign"><span class="name">본문</span>
+                        <div class="seg" style="flex:1" data-al="bAlign"><button data-v="left">왼쪽</button><button data-v="center">가운데</button><button data-v="right">오른쪽</button></div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="kbar" id="kbar">
+        <a class="kinner" href="https://open.kakao.com/o/pfEDVwFi" target="_blank" rel="noopener">
+            <span class="kic">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="#FEE500"><path d="M12 3C6.9 3 2.8 6.3 2.8 10.3c0 2.6 1.7 4.9 4.3 6.2-.2.7-.7 2.5-.8 2.9-.1.5.2.5.4.4.2-.1 2.6-1.8 3.7-2.5.5.1 1.1.1 1.6.1 5.1 0 9.2-3.3 9.2-7.3S17.1 3 12 3z"/></svg>
+            </span>
+            <span class="ktx"><b>뷰티 1인샵 원장님들의 단톡방</b><small>템플릿·마케팅 자료 무료 공유 · 영구오빠</small></span>
+            <span class="kcta">참여</span>
+            <button class="kx" id="kx" aria-label="닫기">×</button>
+        </a>
+    </div>
+
+    <div class="big" id="big" hidden>
+        <div class="bigbar"><span>손가락으로 끌어 사진 위치를 잡으세요</span><button class="btn sm" id="bigClose">닫기</button></div>
+    </div>
+
+    <input type="file" id="file" accept="image/*" hidden>
+    <div id="mirror"></div>
+
+    <script>
+        const W = 1080;
+        const RATIO = { '34': 1440, '45': 1350 };
+        let H = 1440;
+        /* 템플릿 수치는 1080×1350에서 잰 값. 세로 위치만 지금 높이에 맞춰 늘린다 */
+        const BASE_H = 1350;
+        const Y = v => v * H / BASE_H;
+
+        const cv = document.getElementById('cv'),
+            ctx = cv.getContext('2d');
+        const mirror = document.getElementById('mirror');
+        const el = id => document.getElementById(id);
+
+        const INK = '#161514',
+            PAPER = '#F6F4EF',
+            GRAY = '#ECEBE8',
+            WHITE = '#FFFFFF',
+            BODY_ON_INK = '#B7B2AA',
+            BODY_ON_PAPER = '#6E6A64';
+        const PANEL = { paper: PAPER, white: WHITE, gray: GRAY, ink: INK, navy: '#2B4A77', terracotta: '#8E4B34' };
+        const DARK_PANEL = { ink: 1, navy: 1, terracotta: 1 };
+        const ACCENT = { paper: PAPER, red: '#B3262C', lime: '#B6F03C', yellow: '#FEE500', sky: '#8CC8F0', ink: INK };
+
+        /* ---------- fonts ---------- */
+        const G = { font: 'pre', ratio: '34', handle: '' };
+        const WT = { thin: 200, light: 300, regular: 400, medium: 500, semibold: 600, bold: 700, xbold: 800, black: 900 };
+        /* 글꼴 종류: 기본(프리텐다드/페이퍼로지) · 넓은 고딕 · 세리프 · 가는 세리프 · 필기체 */
+        const FK = {
+            wide: 'Unbounded, Pretendard, sans-serif',
+            serif: "'Playfair Display', 'Noto Serif KR', serif",
+            thin: "'Cormorant Garamond', 'Noto Serif KR', serif",
+            script: "'Great Vibes', 'Playfair Display', serif"
+        };
+
+        function fam(k) { if (k && FK[k]) return FK[k]; return G.font === 'pap' ? 'Paperlogy, Pretendard, sans-serif' : 'Pretendard, -apple-system, sans-serif'; }
+
+        function font(w, px, k) { return (WT[w] || w) + ' ' + px + 'px ' + fam(k); }
+
+        /* ---------- templates ---------- */
+        /* slots: 사진 칸 이름, fields: 문구 칸, lb: 칸 이름 바꾸기, sizes/pos/fx: 보일 조절 */
+        const TPL = [{
+            id: 'caseCover',
+            group: '케이스 · 전후',
+            nm: '케이스 · 표지',
+            ds: '위 전·아래 후 + 이음새 문구',
+            slots: ['위 · 시술 전', '아래 · 시술 후'],
+            fields: ['label', 'title', 'sub'],
+            lb: { label: '라벨 · 영문 대문자 추천', title: '큰 문장 · 손님 말이면 “ ”로 감싸기', sub: '아랫줄 · 영문 번역' },
+            note: '손님이 실제로 한 말을 넣을 때만 따옴표를 쓰세요.',
+            sizes: ['labelSize', 'titleSize', 'subSize'],
+            pos: ['all', 'label', 'title', 'sub'],
+            fx: ['photo:dim,grain', 'seam'],
+            al: ['align'],
+            d: { label: 'MEN’S BROWS', title: '흐릿하게 퍼진 눈썹, **결로 또렷하게**', sub: 'From scattered to defined, stroke by stroke', labelSize: 26, titleSize: 36, subSize: 27, align: 'center', seam: 'line', seamY: 50, band: 45, dim: 0, grain: 0 },
+            paint: paintCaseCover
+        }, {
+            id: 'caseBefore',
+            group: '케이스 · 전후',
+            nm: '케이스 · BEFORE',
+            ds: '사진 + 아래 어둡게 + 확대 인셋',
+            slots: ['메인 사진', '인셋 · 비우면 메인 확대'],
+            fields: ['label', 'body'],
+            lb: { label: '라벨', body: '고민 설명 · 3~5줄' },
+            sizes: ['labelSize', 'bodySize'],
+            pos: ['all', 'label', 'body', 'inset', 'mark'],
+            fx: ['photo:dim,grain', 'grad', 'inset:mark'],
+            al: [],
+            d: { label: 'BEFORE', body: '숱은 있는데 **결이 위아래로 흩어져**\n모양이 흐릿하게 퍼져 보이는 눈썹이었어요.\n특히 **꼬리 쪽**은 끝이 거의 보이지 않았고요.', labelSize: 40, bodySize: 28, gradA: 46, gradB: 61, border: 1, mark: 1, markW: 118, markH: 58, dim: 0, grain: 0, insetZoom: 2.4 },
+            paint: paintCaseBefore
+        }, {
+            id: 'caseAfter',
+            group: '케이스 · 전후',
+            nm: '케이스 · AFTER',
+            ds: 'BEFORE를 위아래로 뒤집은 배치',
+            slots: ['메인 사진', '인셋 · 비우면 메인 확대'],
+            fields: ['label', 'body'],
+            lb: { label: '라벨', body: '결과 설명 · 3~5줄' },
+            sizes: ['labelSize', 'bodySize'],
+            pos: ['all', 'label', 'body', 'inset', 'mark'],
+            fx: ['photo:dim,grain', 'grad', 'inset:mark'],
+            al: [],
+            d: { label: 'AFTER', body: '모가 난 방향을 따라\n**필요한 곳에만** 결을 넣어\n흩어진 모양을 **정리**했어요.', labelSize: 40, bodySize: 28, gradA: 46, gradB: 62, border: 1, mark: 0, markW: 118, markH: 58, dim: 0, grain: 0, insetZoom: 2.4 },
+            paint: paintCaseAfter
+        }, {
+            id: 'clientSays',
+            group: '케이스 · 전후',
+            nm: '후기 · CLIENT SAYS',
+            ds: '사진 + 흰 박스 후기',
+            slots: ['사진'],
+            fields: ['label', 'body'],
+            lb: { label: '라벨', body: '후기 문장 · 손님이 보낸 그대로' },
+            note: '손님이 실제로 보낸 후기만, 동의를 받고 넣으세요.',
+            sizes: ['labelSize', 'bodySize'],
+            pos: ['all', 'label', 'box'],
+            fx: ['photo:dim,grain'],
+            al: [],
+            d: { label: 'CLIENT SAYS', body: '손님이 보내주신 후기 문장을 그대로 넣어주세요.\n**가장 와닿는 한 구절**은 굵게 표시하면 좋아요.', labelSize: 29, bodySize: 24, dim: 0, grain: 0 },
+            paint: paintClientSays
+        }, {
+            id: 'caseDetail',
+            group: '케이스 · 전후',
+            nm: '케이스 · DETAIL',
+            ds: '접사 + 한 줄 + 아래 연락처',
+            slots: ['접사 사진'],
+            fields: ['label', 'title', 'foot1', 'foot2'],
+            lb: { label: '라벨', title: '한 줄', foot1: '연락처 1 · **LOC.** 처럼 앞말 굵게', foot2: '연락처 2' },
+            sizes: ['labelSize', 'titleSize', 'footSize'],
+            pos: ['all', 'label', 'title', 'foot'],
+            fx: ['photo:dim,grain', 'grad'],
+            al: [],
+            d: { label: 'DETAIL', title: '결 사이가 비어 있어야 **자연스럽습니다**', foot1: '**LOC.** 지점명 1호점 / 2호점', foot2: '**IN.** 카카오톡 채널  |  DM  |  프로필 링크', labelSize: 40, titleSize: 28, footSize: 26, gradA: 70, gradB: 86, dim: 0, grain: 0 },
+            paint: paintCaseDetail
+        }, {
+            id: 'qaCover',
+            group: '질문 · 정보',
+            nm: '질문 · 표지',
+            ds: '화보 사진 + 두 줄 질문',
+            slots: ['사진'],
+            fields: ['label', 'title', 'sub'],
+            lb: { label: '맨 위 작은 글 · 비우면 숨김', title: '질문 · 핵심 단어만 **굵게**', sub: '아랫줄 · 넘겨보게 하는 말' },
+            sizes: ['labelSize', 'titleSize', 'subSize'],
+            pos: ['all', 'label', 'title', 'sub'],
+            fx: ['photo:dim,grain', 'grad'],
+            al: ['align'],
+            d: { label: '', title: '붉게 변하거나\n**퍼지진** 않나요?', sub: '자연스럽게 남는 이유 >>', labelSize: 24, titleSize: 72, subSize: 30, align: 'left', gradA: 50, gradB: 100, dim: 0, grain: 0 },
+            paint: paintQaCover
+        }, {
+            id: 'infoCard',
+            group: '질문 · 정보',
+            nm: '정보 카드',
+            ds: '위 사진 띠 + 글 패널',
+            slots: ['사진 띠'],
+            fields: ['title', 'sub', 'body'],
+            lb: { title: '제목', sub: '영문 부제 · 제목 옆에 작게', body: '본문' },
+            sizes: ['titleSize', 'subSize', 'bodySize'],
+            pos: ['all', 'title', 'body'],
+            fx: ['photo:dim,grain', 'panel'],
+            al: [],
+            d: { title: '모공피부', sub: 'Large pores · Thick skin', body: '피부 조직이 **단단하고 모공이** 도드라지는 타입입니다.\n색소가 깊게 들어가기 어렵고, 너무 얕으면 빠르게 빠집니다.\n\n그래서 **한 올씩 겹쳐서** 채웁니다.', titleSize: 44, subSize: 26, bodySize: 27, panel: 'paper', dim: 0, grain: 0 },
+            paint: paintInfoCard
+        }, {
+            id: 'compare',
+            group: '질문 · 정보',
+            nm: '비교 카드',
+            ds: '두 사진 나란히 + 아래 설명',
+            slots: ['왼쪽 사진', '오른쪽 사진'],
+            fields: ['label', 'capL', 'capR', 'body'],
+            lb: { label: '맨 위 작은 글 · 비우면 숨김', capL: '왼쪽 · 첫 줄은 굵은 제목', capR: '오른쪽 · 첫 줄은 굵은 제목', body: '맨 아래 한마디 · 비우면 숨김' },
+            sizes: ['labelSize', 'titleSize', 'bodySize'],
+            pos: ['all', 'label', 'caps', 'body'],
+            fx: ['photo:dim,grain', 'panel'],
+            al: [],
+            d: { label: 'BRAND', capL: '정석 위치\n얼굴 각이 꺾이는\n부분에 눈썹 산', capR: '안쪽 위치\n시선이 가운데로 모여\n더 또렷한 인상', body: '', labelSize: 22, titleSize: 30, bodySize: 22, panel: 'gray', dim: 0, grain: 0 },
+            paint: paintCompare
+        }, {
+            id: 'splitLR',
+            group: '질문 · 정보',
+            nm: '좌우 비교 + 흰 띠',
+            ds: '한 달 후 · 두 달 후처럼',
+            slots: ['왼쪽 사진', '오른쪽 사진'],
+            fields: ['capL', 'capR', 'body'],
+            lb: { capL: '왼쪽 사진 아래 글', capR: '오른쪽 사진 아래 글', body: '흰 띠 설명' },
+            sizes: ['titleSize', 'bodySize'],
+            pos: ['all', 'caps', 'body'],
+            fx: ['photo:dim,grain', 'panel'],
+            al: [],
+            d: { capL: '시술 한 달 후', capR: '시술 두 달 후', body: '색 퍼짐이나 붉어짐 없이\n**깔끔하게 유지**되는 눈썹', titleSize: 26, bodySize: 26, panel: 'paper', dim: 0, grain: 0 },
+            paint: paintSplitLR
+        }, {
+            id: 'textOnly',
+            group: '질문 · 정보',
+            nm: '문장 카드',
+            ds: '연회색 바탕 + 가운데 문장',
+            slots: [],
+            fields: ['label', 'body', 'sub'],
+            lb: { label: '맨 위 작은 글 · 비우면 숨김', body: '문장', sub: '아랫줄 · 비우면 숨김' },
+            sizes: ['labelSize', 'bodySize', 'subSize'],
+            pos: ['all', 'label', 'body', 'sub'],
+            fx: ['panel'],
+            al: ['bAlign'],
+            d: { label: '', body: '걱정은 이제 그만,\n**붉어지거나 퍼지지 않습니다.**', sub: '그 결과와 이유 보러가시죠 >>', labelSize: 22, bodySize: 34, subSize: 26, bAlign: 'center', panel: 'gray' },
+            paint: paintTextOnly
+        }, {
+            id: 'reviewCover',
+            group: '후기 · 마무리',
+            nm: '후기 모음 · 표지',
+            ds: '잔상 사진 + REAL / REVIEW',
+            slots: ['사진'],
+            fields: ['title', 'sub'],
+            lb: { title: '큰 글 · 둘째 줄 **굵게**', sub: '아랫줄' },
+            sizes: ['titleSize', 'subSize'],
+            pos: ['all', 'title', 'sub'],
+            fx: ['photo:dim,grain,ghost'],
+            al: ['align'],
+            d: { title: 'REAL\n**REVIEW**', sub: '일상에 스며든 눈썹\nEffortlessly part of your everyday.', titleSize: 104, subSize: 26, align: 'center', dim: 12, grain: 0, ghost: 60 },
+            paint: paintReviewCover
+        }, {
+            id: 'endCard',
+            group: '후기 · 마무리',
+            nm: '마무리 · 연락처',
+            ds: '브랜드 이름 + 위치·연락처',
+            slots: [],
+            fields: ['title', 'body'],
+            lb: { title: '브랜드 이름', body: '연락처 · 한 줄에 하나' },
+            sizes: ['titleSize', 'bodySize'],
+            pos: ['all', 'title', 'body'],
+            fx: ['panel'],
+            al: [],
+            d: { title: 'BRAND', body: '**LOC.** 서울 1호점 / 2호점\n**IN.** DM  |  카카오톡 채널\n**LINK.** 프로필 링크', titleSize: 64, bodySize: 26, panel: 'paper' },
+            paint: paintEndCard
+        }];
+
+        /* 전체 3,570개 조사로 더한 틀(아카데미 계열 제외, 브랜드 포스터 포함) */
+        TPL.push({
+            id: 'splitSeam',
+            nm: '좌우 전후 · 아래 문구',
+            ds: '반반 나누고 가운데 세로선',
+            slots: ['왼쪽 · 시술 전', '오른쪽 · 시술 후'],
+            fields: ['capL', 'capR', 'label', 'title', 'sub'],
+            lb: { capL: '왼쪽 위 작은 글', capR: '오른쪽 위 작은 글', label: '라벨 · 비우면 숨김', title: '큰 문장', sub: '아랫줄' },
+            sizes: ['labelSize', 'titleSize', 'subSize'],
+            pos: ['all', 'caps', 'label', 'title', 'sub'],
+            fx: ['photo:dim,grain', 'seam:band', 'divider'],
+            al: [],
+            d: { capL: 'BEFORE', capR: 'AFTER', label: '', title: '흐릿했던 눈썹, **결로 또렷하게**', sub: 'From faint to defined', labelSize: 24, titleSize: 36, subSize: 26, band: 55, border: 1 },
+            paint: paintSplitSeam
+        }, {
+            id: 'caseReport',
+            nm: '케이스 리포트',
+            ds: '번호·부위명·좌우 전후·설명',
+            slots: ['왼쪽 사진', '오른쪽 사진'],
+            fields: ['label', 'sub', 'capL', 'capR', 'title', 'body'],
+            lb: { label: '번호 · 예: 02', sub: '오른쪽 위 작은 글', capL: '왼쪽 사진 라벨', capR: '오른쪽 사진 라벨', title: '부위 이름(영문)', body: '첫 줄 **굵게** 제목 + 설명' },
+            sizes: ['bodySize'],
+            pos: ['all', 'label', 'sub', 'caps', 'title', 'body'],
+            fx: ['photo:dim,grain', 'panel', 'accent'],
+            al: [],
+            d: { label: '02', sub: 'CASE NOTE', capL: 'BEFORE', capR: 'AFTER', title: 'BROW TAIL', body: '**눈썹 꼬리 연장**\n뒤로 갈수록 흐려지던 꼬리를\n모가 난 방향대로 이어 채웠습니다.', bodySize: 24, panel: 'white', accent: 'ink' },
+            paint: paintCaseReport
+        }, {
+            id: 'circlePair',
+            nm: '원형 전후 · 단계 점',
+            ds: '동그란 사진 두 장 + ●○ 단계',
+            slots: ['위 원 · 1단계', '아래 원 · 2단계'],
+            fields: ['label', 'capL', 'capR'],
+            lb: { label: '맨 위 필기체 로고 · 비우면 숨김', capL: '1단계 설명 · 첫 줄 굵게', capR: '2단계 설명 · 첫 줄 굵게' },
+            sizes: [],
+            pos: ['all', 'label', 'caps'],
+            fx: ['photo:dim,grain', 'panel'],
+            al: [],
+            d: { label: 'Brand', capL: '**1단계**\n처음 작업한 직후\n결 방향을 따라 옅게', capR: '**2단계**\n한 달 뒤 리터치\n빈 곳만 채워 완성', panel: 'white' },
+            paint: paintCirclePair
+        }, {
+            id: 'zoomCircle',
+            nm: '원형 돋보기 · 연결선',
+            ds: '사진 + 동그란 확대 + 설명',
+            slots: ['사진', '확대 · 비우면 사진 확대'],
+            fields: ['label', 'title', 'body', 'capL'],
+            lb: { label: '맨 위 필기체 로고 · 비우면 숨김', title: '제목 · 오른쪽 정렬', body: '설명', capL: '원 아래 작은 글' },
+            sizes: ['titleSize', 'bodySize'],
+            pos: ['all', 'label', 'title', 'body', 'caps', 'inset', 'mark'],
+            posLb: { inset: '돋보기 원', mark: '연결선 끝점' },
+            fx: ['photo:dim,grain', 'inset:ring'],
+            al: [],
+            d: { label: '', title: '자연스러운\n**헤어라인**', body: '원래 있던 잔머리 사이로\n한 올씩 결을 넣었습니다.', capL: '시술 전', titleSize: 52, bodySize: 22, border: 1, insetZoom: 2.6, dim: 10 },
+            paint: paintZoomCircle
+        }, {
+            id: 'selfieChip',
+            nm: '직후 사진 · 손님 말',
+            ds: '위에 손님 한마디 + 작은 라벨',
+            slots: ['사진'],
+            fields: ['title', 'label', 'capL'],
+            lb: { title: '손님이 실제로 한 말', label: '작은 라벨 · 비우면 숨김', capL: '왼쪽 아래 흰 상자 · 비우면 숨김' },
+            note: '손님이 실제로 한 말만, 동의를 받고 넣으세요.',
+            sizes: ['titleSize'],
+            pos: ['all', 'title', 'label', 'caps'],
+            fx: ['photo:dim,grain'],
+            al: [],
+            d: { title: '손님이 실제로 한 말을\n**그대로** 넣어주세요', label: '시술 직후', capL: '', titleSize: 36 },
+            paint: paintSelfieChip
+        }, {
+            id: 'testimonial',
+            nm: '소감 카드',
+            ds: '큰 제목 + 인물 사진 + 반전 강조',
+            slots: ['인물 사진'],
+            fields: ['label', 'title', 'body'],
+            lb: { label: '윗줄 · 누구의 소감인지', title: '큰 제목', body: '소감 · **굵게**는 검은 띠로 강조' },
+            note: '손님이 직접 쓴 글만 넣으세요.',
+            sizes: ['titleSize', 'bodySize'],
+            pos: ['all', 'label', 'title', 'body'],
+            fx: ['photo:dim,grain', 'panel'],
+            al: [],
+            d: { label: '시술을 받아보신', title: '소감이 궁금해요', body: '손님이 보내주신 글을\n그대로 옮겨 적어주세요.\n\n특히 와닿는 구절은\n**이렇게 강조**돼요.', titleSize: 64, bodySize: 23, panel: 'white' },
+            paint: paintTestimonial
+        }, {
+            id: 'reviewCollage',
+            nm: '후기 캡처 콜라주',
+            ds: '흐린 배경 + 캡처 3장 + 한 문장',
+            slots: ['배경 · 흐리게', '캡처 1', '캡처 2', '캡처 3'],
+            fields: ['label', 'body'],
+            lb: { label: '맨 위 작은 글', body: '크게 보여줄 한 문장' },
+            note: '실제 받은 후기 캡처만 쓰세요.',
+            sizes: ['bodySize'],
+            pos: ['all', 'label', 'body'],
+            fx: ['photo:dim,grain'],
+            al: [],
+            d: { label: 'REAL REVIEW', body: '가장 와닿은 **한 문장**', bodySize: 32, dim: 30 },
+            paint: paintReviewCollage
+        }, {
+            id: 'gridCollage',
+            nm: '사진 격자 콜라주',
+            ds: '4·6칸 사진 + 제목 띠',
+            slots: ['사진 1', '사진 2', '사진 3', '사진 4', '사진 5', '사진 6'],
+            fields: ['title', 'sub'],
+            lb: { title: '제목 · **굵게**는 포인트 색', sub: '아랫줄' },
+            sizes: ['titleSize', 'subSize'],
+            pos: ['all', 'title', 'sub'],
+            fx: ['photo:dim,grain', 'grid', 'panel', 'accent'],
+            al: [],
+            d: { title: '시술 직후 **모음**', sub: '보정 없이 찍은 사진이에요', titleSize: 44, subSize: 22, cells: '6', bandPos: 'top', panel: 'ink', accent: 'paper' },
+            paint: paintGridCollage
+        }, {
+            id: 'stepCard',
+            nm: 'STEP 과정 카드',
+            ds: '사진 + 큰 번호 + 과정 설명',
+            slots: ['사진'],
+            fields: ['label', 'title', 'capL', 'sub', 'body'],
+            lb: { label: '맨 위 작은 글 · 비우면 숨김', title: '번호 · 예: 01', capL: 'STEP 자리 글', sub: '과정 이름', body: '설명' },
+            sizes: ['bodySize'],
+            pos: ['all', 'label', 'title', 'sub', 'body'],
+            fx: ['photo:dim,grain'],
+            al: [],
+            d: { label: '', title: '01', capL: 'STEP', sub: '디자인 상담', body: '얼굴 골격과 원래 눈썹 결을 먼저 보고\n어울리는 모양을 함께 정합니다.', bodySize: 24, dim: 15 },
+            paint: paintStepCard
+        }, {
+            id: 'noticeCover',
+            nm: '공지 · 이벤트 표지',
+            ds: '큰 제목 두 줄 + 일정 + 태그 줄',
+            slots: ['사진'],
+            fields: ['title', 'sub', 'label', 'body', 'foot1'],
+            lb: { title: '큰 제목', sub: '일정 · **굵게**는 포인트 색', label: '태그 · 쉼표로 구분, 비우면 숨김', body: '설명', foot1: '맨 아래 연락처 줄' },
+            sizes: ['titleSize', 'subSize', 'bodySize', 'footSize'],
+            pos: ['all', 'title', 'sub', 'label', 'body', 'foot'],
+            fx: ['photo:dim,grain', 'accent'],
+            al: [],
+            d: { title: '10월\n예약 오픈', sub: '**10월 1일** 오전 10시부터', label: '1:1 상담, 디자인 먼저, 리터치 포함', body: '원하시는 날짜가 있다면\n미리 문의 남겨주세요.', foot1: '문의  |  프로필 링크  |  DM', titleSize: 100, subSize: 50, bodySize: 22, footSize: 20, dim: 40, accent: 'paper' },
+            paint: paintNoticeCover
+        }, {
+            id: 'kakaoSearch',
+            nm: '카카오 채널 검색 안내',
+            ds: '검색창 모형 + 3단계 + 프로필',
+            slots: ['프로필 사진'],
+            fields: ['title', 'sub', 'body', 'capL', 'label', 'foot1'],
+            lb: { title: '위 안내 문장', sub: '검색창에 보일 채널 이름', body: '검색창 아래 작은 글', capL: '3단계 설명 · 한 줄에 하나씩 3줄', label: '프로필 이름', foot1: '프로필 아래 작은 글' },
+            sizes: ['titleSize', 'bodySize'],
+            pos: ['all'],
+            fx: ['panel'],
+            al: [],
+            d: { title: '더 자연스러운 눈썹이 궁금하시다면\n**아래 채널로 문의** 부탁드립니다', sub: '채널이름', body: '카카오톡 채널을 추가하고\n문의를 남겨주세요', capL: '카카오톡 실행\n채널 이름 검색\n채널 추가', label: '채널이름', foot1: '친구 1천 · 문의', titleSize: 32, bodySize: 22, panel: 'white' },
+            paint: paintKakaoSearch
+        }, {
+            id: 'qrCard',
+            nm: 'QR 카드',
+            ds: '사진 위 흰 카드 + QR',
+            slots: ['배경 사진', 'QR 이미지'],
+            fields: ['title', 'sub', 'foot1', 'foot2'],
+            lb: { title: '카드 이름', sub: '카드 작은 글', foot1: '카드 아래 큰 글', foot2: '카드 아래 작은 글' },
+            note: 'QR 칸에는 카카오톡·왓츠앱에서 받은 QR 캡처를 넣으세요.',
+            sizes: [],
+            pos: ['all', 'box', 'foot'],
+            posLb: { box: 'QR 카드' },
+            fx: ['photo:dim,grain', 'photofx'],
+            al: [],
+            d: { title: 'brand', sub: 'KakaoTalk Channel', foot1: 'BOOKING HERE', foot2: 'DM  |  카카오톡 채널  |  프로필 링크', photoFx: 'gray', dim: 15 },
+            paint: paintQrCard
+        }, {
+            id: 'brandCover',
+            nm: '화보 표지',
+            ds: '가로로 넓은 로고 + 두 단 작은 글',
+            slots: ['화보 사진'],
+            fields: ['title', 'capL', 'capR', 'sub', 'foot1'],
+            lb: { title: '브랜드 이름(로고)', capL: '로고 아래 왼쪽', capR: '로고 아래 오른쪽', sub: '가운데 작은 줄', foot1: '맨 아래 줄 · **굵게**는 세리프' },
+            sizes: ['titleSize'],
+            pos: ['all', 'title', 'caps', 'sub', 'foot'],
+            fx: ['photo:dim,grain,ghost', 'photofx', 'accent'],
+            al: [],
+            d: { title: 'BRAND', capL: 'BROW\nSCALP', capR: 'SEOUL\nSINCE 2019', sub: 'PERSONAL DESIGN', foot1: 'NOW BOOKING **OPEN**', titleSize: 92, ghost: 30, dim: 8, accent: 'paper' },
+            paint: paintBrandCover
+        }, {
+            id: 'ghostWordmark',
+            nm: '잔상 워드마크',
+            ds: '흔들린 듯한 큰 글자 + 작은 두 줄',
+            slots: ['인물 사진'],
+            fields: ['title', 'sub'],
+            lb: { title: '큰 글자', sub: '아래 두 줄' },
+            sizes: ['titleSize'],
+            pos: ['all', 'title', 'sub'],
+            fx: ['photo:dim,grain,ghost', 'photofx', 'accent'],
+            al: [],
+            d: { title: 'BROW', sub: 'THE ERA OF\nNATURAL STROKES', titleSize: 170, ghost: 55, dim: 5, accent: 'paper' },
+            paint: paintGhostWordmark
+        }, {
+            id: 'serifStatement',
+            nm: '세리프 문구 포스터',
+            ds: '옷 색에 맞춘 로고 + 세리프 문장',
+            slots: ['화보 사진'],
+            fields: ['label', 'body'],
+            lb: { label: '로고', body: '세리프 문장 · 짧게 여러 줄' },
+            sizes: ['labelSize', 'bodySize'],
+            pos: ['all', 'label', 'body'],
+            fx: ['photo:dim,grain,ghost', 'photofx', 'accent'],
+            al: [],
+            d: { label: 'BRAND', body: 'designed for\nthe quiet\ndetails\nthat shape\nyour whole\nimpression', labelSize: 58, bodySize: 30, ghost: 0, accent: 'red' },
+            paint: paintSerifStatement
+        }, {
+            id: 'magazine',
+            nm: '잡지 표지형',
+            ds: '큰 제호 + 윤곽 글자 + 인물',
+            slots: ['인물 사진'],
+            fields: ['title', 'sub', 'capR', 'body', 'foot1'],
+            lb: { title: '제호', sub: '윤곽 글자 · 비우면 숨김', capR: '오른쪽 작은 글 · **굵게**는 검은 띠', body: '아래 큰 문장', foot1: '맨 아래 띠 글 · 비우면 숨김' },
+            sizes: ['titleSize', 'subSize', 'bodySize'],
+            pos: ['all', 'title', 'sub', 'caps', 'body', 'foot'],
+            fx: ['photo:dim,grain', 'photofx', 'panel'],
+            al: [],
+            d: { title: 'TREND', sub: 'BROW', capR: '이번 달\n**남자 눈썹**\n자연스러움의 기준', body: '결로 채우는 눈썹이 뜨는 이유', foot1: '예약 문의  |  프로필 링크  |  DM', titleSize: 176, subSize: 110, bodySize: 36, panel: 'white' },
+            paint: paintMagazine
+        }, {
+            id: 'frameCard',
+            nm: '액자형',
+            ds: '단색 배경 + 가운데 사진 + 필기체 로고',
+            slots: ['사진'],
+            fields: ['label', 'sub'],
+            lb: { label: '로고 · 필기체', sub: '아래 작은 글 · 비우면 숨김' },
+            sizes: ['labelSize', 'subSize'],
+            pos: ['all', 'label', 'sub'],
+            fx: ['photo:dim,grain', 'photofx', 'panel'],
+            al: [],
+            d: { label: 'Brand', sub: '', labelSize: 44, subSize: 22, panel: 'navy' },
+            paint: paintFrameCard
+        }, {
+            id: 'eventPoster',
+            nm: '행사 · 오픈 포스터',
+            ds: '윤곽 라벨 + 넓은 제목 + 좌우 정보',
+            slots: ['배경 · 인물 사진'],
+            fields: ['label', 'title', 'capL', 'capR', 'sub', 'foot1'],
+            lb: { label: '윤곽 라벨(영문)', title: '큰 제목', capL: '왼쪽 정보 · **굵게**', capR: '오른쪽 연락처', sub: '아래 반투명 큰 글', foot1: '맨 아래 줄' },
+            sizes: ['titleSize', 'footSize'],
+            pos: ['all', 'label', 'title', 'caps', 'sub', 'foot'],
+            fx: ['photo:dim,grain', 'photofx'],
+            al: [],
+            d: { label: 'GRAND OPENING', title: 'SEOUL', capL: '**새 매장** 오픈\n10월 한 달\n**디자인 상담** 먼저\n10. 01 수요일', capR: 'DM\n카카오톡 채널', sub: '새 공간에서\n만나요', foot1: '문의 > DM 또는 프로필 링크', titleSize: 150, footSize: 20, dim: 45, grain: 25 },
+            paint: paintEventPoster
+        }, {
+            id: 'silhouette',
+            nm: '실루엣 티저',
+            ds: '흰 배경 + 검은 실루엣 + 작은 로고',
+            slots: ['역광 인물 사진'],
+            fields: ['label', 'sub'],
+            lb: { label: '로고', sub: '아래 작은 글' },
+            sizes: ['labelSize'],
+            pos: ['all', 'label', 'sub'],
+            fx: ['photofx:thr'],
+            al: [],
+            d: { label: 'BRAND', sub: 'COMING SOON', labelSize: 34, thr: 110, photoFx: 'sil' },
+            paint: paintSilhouette
+        }, {
+            id: 'lookbook',
+            nm: '룩북 지면',
+            ds: '세리프 제목 + 사진 두 장 + 필기체',
+            slots: ['왼쪽 큰 사진', '오른쪽 작은 사진'],
+            fields: ['title', 'label', 'sub', 'foot1'],
+            lb: { title: '세리프 제목', label: '사진 위 필기체', sub: '아래 설명', foot1: '오른쪽 아래 쪽번호' },
+            sizes: ['titleSize', 'subSize'],
+            pos: ['all', 'title', 'label', 'sub', 'foot'],
+            fx: ['photo:dim,grain', 'photofx', 'panel'],
+            al: [],
+            d: { title: 'Look\nBook', label: 'Brand', sub: '이번 시즌 남자 눈썹\n자연스러운 결 모음', foot1: 'No. 01', titleSize: 92, subSize: 22, panel: 'white' },
+            paint: paintLookbook
+        });
+        /* 묶음·순서 */
+        const GROUP_OF = {
+            caseCover: '케이스 · 전후', caseBefore: '케이스 · 전후', caseAfter: '케이스 · 전후', caseDetail: '케이스 · 전후', splitSeam: '케이스 · 전후', caseReport: '케이스 · 전후', circlePair: '케이스 · 전후', zoomCircle: '케이스 · 전후',
+            clientSays: '후기', selfieChip: '후기', testimonial: '후기', reviewCover: '후기', reviewCollage: '후기', gridCollage: '후기',
+            qaCover: '질문 · 정보', infoCard: '질문 · 정보', compare: '질문 · 정보', splitLR: '질문 · 정보', textOnly: '질문 · 정보', stepCard: '질문 · 정보',
+            noticeCover: '공지 · 마무리', kakaoSearch: '공지 · 마무리', qrCard: '공지 · 마무리', endCard: '공지 · 마무리',
+            brandCover: '브랜드 포스터', ghostWordmark: '브랜드 포스터', serifStatement: '브랜드 포스터', magazine: '브랜드 포스터', frameCard: '브랜드 포스터', eventPoster: '브랜드 포스터', silhouette: '브랜드 포스터', lookbook: '브랜드 포스터'
+        };
+        const ORDER = Object.keys(GROUP_OF);
+        TPL.forEach(t => t.group = GROUP_OF[t.id] || t.group);
+        TPL.sort((a, b) => ORDER.indexOf(a.id) - ORDER.indexOf(b.id));
+        (function() { const q = TPL.find(t => t.id === 'qaCover');
+            q.fx = ['photo:dim,grain,ghost', 'grad'];
+            q.d.ghost = 0; })();
+        const TPL_BY = Object.fromEntries(TPL.map(t => [t.id, t]));
+        const slotNames = s => { const t = TPL_BY[s.tpl]; return t.id === 'gridCollage' ? t.slots.slice(0, +s.cells === 4 ? 4 : 6) : t.slots; };
+
+        /* ---------- slide model ---------- */
+        const POS_KEYS = ['all', 'label', 'title', 'sub', 'body', 'caps', 'foot', 'box', 'inset', 'mark'];
+
+        function newPos() { const p = {};
+            POS_KEYS.forEach(k => p[k] = { x: 0, y: 0 });
+            return p; }
+        /* 글 요소 오프셋 = 문구 전체 + 개별 (인셋·원은 개별만) */
+        function pOff(s, k) { const p = s.pos || (s.pos = newPos()),
+                a = (k === 'inset' || k === 'mark') ? { x: 0, y: 0 } : p.all;
+            return { x: a.x + p[k].x, y: a.y + p[k].y }; }
+
+        function newPhoto(z) { return { img: null, src: null, zoom: z || 1, ox: 0, oy: 0 }; }
+
+        const DEF = { label: '', title: '', sub: '', body: '', capL: '', capR: '', foot1: '', foot2: '', labelSize: 40, titleSize: 36, subSize: 27, bodySize: 28, footSize: 26, align: 'left', bAlign: 'left', dim: 0, grain: 0, ghost: 60, gradA: 46, gradB: 61, seam: 'line', seamY: 50, band: 45, border: 1, mark: 0, markW: 118, markH: 58, panel: 'paper', accent: 'paper', photoFx: 'none', thr: 110, cells: '6', bandPos: 'top' };
+
+        function tplValues(t) { const v = Object.assign({}, DEF, t.d);
+            delete v.insetZoom;
+            return v; }
+
+        function newSlide(tplId) {
+            const t = TPL_BY[tplId] || TPL[0];
+            const s = Object.assign({ tpl: t.id, pos: newPos(), photos: Array.from({ length: 6 }, (_, k) => newPhoto(k === 1 ? (t.d.insetZoom || 1) : 1)) }, tplValues(t));
+            return s;
+        }
+
+        function applyTpl(s, tplId) {
+            const t = TPL_BY[tplId];
+            Object.assign(s, tplValues(t), { tpl: t.id, pos: newPos() });
+            if (t.d.insetZoom && !s.photos[1].img) { s.photos[1].zoom = t.d.insetZoom;
+                s.photos[1].ox = 0;
+                s.photos[1].oy = 0; }
+        }
+
+        const S = { slides: ['caseCover', 'caseBefore', 'caseAfter', 'clientSays', 'caseDetail'].map(newSlide), i: 0, slot: 0 };
+        const cur = () => S.slides[S.i];
+        const tplOf = s => TPL_BY[s.tpl];
+
+        /* ---------- grain ---------- */
+        const noise = document.createElement('canvas');
+        noise.width = W;
+        noise.height = 1440;
+        (function() {
+            const nc = noise.getContext('2d'),
+                d = nc.createImageData(W, 1440);
+            for (let p = 0; p < d.data.length; p += 4) {
+                const v = 110 + (Math.random() * 90 | 0);
+                d.data[p] = v;
+                d.data[p + 1] = v;
+                d.data[p + 2] = v;
+                d.data[p + 3] = 255;
+            }
+            nc.putImageData(d, 0, 0);
+        })();
+
+        /* ---------- helpers ---------- */
+        const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+        function ls(c, v) { if ('letterSpacing' in c) c.letterSpacing = v; }
+
+        /* **굵게** 표시를 조각으로: [[{t, b}] 줄...] */
+        function parseRich(str) {
+            return String(str || '').split('\n').map(line => {
+                const segs = [];
+                line.split('**').forEach((part, k) => { if (part) segs.push({ t: part, b: k % 2 === 1 }); });
+                return segs;
+            });
+        }
+
+        function segW(c, seg, o) { c.font = font(seg.b ? o.w2 : o.w1, o.size, seg.b ? (o.fk2 || o.fk) : o.fk);
+            ls(c, o.ls || '0px');
+            return c.measureText(seg.t).width; }
+
+        function lineW(c, segs, o) { return segs.reduce((a, s) => a + segW(c, s, o), 0); }
+
+        /* 한 줄이 maxW보다 길면 띄어쓰기에서(없으면 글자에서) 접는다 */
+        function wrapRich(c, lines, o) {
+            const out = [];
+            for (const segs of lines) {
+                if (!segs.length) { out.push([]); continue; }
+                if (!o.maxW || lineW(c, segs, o) <= o.maxW) { out.push(segs); continue; }
+                const toks = [];
+                segs.forEach(sg => sg.t.split(/(\s+)/).forEach(tk => { if (tk) toks.push({ t: tk, b: sg.b }); }));
+                let line = [],
+                    w = 0;
+                const push = () => { while (line.length && /^\s+$/.test(line[line.length - 1].t)) line.pop();
+                    if (line.length) out.push(line);
+                    line = [];
+                    w = 0; };
+                for (const tk of toks) {
+                    const tw = segW(c, tk, o);
+                    if (w + tw <= o.maxW || (!line.length && /^\s+$/.test(tk.t))) { if (!line.length && /^\s+$/.test(tk.t)) continue;
+                        line.push(tk);
+                        w += tw;
+                        continue; }
+                    if (line.length) push();
+                    if (/^\s+$/.test(tk.t)) continue;
+                    if (tw <= o.maxW) { line.push(tk);
+                        w = tw;
+                        continue; }
+                    for (const ch of tk.t) { const cw = segW(c, { t: ch, b: tk.b }, o);
+                        if (w + cw > o.maxW && line.length) push();
+                        line.push({ t: ch, b: tk.b });
+                        w += cw; }
+                }
+                push();
+            }
+            return out;
+        }
+
+        /* 여러 줄 글. y는 첫 줄 기준선(anchor:'bottom'이면 마지막 줄 기준선) */
+        function drawRich(c, text, o) {
+            o = Object.assign({ w1: 'regular', w2: 'bold', col1: PAPER, col2: null, align: 'left', lh: 1.45, ls: '0px' }, o);
+            const lines = wrapRich(c, parseRich(text), o);
+            if (!lines.length) return { n: 0, top: o.y, bottom: o.y };
+            const step = o.size * o.lh;
+            let y = o.anchor === 'bottom' ? o.y - (lines.length - 1) * step : o.y;
+            const y0 = y;
+            c.textBaseline = 'alphabetic';
+            c.textAlign = 'left';
+            c.save();
+            if (o.alpha != null) c.globalAlpha = o.alpha;
+            for (const segs of lines) {
+                const w = lineW(c, segs, o);
+                let x = o.align === 'center' ? o.x - w / 2 : o.align === 'right' ? o.x - w : o.x;
+                for (const sg of segs) {
+                    c.font = font(sg.b ? o.w2 : o.w1, o.size, sg.b ? (o.fk2 || o.fk) : o.fk);
+                    ls(c, o.ls);
+                    const sw = c.measureText(sg.t).width;
+                    if (sg.b && o.hl) {
+                        /* 굵게 → 검은 띠 위 반전 글자 */
+                        c.fillStyle = o.hlBg || INK;
+                        c.fillRect(x - 4, y - o.size * .88, sw + 8, o.size * 1.14);
+                        c.fillStyle = o.hlFg || PAPER;
+                        c.fillText(sg.t, x, y);
+                    } else if (o.stroke) {
+                        c.strokeStyle = sg.b ? (o.col2 || o.col1) : o.col1;
+                        c.lineWidth = o.stroke;
+                        c.strokeText(sg.t, x, y);
+                    } else {
+                        c.fillStyle = sg.b ? (o.col2 || o.col1) : o.col1;
+                        c.fillText(sg.t, x, y);
+                    }
+                    x += sw;
+                }
+                y += step;
+            }
+            c.restore();
+            ls(c, '0px');
+            return { n: lines.length, top: y0 - o.size * .8, bottom: y - step, step };
+        }
+
+        function alignX(al, m) {
+            if (al === 'center') return W / 2;
+            if (al === 'right') return W - m;
+            return m;
+        }
+
+        /* 사진 가공(흑백·실루엣·흐림)은 한 번만 계산해 둔다 */
+        const PROC = new WeakMap();
+
+        function procImg(img, kind, thr) {
+            let m = PROC.get(img);
+            if (!m) PROC.set(img, m = {});
+            const key = kind + (kind === 'sil' ? ':' + thr : '');
+            if (m[key]) return m[key];
+            const iw = img.naturalWidth || img.width,
+                ih = img.naturalHeight || img.height;
+            const sc = Math.min(1, 1600 / Math.max(iw, ih));
+            const w = Math.max(1, Math.round(iw * sc)),
+                h = Math.max(1, Math.round(ih * sc));
+            const cv2 = document.createElement('canvas');
+            cv2.width = w;
+            cv2.height = h;
+            const g = cv2.getContext('2d');
+            if (kind === 'blur') {
+                const sm = document.createElement('canvas');
+                sm.width = Math.max(8, Math.round(w / 22));
+                sm.height = Math.max(8, Math.round(h / 22));
+                sm.getContext('2d').drawImage(img, 0, 0, sm.width, sm.height);
+                g.imageSmoothingEnabled = true;
+                g.imageSmoothingQuality = 'high';
+                g.drawImage(sm, 0, 0, w, h);
+            } else {
+                g.drawImage(img, 0, 0, w, h);
+                const d = g.getImageData(0, 0, w, h),
+                    a = d.data;
+                for (let i = 0; i < a.length; i += 4) {
+                    const l = .299 * a[i] + .587 * a[i + 1] + .114 * a[i + 2];
+                    const v = kind === 'gray' ? l : (l < thr ? 20 : 255);
+                    a[i] = a[i + 1] = a[i + 2] = v;
+                }
+                g.putImageData(d, 0, 0);
+            }
+            cv2.naturalWidth = w;
+            cv2.naturalHeight = h;
+            m[key] = cv2;
+            return cv2;
+        }
+
+        /* 사진 칸: rect에 꽉 채우고(cover) 확대·이동. 사진이 없으면 자리 표시.
+           opt: fallback(빈 칸이면 다른 칸 사진), circle(원으로 자르기), fit:'contain', bg, proc('gray'|'sil'|'blur'), ghost, hint:false */
+        function drawPhoto(c, s, slot, r, opt) {
+            opt = opt || {};
+            const p = s.photos[slot];
+            let img = p.img || (opt.fallback != null ? s.photos[opt.fallback].img : null);
+            c.save();
+            c.beginPath();
+            if (opt.circle) c.arc(r.x + r.w / 2, r.y + r.h / 2, Math.min(r.w, r.h) / 2, 0, Math.PI * 2);
+            else c.rect(r.x, r.y, r.w, r.h);
+            c.clip();
+            if (!img) {
+                const g = c.createLinearGradient(r.x, r.y, r.x + r.w, r.y + r.h);
+                g.addColorStop(0, '#8b8680');
+                g.addColorStop(1, '#3b3936');
+                c.fillStyle = g;
+                c.fillRect(r.x, r.y, r.w, r.h);
+                if (opt.hint !== false) {
+                    const nm = (slotNames(s)[slot] || '사진').split(' · ')[0];
+                    c.font = font('semibold', Math.max(18, Math.min(34, r.w / 12)));
+                    c.fillStyle = 'rgba(255,255,255,.55)';
+                    c.textAlign = 'center';
+                    c.textBaseline = 'middle';
+                    c.fillText(nm, r.x + r.w / 2, r.y + r.h / 2);
+                    c.textBaseline = 'alphabetic';
+                    c.textAlign = 'left';
+                }
+                c.restore();
+                return;
+            }
+            if (opt.proc && opt.proc !== 'none') img = procImg(img, opt.proc, s.thr);
+            if (opt.bg) { c.fillStyle = opt.bg;
+                c.fillRect(r.x, r.y, r.w, r.h); }
+            const iw = img.naturalWidth || img.width,
+                ih = img.naturalHeight || img.height;
+            const base = opt.fit === 'contain' ? Math.min(r.w / iw, r.h / ih) : Math.max(r.w / iw, r.h / ih),
+                sc = base * p.zoom;
+            const w = iw * sc,
+                h = ih * sc;
+            const mx = Math.max(0, (w - r.w) / 2),
+                my = Math.max(0, (h - r.h) / 2);
+            p.ox = clamp(p.ox, -mx, mx);
+            p.oy = clamp(p.oy, -my, my);
+            const dx = r.x + (r.w - w) / 2 + p.ox,
+                dy = r.y + (r.h - h) / 2 + p.oy;
+            if (opt.ghost) {
+                /* 잔상: 옆으로 밀린 사본을 옅게 겹친다 */
+                const k = opt.ghost / 100;
+                c.drawImage(img, dx, dy, w, h);
+                [[-46, .34], [46, .26], [-96, .16], [96, .1]].forEach(([ox, a]) => { c.globalAlpha = a * k;
+                    c.drawImage(img, dx + ox * k, dy, w, h); });
+                c.globalAlpha = 1;
+            } else c.drawImage(img, dx, dy, w, h);
+            c.restore();
+        }
+
+        function dimRect(c, s, r) { if (s.dim > 0) { c.fillStyle = 'rgba(0,0,0,' + (s.dim / 100) + ')';
+                c.fillRect(r.x, r.y, r.w, r.h); } }
+
+        function grainAll(c, s) {
+            if (!(s.grain > 0)) return;
+            c.save();
+            c.globalCompositeOperation = 'overlay';
+            c.globalAlpha = s.grain / 100 * .55;
+            c.drawImage(noise, 0, 0, W, H, 0, 0, W, H);
+            c.restore();
+        }
+
+        /* 부드러운 계단(smoothstep) 그라데이션: y0에서 a0, y1에서 a1 */
+        function rampGrad(c, y0, y1, a0, a1, rgb) {
+            const g = c.createLinearGradient(0, y0, 0, y1);
+            for (let k = 0; k <= 8; k++) { const t = k / 8,
+                    e = t * t * (3 - 2 * t),
+                    a = a0 + (a1 - a0) * e;
+                g.addColorStop(t, 'rgba(' + rgb + ',' + a.toFixed(3) + ')'); }
+            return g;
+        }
+        const INK_RGB = '22,21,20';
+
+        function handleMark(c, s) {
+            const txt = (G.handle || '').trim();
+            if (!txt) return;
+            c.font = font('medium', 22);
+            ls(c, '0.08em');
+            c.textAlign = 'right';
+            c.textBaseline = 'alphabetic';
+            c.fillStyle = s._handleCol || 'rgba(246,244,239,.72)';
+            c.fillText(txt, W - 56, 60);
+            ls(c, '0px');
+        }
+
+        /* 누르면 끌리는 사진 칸. top=true면 위에 겹친 칸(인셋·QR)이라 먼저 잡힌다 */
+        function region(s, slot, r, top) { const a = s._regions || (s._regions = []),
+                o = { slot, x: r.x, y: r.y, w: r.w, h: r.h };
+            if (top) a.unshift(o);
+            else a.push(o); }
+
+        function rr(c, x, y, w, h, r) {
+            r = Math.min(r, w / 2, h / 2);
+            c.beginPath();
+            c.moveTo(x + r, y);
+            c.arcTo(x + w, y, x + w, y + h, r);
+            c.arcTo(x + w, y + h, x, y + h, r);
+            c.arcTo(x, y + h, x, y, r);
+            c.arcTo(x, y, x + w, y, r);
+            c.closePath();
+        }
+
+        function hexRgb(h) { const v = parseInt(h.slice(1), 16); return ((v >> 16) & 255) + ',' + ((v >> 8) & 255) + ',' + (v & 255); }
+
+        function isDarkPanel(s) { return !!DARK_PANEL[s.panel]; }
+
+        /* 사진 위 글자색: 그 자리의 가장 불리한 밝기(15·85%)와 대비가 큰 쪽(먹색/미색)을 고른다 */
+        function autoInk(c, x, y, w, h) {
+            try {
+                const m = c.getTransform();
+                const X = Math.max(0, Math.round(x * m.a + m.e)),
+                    Y0 = Math.max(0, Math.round(y * m.d + m.f));
+                const d = c.getImageData(X, Y0, Math.max(1, Math.round(w * m.a)), Math.max(1, Math.round(h * m.d))).data;
+                const lin = v => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); };
+                const L = [];
+                for (let i = 0; i < d.length; i += 16) L.push(.2126 * lin(d[i]) + .7152 * lin(d[i + 1]) + .0722 * lin(d[i + 2]));
+                L.sort((a, b) => a - b);
+                const p15 = L[Math.floor(L.length * .15)],
+                    p85 = L[Math.floor(L.length * .85)];
+                const cr = (a, b) => (Math.max(a, b) + .05) / (Math.min(a, b) + .05);
+                const lInk = .0073,
+                    lPaper = .9;
+                const wInk = Math.min(cr(lInk, p15), cr(lInk, p85)),
+                    wPaper = Math.min(cr(lPaper, p15), cr(lPaper, p85));
+                return wInk > wPaper ? INK : PAPER;
+            } catch (e) { return PAPER; }
+        }
+
+        /* 알약 줄(태그·라벨). 테두리만 또는 채움 */
+        function pillRow(c, items, x, y, o) {
+            o = Object.assign({ size: 22, gap: 10, padX: 20, h: 46, stroke: PAPER, fill: null, col: PAPER, w: 'semibold', align: 'left' }, o);
+            c.font = font(o.w, o.size);
+            ls(c, '0px');
+            const ws = items.map(t => c.measureText(t).width + o.padX * 2);
+            const tot = ws.reduce((a, b) => a + b, 0) + o.gap * Math.max(0, items.length - 1);
+            let cx = o.align === 'center' ? x - tot / 2 : x;
+            items.forEach((t, k) => {
+                rr(c, cx, y, ws[k], o.h, o.h / 2);
+                if (o.fill) { c.fillStyle = o.fill;
+                    c.fill(); }
+                if (o.stroke) { c.strokeStyle = o.stroke;
+                    c.lineWidth = 1.5;
+                    c.stroke(); }
+                c.fillStyle = o.col;
+                c.textAlign = 'center';
+                c.textBaseline = 'middle';
+                c.font = font(o.w, o.size);
+                c.fillText(t, cx + ws[k] / 2, y + o.h / 2 + 1);
+                cx += ws[k] + o.gap;
+            });
+            c.textAlign = 'left';
+            c.textBaseline = 'alphabetic';
+            return tot;
+        }
+
+        function magnifier(c, x, y, r, col, lw) {
+            c.strokeStyle = col;
+            c.lineWidth = lw || 3;
+            c.lineCap = 'round';
+            c.beginPath();
+            c.arc(x, y, r, 0, Math.PI * 2);
+            c.stroke();
+            c.beginPath();
+            c.moveTo(x + r * .72, y + r * .72);
+            c.lineTo(x + r * 1.5, y + r * 1.5);
+            c.stroke();
+            c.lineCap = 'butt';
+        }
+
+        function bubbleIcon(c, x, y, w, col) {
+            const h = w * .74;
+            c.fillStyle = col;
+            c.beginPath();
+            c.ellipse(x, y, w / 2, h / 2, 0, 0, Math.PI * 2);
+            c.fill();
+            c.beginPath();
+            c.moveTo(x - w * .2, y + h * .28);
+            c.lineTo(x - w * .3, y + h * .64);
+            c.lineTo(x + w * .02, y + h * .4);
+            c.closePath();
+            c.fill();
+        }
+
+        function appSquare(c, x, y, sz, bg, txt, col) {
+            rr(c, x, y, sz, sz, sz * .24);
+            c.fillStyle = bg;
+            c.fill();
+            if (txt) {
+                c.font = font('xbold', Math.round(sz * .27));
+                c.fillStyle = col;
+                c.textAlign = 'center';
+                c.textBaseline = 'middle';
+                c.fillText(txt, x + sz / 2, y + sz / 2 + 1);
+                c.textAlign = 'left';
+                c.textBaseline = 'alphabetic';
+            }
+        }
+
+        /* ●○○ 단계 점 */
+        function dots(c, x, y, n, filled, r, col) {
+            for (let k = 0; k < n; k++) {
+                c.beginPath();
+                c.arc(x + k * r * 3, y, r, 0, Math.PI * 2);
+                if (k < filled) { c.fillStyle = col;
+                    c.fill(); } else { c.strokeStyle = col;
+                    c.lineWidth = 2;
+                    c.stroke(); }
+            }
+        }
+
+        /* ---------- painters (수치는 1080×1350 실측) ---------- */
+        function paintCaseCover(c, s) {
+            const seam = Math.round(H * s.seamY / 100);
+            const top = { x: 0, y: 0, w: W, h: seam },
+                bot = { x: 0, y: seam, w: W, h: H - seam };
+            if (s.seam === 'soft') {
+                const F = 80;
+                drawPhoto(c, s, 0, { x: 0, y: 0, w: W, h: seam + F });
+                const off = document.createElement('canvas');
+                off.width = W;
+                off.height = H;
+                const oc = off.getContext('2d');
+                drawPhoto(oc, s, 1, { x: 0, y: seam - F, w: W, h: H - seam + F });
+                oc.globalCompositeOperation = 'destination-in';
+                const g = oc.createLinearGradient(0, seam - F, 0, seam + F);
+                g.addColorStop(0, 'rgba(0,0,0,0)');
+                g.addColorStop(1, 'rgba(0,0,0,1)');
+                oc.fillStyle = g;
+                oc.fillRect(0, seam - F, W, H - seam + F);
+                c.drawImage(off, 0, 0);
+            } else {
+                drawPhoto(c, s, 0, top);
+                drawPhoto(c, s, 1, bot);
+            }
+            region(s, 0, top);
+            region(s, 1, bot);
+            dimRect(c, s, { x: 0, y: 0, w: W, h: H });
+            /* 글 뒤 어두운 띠(가우스 모양) */
+            const o = pOff(s, 'all'),
+                bc = seam + 60 + o.y,
+                a = s.band / 100 * .5;
+            if (a > 0) { const g = c.createLinearGradient(0, bc - 260, 0, bc + 260);
+                for (let k = 0; k <= 12; k++) { const t = k / 12,
+                        z = (t - .5) * 2 * 2.2;
+                    g.addColorStop(t, 'rgba(0,0,0,' + (a * Math.exp(-z * z / 2)).toFixed(3) + ')'); }
+                c.fillStyle = g;
+                c.fillRect(0, bc - 260, W, 520); }
+            grainAll(c, s);
+            const x = alignX(s.align, 88);
+            const ol = pOff(s, 'label'),
+                ot = pOff(s, 'title'),
+                os = pOff(s, 'sub');
+            drawRich(c, s.label, { x: x + ol.x, y: seam + 48 + ol.y, size: s.labelSize, w1: 'light', w2: 'semibold', ls: '0.16em', align: s.align });
+            drawRich(c, s.title, { x: x + ot.x, y: seam + 98 + ot.y, size: s.titleSize, w1: 'light', w2: 'bold', lh: 1.4, align: s.align, maxW: W - 120 });
+            drawRich(c, s.sub, { x: x + os.x, y: seam + 144 + os.y, size: s.subSize, w1: 'light', w2: 'semibold', col1: '#ECE8E2', align: s.align, maxW: W - 120 });
+        }
+
+        const AX = 367; /* 인셋·글 세로선(34%) */
+        function insetBox(s, y) { const o = pOff(s, 'inset');
+            return { x: AX + o.x, y: y + o.y, w: 610, h: 250 }; }
+
+        function strokeInset(c, s, r) { if (+s.border) { c.strokeStyle = PAPER;
+                c.lineWidth = 1.5;
+                c.strokeRect(r.x + .75, r.y + .75, r.w - 1.5, r.h - 1.5); } }
+
+        function paintMark(c, s, cx, cy) {
+            if (!+s.mark) return;
+            const o = pOff(s, 'mark');
+            c.strokeStyle = PAPER;
+            c.lineWidth = 1.5;
+            c.beginPath();
+            c.ellipse(cx + o.x, cy + o.y, s.markW, s.markH, 0, 0, Math.PI * 2);
+            c.stroke();
+        }
+
+        function paintCaseBefore(c, s) {
+            const full = { x: 0, y: 0, w: W, h: H };
+            drawPhoto(c, s, 0, full);
+            dimRect(c, s, full);
+            const y0 = H * s.gradA / 100,
+                y1 = H * Math.max(s.gradA + 1, s.gradB) / 100;
+            c.fillStyle = rampGrad(c, y0, y1, 0, 1, INK_RGB);
+            c.fillRect(0, y0, W, y1 - y0);
+            c.fillStyle = INK;
+            c.fillRect(0, y1, W, H - y1);
+            paintMark(c, s, 820, Y(300));
+            const ib = insetBox(s, Y(656));
+            drawPhoto(c, s, 1, ib, { fallback: 0 });
+            strokeInset(c, s, ib);
+            region(s, 1, ib);
+            region(s, 0, full);
+            grainAll(c, s);
+            const ol = pOff(s, 'label'),
+                ob = pOff(s, 'body');
+            drawRich(c, s.label, { x: AX + 2 + ol.x, y: Y(977) + 28 + ol.y, size: s.labelSize, w1: 'semibold', w2: 'bold' });
+            drawRich(c, s.body, { x: AX + ob.x, y: Y(1055) + s.bodySize * .86 + ob.y, size: s.bodySize, w1: 'regular', w2: 'semibold', col1: BODY_ON_INK, col2: PAPER, lh: 1.43, maxW: W - AX - 56 });
+        }
+
+        function paintCaseAfter(c, s) {
+            const full = { x: 0, y: 0, w: W, h: H };
+            drawPhoto(c, s, 0, full);
+            dimRect(c, s, full);
+            const y0 = H * s.gradA / 100,
+                y1 = H * Math.max(s.gradA + 1, s.gradB) / 100;
+            c.fillStyle = INK;
+            c.fillRect(0, 0, W, y0);
+            c.fillStyle = rampGrad(c, y0, y1, 1, 0, INK_RGB);
+            c.fillRect(0, y0, W, y1 - y0);
+            paintMark(c, s, 820, Y(1080));
+            const ib = insetBox(s, Y(114));
+            drawPhoto(c, s, 1, ib, { fallback: 0 });
+            strokeInset(c, s, ib);
+            region(s, 1, ib);
+            region(s, 0, full);
+            grainAll(c, s);
+            const ol = pOff(s, 'label'),
+                ob = pOff(s, 'body');
+            drawRich(c, s.label, { x: AX + 2 + ol.x, y: Y(415) + 28 + ol.y, size: s.labelSize, w1: 'semibold', w2: 'bold' });
+            drawRich(c, s.body, { x: AX + ob.x, y: Y(480) + s.bodySize * .86 + ob.y, size: s.bodySize, w1: 'regular', w2: 'semibold', col1: BODY_ON_INK, col2: PAPER, lh: 1.43, maxW: W - AX - 56 });
+        }
+
+        function paintClientSays(c, s) {
+            const full = { x: 0, y: 0, w: W, h: H };
+            drawPhoto(c, s, 0, full);
+            dimRect(c, s, full);
+            region(s, 0, full);
+            grainAll(c, s);
+            /* 흰 박스: x 135, 폭 810, 안쪽 여백 34, 아래 끝 1179(1350 기준) */
+            const P = s.pos || (s.pos = newPos()),
+                bs = s.bodySize,
+                step = bs * 1.46;
+            const o = { size: bs, w1: 'regular', w2: 'bold', col1: '#1A1A1A', lh: 1.46, maxW: 810 - 68 };
+            const n = Math.max(1, wrapRich(c, parseRich(s.body), o).length);
+            const boxH = 34 * 2 + bs * 1.08 + (n - 1) * step;
+            const bx = 135 + P.all.x + P.box.x,
+                by = Y(1179) - boxH + P.all.y + P.box.y;
+            c.fillStyle = '#FFFFFF';
+            c.fillRect(bx, by, 810, boxH);
+            drawRich(c, s.body, Object.assign({ x: bx + 35, y: by + 34 + bs * .9 }, o));
+            drawRich(c, s.label, { x: bx + 11 + P.label.x, y: by - 31 + P.label.y, size: s.labelSize, w1: 'bold', w2: 'xbold' });
+        }
+
+        function paintCaseDetail(c, s) {
+            const full = { x: 0, y: 0, w: W, h: H };
+            drawPhoto(c, s, 0, full);
+            dimRect(c, s, full);
+            region(s, 0, full);
+            const y0 = H * s.gradA / 100,
+                y1 = H * Math.max(s.gradA + 1, s.gradB) / 100;
+            c.fillStyle = rampGrad(c, y0, y1, 0, .92, INK_RGB);
+            c.fillRect(0, y0, W, y1 - y0);
+            c.fillStyle = 'rgba(' + INK_RGB + ',.92)';
+            c.fillRect(0, y1, W, H - y1);
+            grainAll(c, s);
+            const ol = pOff(s, 'label'),
+                ot = pOff(s, 'title'),
+                of = pOff(s, 'foot');
+            drawRich(c, s.label, { x: 113 + ol.x, y: Y(1048) + ol.y, size: s.labelSize, w1: 'semibold', w2: 'bold' });
+            drawRich(c, s.title, { x: 113 + ot.x, y: Y(1093) + ot.y, size: s.titleSize, w1: 'light', w2: 'semibold', maxW: W - 200 });
+            if ((s.foot1 || s.foot2).trim()) {
+                c.strokeStyle = 'rgba(246,244,239,.55)';
+                c.lineWidth = 1;
+                c.beginPath();
+                c.moveTo(W / 2 - 60 + of.x, Y(1183) + of.y + .5);
+                c.lineTo(W / 2 + 60 + of.x, Y(1183) + of.y + .5);
+                c.stroke();
+            }
+            drawRich(c, s.foot1, { x: W / 2 + of.x, y: Y(1228) + of.y, size: s.footSize, w1: 'light', w2: 'semibold', align: 'center' });
+            drawRich(c, s.foot2, { x: W / 2 + of.x, y: Y(1268) + of.y, size: s.footSize, w1: 'light', w2: 'semibold', align: 'center' });
+        }
+
+        function paintQaCover(c, s) {
+            const full = { x: 0, y: 0, w: W, h: H };
+            drawPhoto(c, s, 0, full, { ghost: s.ghost });
+            dimRect(c, s, full);
+            region(s, 0, full);
+            const y0 = H * s.gradA / 100,
+                y1 = H * Math.max(s.gradA + 1, s.gradB) / 100;
+            c.fillStyle = rampGrad(c, y0, y1, 0, .62, '0,0,0');
+            c.fillRect(0, y0, W, y1 - y0);
+            if (y1 < H) { c.fillStyle = 'rgba(0,0,0,.62)';
+                c.fillRect(0, y1, W, H - y1); }
+            grainAll(c, s);
+            const x = alignX(s.align, 130);
+            const ol = pOff(s, 'label'),
+                ot = pOff(s, 'title'),
+                os = pOff(s, 'sub');
+            drawRich(c, s.label, { x: W / 2 + ol.x, y: Y(86) + ol.y, size: s.labelSize, w1: 'semibold', w2: 'bold', ls: '0.2em', align: 'center' });
+            drawRich(c, s.title, { x: x + ot.x, y: Y(1118) + ot.y, size: s.titleSize, w1: 'light', w2: 'xbold', lh: 1.24, align: s.align, anchor: 'bottom', maxW: W - 200, ls: '-0.02em' });
+            drawRich(c, s.sub, { x: x + os.x, y: Y(1222) + os.y, size: s.subSize, w1: 'regular', w2: 'bold', align: s.align, maxW: W - 200 });
+        }
+
+        function paintInfoCard(c, s) {
+            const bandH = Math.round(H * .34);
+            const band = { x: 0, y: 0, w: W, h: bandH };
+            drawPhoto(c, s, 0, band);
+            dimRect(c, s, band);
+            region(s, 0, band);
+            const bg = PANEL[s.panel] || PAPER,
+                dark = s.panel === 'ink';
+            c.fillStyle = bg;
+            c.fillRect(0, bandH, W, H - bandH);
+            grainAll(c, s);
+            const inkC = dark ? PAPER : INK,
+                bodyC = dark ? BODY_ON_INK : BODY_ON_PAPER;
+            const ot = pOff(s, 'title'),
+                ob = pOff(s, 'body');
+            const r = drawRich(c, s.title, { x: 120 + ot.x, y: bandH + 132 + ot.y, size: s.titleSize, w1: 'xbold', w2: 'xbold', col1: inkC });
+            if ((s.sub || '').trim()) {
+                c.font = font('xbold', s.titleSize);
+                const tw = parseRich(s.title)[0] ? lineW(c, parseRich(s.title)[0], { size: s.titleSize, w1: 'xbold', w2: 'xbold' }) : 0;
+                drawRich(c, s.sub, { x: 120 + ot.x + tw + 18, y: bandH + 132 + ot.y, size: s.subSize, w1: 'light', w2: 'semibold', col1: bodyC });
+            }
+            drawRich(c, s.body, { x: 120 + ob.x, y: bandH + 132 + (r.n - 1) * s.titleSize * 1.45 + 84 + ob.y, size: s.bodySize, w1: 'regular', w2: 'bold', col1: bodyC, col2: inkC, lh: 1.6, maxW: W - 240 });
+        }
+
+        function captions(c, s, cx, y, text, col, colSub, maxW) {
+            const ls0 = parseRich(text);
+            if (!ls0.length || !ls0[0].length) return;
+            const head = ls0[0].map(x => x.t).join('');
+            drawRich(c, head, { x: cx, y, size: s.titleSize, w1: 'bold', w2: 'xbold', col1: col, align: 'center', maxW });
+            const rest = String(text).split('\n').slice(1).join('\n');
+            drawRich(c, rest, { x: cx, y: y + s.titleSize * .9 + s.bodySize * 1.2, size: s.bodySize, w1: 'regular', w2: 'bold', col1: colSub, col2: col, align: 'center', lh: 1.5, maxW });
+        }
+
+        function paintCompare(c, s) {
+            const bg = PANEL[s.panel] || GRAY,
+                dark = s.panel === 'ink';
+            c.fillStyle = bg;
+            c.fillRect(0, 0, W, H);
+            const gap = 16,
+                mx = 64,
+                pw = (W - mx * 2 - gap) / 2,
+                ph = Math.round(pw * 1.2),
+                py = Y(230);
+            const L = { x: mx, y: py, w: pw, h: ph },
+                R = { x: mx + pw + gap, y: py, w: pw, h: ph };
+            drawPhoto(c, s, 0, L);
+            drawPhoto(c, s, 1, R);
+            dimRect(c, s, L);
+            dimRect(c, s, R);
+            region(s, 0, L);
+            region(s, 1, R);
+            grainAll(c, s);
+            const inkC = dark ? PAPER : INK,
+                subC = dark ? BODY_ON_INK : BODY_ON_PAPER;
+            const ol = pOff(s, 'label'),
+                oc = pOff(s, 'caps'),
+                ob = pOff(s, 'body');
+            drawRich(c, s.label, { x: W / 2 + ol.x, y: Y(120) + ol.y, size: s.labelSize, w1: 'xbold', w2: 'xbold', col1: inkC, ls: '0.22em', align: 'center' });
+            const cy = py + ph + 62 + oc.y;
+            captions(c, s, L.x + pw / 2 + oc.x, cy, s.capL, inkC, subC, pw - 20);
+            captions(c, s, R.x + pw / 2 + oc.x, cy, s.capR, inkC, subC, pw - 20);
+            drawRich(c, s.body, { x: W / 2 + ob.x, y: Y(1270) + ob.y, size: s.bodySize, w1: 'regular', w2: 'bold', col1: subC, col2: inkC, align: 'center', maxW: W - 160 });
+        }
+
+        function paintSplitLR(c, s) {
+            const bandY = Math.round(H * .78);
+            const L = { x: 0, y: 0, w: W / 2, h: bandY },
+                R = { x: W / 2, y: 0, w: W / 2, h: bandY };
+            drawPhoto(c, s, 0, L);
+            drawPhoto(c, s, 1, R);
+            dimRect(c, s, L);
+            dimRect(c, s, R);
+            region(s, 0, L);
+            region(s, 1, R);
+            /* 사진 아래 글이 읽히도록 사진 아래쪽만 옅게 어둡게 */
+            c.fillStyle = rampGrad(c, bandY - 260, bandY, 0, .42, '0,0,0');
+            c.fillRect(0, bandY - 260, W, 260);
+            const bg = PANEL[s.panel] || PAPER,
+                dark = s.panel === 'ink';
+            c.fillStyle = bg;
+            c.fillRect(0, bandY, W, H - bandY);
+            grainAll(c, s);
+            const oc = pOff(s, 'caps'),
+                ob = pOff(s, 'body');
+            [
+                [s.capL, W / 4],
+                [s.capR, W * 3 / 4]
+            ].forEach(([t, cx]) => drawRich(c, t, { x: cx + oc.x, y: bandY - 34 + oc.y, size: s.titleSize, w1: 'semibold', w2: 'xbold', align: 'center', anchor: 'bottom', maxW: W / 2 - 60 }));
+            const lines = Math.max(1, parseRich(s.body).length);
+            drawRich(c, s.body, { x: W / 2 + ob.x, y: bandY + (H - bandY) / 2 - (lines - 1) * s.bodySize * 1.5 / 2 + s.bodySize * .35 + ob.y, size: s.bodySize, w1: 'regular', w2: 'bold', col1: dark ? BODY_ON_INK : BODY_ON_PAPER, col2: dark ? PAPER : INK, align: 'center', lh: 1.5, maxW: W - 160 });
+        }
+
+        function paintTextOnly(c, s) {
+            const bg = PANEL[s.panel] || GRAY,
+                dark = s.panel === 'ink';
+            c.fillStyle = bg;
+            c.fillRect(0, 0, W, H);
+            const inkC = dark ? PAPER : INK,
+                subC = dark ? BODY_ON_INK : BODY_ON_PAPER;
+            const x = alignX(s.bAlign, 120);
+            const ol = pOff(s, 'label'),
+                ob = pOff(s, 'body'),
+                os = pOff(s, 'sub');
+            const n = Math.max(1, wrapRich(c, parseRich(s.body), { size: s.bodySize, w1: 'regular', w2: 'bold', maxW: W - 240 }).length);
+            const step = s.bodySize * 1.6,
+                y0 = H / 2 - (n - 1) * step / 2 + s.bodySize * .35 - (s.sub ? 30 : 0);
+            drawRich(c, s.label, { x: W / 2 + ol.x, y: Y(120) + ol.y, size: s.labelSize, w1: 'xbold', w2: 'xbold', col1: inkC, ls: '0.22em', align: 'center' });
+            const r = drawRich(c, s.body, { x: x + ob.x, y: y0 + ob.y, size: s.bodySize, w1: 'regular', w2: 'bold', col1: subC, col2: inkC, align: s.bAlign, lh: 1.6, maxW: W - 240 });
+            drawRich(c, s.sub, { x: x + os.x, y: r.bottom + 86 + os.y, size: s.subSize, w1: 'regular', w2: 'bold', col1: subC, col2: inkC, align: s.bAlign, maxW: W - 240 });
+        }
+
+        function paintReviewCover(c, s) {
+            const full = { x: 0, y: 0, w: W, h: H };
+            drawPhoto(c, s, 0, full, { ghost: s.ghost });
+            dimRect(c, s, full);
+            region(s, 0, full);
+            grainAll(c, s);
+            const x = alignX(s.align, 110);
+            const ot = pOff(s, 'title'),
+                os = pOff(s, 'sub');
+            drawRich(c, s.title, { x: x + ot.x, y: Y(560) + ot.y, size: s.titleSize, w1: 'light', w2: 'xbold', lh: .98, align: s.align, ls: '-0.01em' });
+            drawRich(c, s.sub, { x: x + os.x, y: Y(1130) + os.y, size: s.subSize, w1: 'regular', w2: 'bold', col1: 'rgba(246,244,239,.92)', align: s.align, lh: 1.5, maxW: W - 160 });
+        }
+
+        function paintEndCard(c, s) {
+            const bg = PANEL[s.panel] || PAPER,
+                dark = s.panel === 'ink';
+            c.fillStyle = bg;
+            c.fillRect(0, 0, W, H);
+            const inkC = dark ? PAPER : INK,
+                subC = dark ? BODY_ON_INK : BODY_ON_PAPER;
+            const ot = pOff(s, 'title'),
+                ob = pOff(s, 'body');
+            drawRich(c, s.title, { x: W / 2 + ot.x, y: H * .44 + ot.y, size: s.titleSize, w1: 'xbold', w2: 'xbold', col1: inkC, ls: '0.06em', align: 'center' });
+            /* 연락처 줄은 가장 긴 줄 폭만큼의 블록을 가운데에 두고 왼쪽 정렬 */
+            const o = { size: s.bodySize, w1: 'light', w2: 'semibold' };
+            const lines = parseRich(s.body);
+            const bw = Math.max(0, ...lines.map(l => lineW(c, l, o)));
+            drawRich(c, s.body, Object.assign({ x: (W - bw) / 2 + ob.x, y: H * .44 + 96 + ob.y, col1: subC, col2: inkC, lh: 1.6 }, o));
+        }
+
+
+        /* ---------- 추가 템플릿 (전체 3,570개 조사에서 뽑은 틀) ---------- */
+
+        /* 좌우 전후 + 아래 문구 */
+        function paintSplitSeam(c, s) {
+            const L = { x: 0, y: 0, w: W / 2, h: H },
+                R = { x: W / 2, y: 0, w: W / 2, h: H };
+            drawPhoto(c, s, 0, L);
+            drawPhoto(c, s, 1, R);
+            region(s, 0, L);
+            region(s, 1, R);
+            dimRect(c, s, { x: 0, y: 0, w: W, h: H });
+            const a = s.band / 100 * .8;
+            if (a > 0) { c.fillStyle = rampGrad(c, H * .56, H, 0, a, '0,0,0');
+                c.fillRect(0, H * .56, W, H * .44); }
+            if (+s.border) { c.fillStyle = PAPER;
+                c.fillRect(W / 2 - 1, 0, 2, H); }
+            grainAll(c, s);
+            const oc = pOff(s, 'caps');
+            drawRich(c, s.capL, { x: 48 + oc.x, y: 74 + oc.y, size: 22, w1: 'regular', w2: 'bold', ls: '0.2em' });
+            drawRich(c, s.capR, { x: W - 48 + oc.x, y: 74 + oc.y, size: 22, w1: 'regular', w2: 'bold', ls: '0.2em', align: 'right' });
+            const ol = pOff(s, 'label'),
+                ot = pOff(s, 'title'),
+                os = pOff(s, 'sub');
+            drawRich(c, s.label, { x: W / 2 + ol.x, y: H * .80 + ol.y, size: s.labelSize, w1: 'light', w2: 'semibold', ls: '0.16em', align: 'center' });
+            const rT = drawRich(c, s.title, { x: W / 2 + ot.x, y: H * .80 + 54 + ot.y, size: s.titleSize, w1: 'light', w2: 'bold', lh: 1.4, align: 'center', maxW: W - 120 });
+            drawRich(c, s.sub, { x: W / 2 + os.x, y: rT.bottom + 48 + os.y, size: s.subSize, w1: 'light', w2: 'semibold', col1: '#ECE8E2', align: 'center', maxW: W - 120 });
+        }
+
+        /* 케이스 리포트: 번호·부위명·좌우 전후·설명 */
+        function paintCaseReport(c, s) {
+            const bg = PANEL[s.panel] || WHITE,
+                dark = isDarkPanel(s),
+                ink = dark ? PAPER : INK,
+                sub = dark ? BODY_ON_INK : BODY_ON_PAPER;
+            c.fillStyle = bg;
+            c.fillRect(0, 0, W, H);
+            const M = 72,
+                top = H * .13,
+                ph = H * .53,
+                gap = 16,
+                pw = (W - M * 2 - gap) / 2;
+            const L = { x: M, y: top, w: pw, h: ph },
+                R = { x: M + pw + gap, y: top, w: pw, h: ph };
+            drawPhoto(c, s, 0, L);
+            drawPhoto(c, s, 1, R);
+            dimRect(c, s, L);
+            dimRect(c, s, R);
+            region(s, 0, L);
+            region(s, 1, R);
+            grainAll(c, s);
+            const ol = pOff(s, 'label'),
+                os = pOff(s, 'sub'),
+                oc = pOff(s, 'caps');
+            drawRich(c, s.label, { x: M + ol.x, y: H * .088 + ol.y, size: 46, w1: 'regular', w2: 'bold', fk: 'serif', col1: ink });
+            drawRich(c, s.sub, { x: W - M + os.x, y: H * .085 + os.y, size: 26, w1: 'regular', w2: 'bold', fk: 'serif', col1: ink, align: 'right', ls: '0.08em' });
+            drawRich(c, s.capL, { x: L.x + 22 + oc.x, y: L.y + L.h - 26 + oc.y, size: 20, w1: 'semibold', w2: 'bold', ls: '0.18em' });
+            drawRich(c, s.capR, { x: R.x + 22 + oc.x, y: R.y + R.h - 26 + oc.y, size: 20, w1: 'semibold', w2: 'bold', ls: '0.18em' });
+            c.fillStyle = dark ? 'rgba(246,244,239,.4)' : 'rgba(22,21,20,.3)';
+            c.fillRect(M, H * .705, W - M * 2, 1);
+            const ot = pOff(s, 'title'),
+                ob = pOff(s, 'body');
+            c.fillStyle = ACCENT[s.accent] || INK;
+            c.beginPath();
+            c.arc(M + 28 + ot.x, H * .765 + ot.y, 28, 0, Math.PI * 2);
+            c.fill();
+            drawRich(c, s.title, { x: M + ot.x, y: H * .765 + 84 + ot.y, size: 24, w1: 'xbold', w2: 'black', fk: 'wide', col1: ink, maxW: 300 });
+            drawRich(c, s.body, { x: 400 + ob.x, y: H * .765 + ob.y, size: s.bodySize, w1: 'regular', w2: 'bold', col1: sub, col2: ink, lh: 1.65, maxW: W - 400 - M });
+        }
+
+        /* 원형 전후 한 쌍 + ●○ 단계 점 */
+        function paintCirclePair(c, s) {
+            const bg = PANEL[s.panel] || WHITE,
+                dark = isDarkPanel(s),
+                ink = dark ? PAPER : INK,
+                sub = dark ? BODY_ON_INK : BODY_ON_PAPER;
+            c.fillStyle = bg;
+            c.fillRect(0, 0, W, H);
+            const r = W * .30;
+            const A = { x: W * .34 - r, y: H * .35 - r, w: r * 2, h: r * 2 },
+                B = { x: W * .66 - r, y: H * .71 - r, w: r * 2, h: r * 2 };
+            drawPhoto(c, s, 0, A, { circle: true });
+            drawPhoto(c, s, 1, B, { circle: true });
+            region(s, 1, B);
+            region(s, 0, A);
+            grainAll(c, s);
+            const ol = pOff(s, 'label'),
+                oc = pOff(s, 'caps');
+            drawRich(c, s.label, { x: W / 2 + ol.x, y: H * .065 + ol.y, size: 40, w1: 'regular', w2: 'regular', fk: 'script', col1: ink, align: 'center' });
+            const lx1 = W * .70 + oc.x,
+                ly1 = H * .17 + oc.y;
+            dots(c, lx1 + 9, ly1, 3, 1, 9, ink);
+            drawRich(c, s.capL, { x: lx1, y: ly1 + 58, size: 22, w1: 'regular', w2: 'bold', col1: sub, col2: ink, lh: 1.55, maxW: W - lx1 - 36 });
+            const lx2 = W * .07 + oc.x,
+                ly2 = H * .60 + oc.y;
+            dots(c, lx2 + 9, ly2, 3, 2, 9, ink);
+            drawRich(c, s.capR, { x: lx2, y: ly2 + 58, size: 22, w1: 'regular', w2: 'bold', col1: sub, col2: ink, lh: 1.55, maxW: W * .27 });
+        }
+
+        /* 원형 돋보기 + 연결선 */
+        function paintZoomCircle(c, s) {
+            const full = { x: 0, y: 0, w: W, h: H };
+            drawPhoto(c, s, 0, full);
+            dimRect(c, s, full);
+            const oi = pOff(s, 'inset'),
+                om = pOff(s, 'mark');
+            const r = 176,
+                cx = W * .27 + oi.x,
+                cy = H * .70 + oi.y;
+            const tx = W * .50 + om.x,
+                ty = H * .47 + om.y;
+            const ang = Math.atan2(ty - cy, tx - cx);
+            c.strokeStyle = PAPER;
+            c.lineWidth = 1.5;
+            c.beginPath();
+            c.moveTo(cx + Math.cos(ang) * r, cy + Math.sin(ang) * r);
+            c.lineTo(tx, ty);
+            c.stroke();
+            c.fillStyle = PAPER;
+            c.beginPath();
+            c.arc(tx, ty, 5, 0, Math.PI * 2);
+            c.fill();
+            const box = { x: cx - r, y: cy - r, w: r * 2, h: r * 2 };
+            drawPhoto(c, s, 1, box, { circle: true, fallback: 0 });
+            if (+s.border) { c.strokeStyle = PAPER;
+                c.lineWidth = 2;
+                c.beginPath();
+                c.arc(cx, cy, r, 0, Math.PI * 2);
+                c.stroke(); }
+            region(s, 1, box, true);
+            region(s, 0, full);
+            grainAll(c, s);
+            const oc = pOff(s, 'caps'),
+                ol = pOff(s, 'label'),
+                ot = pOff(s, 'title'),
+                ob = pOff(s, 'body');
+            drawRich(c, s.capL, { x: cx + oc.x, y: cy + r + 42 + oc.y, size: 22, w1: 'semibold', w2: 'bold', align: 'center' });
+            drawRich(c, s.label, { x: W / 2 + ol.x, y: H * .065 + ol.y, size: 40, w1: 'regular', w2: 'regular', fk: 'script', align: 'center' });
+            const rT = drawRich(c, s.title, { x: W - 72 + ot.x, y: H * .66 + ot.y, size: s.titleSize, w1: 'bold', w2: 'xbold', lh: 1.25, align: 'right', maxW: W * .5 });
+            drawRich(c, s.body, { x: W - 72 + ob.x, y: rT.bottom + 56 + ob.y, size: s.bodySize, w1: 'regular', w2: 'bold', col1: 'rgba(246,244,239,.88)', lh: 1.55, align: 'right', maxW: W * .5 });
+        }
+
+        /* 직후 사진 + 손님 말 + 작은 라벨 */
+        function paintSelfieChip(c, s) {
+            const full = { x: 0, y: 0, w: W, h: H };
+            drawPhoto(c, s, 0, full);
+            dimRect(c, s, full);
+            region(s, 0, full);
+            grainAll(c, s);
+            const ot = pOff(s, 'title'),
+                ol = pOff(s, 'label'),
+                oc = pOff(s, 'caps');
+            const col = autoInk(c, 60, H * .05 + ot.y, W - 120, H * .12);
+            const rT = drawRich(c, s.title, { x: W / 2 + ot.x, y: H * .11 + ot.y, size: s.titleSize, w1: 'semibold', w2: 'xbold', col1: col, lh: 1.38, align: 'center', maxW: W - 140 });
+            const lab = (s.label || '').replace(/\*\*/g, '').trim();
+            if (lab) pillRow(c, [lab], W / 2 + ol.x, rT.bottom + 34 + ol.y, { size: 20, h: 42, padX: 18, stroke: null, fill: col === INK ? INK : PAPER, col: col === INK ? PAPER : INK, align: 'center' });
+            if ((s.capL || '').trim()) {
+                const o = { size: 22, w1: 'semibold', w2: 'bold', col1: INK, lh: 1.5, maxW: W * .6 };
+                const lines = wrapRich(c, parseRich(s.capL), o);
+                const bw = Math.max(...lines.map(l => lineW(c, l, o))) + 36,
+                    bh = 28 + lines.length * 33;
+                const bx = 64 + oc.x,
+                    by = H * .86 - bh + oc.y;
+                c.fillStyle = WHITE;
+                c.fillRect(bx, by, bw, bh);
+                drawRich(c, s.capL, Object.assign({ x: bx + 18, y: by + 38 }, o));
+            }
+        }
+
+        /* 소감 카드: 큰 제목 + 인물 사진 + 반전 강조 */
+        function paintTestimonial(c, s) {
+            const bg = PANEL[s.panel] || WHITE,
+                dark = isDarkPanel(s),
+                ink = dark ? PAPER : INK,
+                sub = dark ? BODY_ON_INK : BODY_ON_PAPER;
+            c.fillStyle = bg;
+            c.fillRect(0, 0, W, H);
+            c.font = font('regular', 300, 'serif');
+            c.fillStyle = dark ? 'rgba(246,244,239,.07)' : 'rgba(22,21,20,.055)';
+            c.textAlign = 'left';
+            c.textBaseline = 'alphabetic';
+            c.fillText('Q', 36, H * .235);
+            const P = { x: 0, y: H * .25, w: W * .50, h: H * .75 };
+            drawPhoto(c, s, 0, P);
+            dimRect(c, s, P);
+            region(s, 0, P);
+            grainAll(c, s);
+            const ol = pOff(s, 'label'),
+                ot = pOff(s, 'title'),
+                ob = pOff(s, 'body');
+            drawRich(c, s.label, { x: W / 2 + ol.x, y: H * .08 + ol.y, size: 28, w1: 'regular', w2: 'bold', col1: sub, col2: ink, align: 'center' });
+            drawRich(c, s.title, { x: W / 2 + ot.x, y: H * .08 + 88 + ot.y, size: s.titleSize, w1: 'xbold', w2: 'black', col1: ink, align: 'center', ls: '-0.02em', maxW: W - 120 });
+            drawRich(c, s.body, { x: W * .54 + ob.x, y: H * .32 + ob.y, size: s.bodySize, w1: 'regular', w2: 'semibold', col1: sub, col2: ink, lh: 1.78, maxW: W * .42, hl: true, hlBg: ink, hlFg: bg });
+        }
+
+        /* 후기 캡처 콜라주: 흐린 배경 + 캡처 3장 + 한 문장 */
+        function paintReviewCollage(c, s) {
+            const full = { x: 0, y: 0, w: W, h: H };
+            drawPhoto(c, s, 0, full, { proc: 'blur', hint: false });
+            c.fillStyle = 'rgba(12,12,12,' + (0.34 + s.dim / 100 * .5).toFixed(3) + ')';
+            c.fillRect(0, 0, W, H);
+            region(s, 0, full);
+            grainAll(c, s);
+            const spots = [{ x: 64, y: H * .075, w: 560 }, { x: W - 64 - 560, y: H * .30, w: 560 }, { x: 100, y: H * .53, w: 520 }];
+            spots.forEach((sp, k) => {
+                const slot = k + 1,
+                    img = s.photos[slot].img;
+                const h = img ? Math.min(H * .34, sp.w * img.naturalHeight / img.naturalWidth) : sp.w * .62;
+                const r = { x: sp.x, y: sp.y, w: sp.w, h };
+                c.save();
+                c.shadowColor = 'rgba(0,0,0,.38)';
+                c.shadowBlur = 30;
+                c.shadowOffsetY = 10;
+                c.fillStyle = WHITE;
+                c.fillRect(r.x, r.y, r.w, r.h);
+                c.restore();
+                drawPhoto(c, s, slot, r);
+                region(s, slot, r, true);
+            });
+            const ob = pOff(s, 'body'),
+                ol = pOff(s, 'label');
+            drawRich(c, s.label, { x: W / 2 + ol.x, y: H * .045 + ol.y, size: 22, w1: 'semibold', w2: 'bold', ls: '0.22em', align: 'center' });
+            if ((s.body || '').trim()) {
+                const o = { size: s.bodySize, w1: 'bold', w2: 'xbold', col1: INK, lh: 1.4, maxW: W - 260, align: 'center' };
+                const lines = wrapRich(c, parseRich(s.body), o);
+                const bw = Math.min(W - 140, Math.max(...lines.map(l => lineW(c, l, o))) + 84),
+                    bh = 46 + lines.length * s.bodySize * 1.4;
+                const bx = W / 2 - bw / 2 + ob.x,
+                    by = H * .86 - bh / 2 + ob.y;
+                rr(c, bx, by, bw, bh, 26);
+                c.fillStyle = WHITE;
+                c.fill();
+                drawRich(c, s.body, Object.assign({ x: W / 2 + ob.x, y: by + 23 + s.bodySize * .95 }, o));
+            }
+        }
+
+        /* 사진 격자 콜라주: 4·6칸 + 제목 띠 */
+        function paintGridCollage(c, s) {
+            const bg = PANEL[s.panel] || INK,
+                dark = isDarkPanel(s),
+                ink = dark ? PAPER : INK;
+            c.fillStyle = bg;
+            c.fillRect(0, 0, W, H);
+            const n = +s.cells === 4 ? 4 : 6,
+                rows = n / 2,
+                bandH = Math.round(H * .17),
+                g = 8;
+            const top = s.bandPos !== 'bottom';
+            const gy = top ? bandH : g,
+                gh = H - bandH - g;
+            const cw = (W - g * 3) / 2,
+                chh = (gh - g * (rows - 1)) / rows;
+            for (let k = 0; k < n; k++) {
+                const r = { x: g + (k % 2) * (cw + g), y: gy + ((k / 2) | 0) * (chh + g), w: cw, h: chh };
+                drawPhoto(c, s, k, r);
+                dimRect(c, s, r);
+                region(s, k, r);
+            }
+            grainAll(c, s);
+            const ot = pOff(s, 'title'),
+                os = pOff(s, 'sub');
+            const by = top ? 0 : H - bandH;
+            drawRich(c, s.title, { x: W / 2 + ot.x, y: by + bandH * .5 + ot.y, size: s.titleSize, w1: 'bold', w2: 'xbold', col1: ink, col2: ACCENT[s.accent] || ink, align: 'center', maxW: W - 120 });
+            drawRich(c, s.sub, { x: W / 2 + os.x, y: by + bandH * .5 + 46 + os.y, size: s.subSize, w1: 'regular', w2: 'bold', col1: dark ? BODY_ON_INK : BODY_ON_PAPER, align: 'center', maxW: W - 120 });
+        }
+
+        /* STEP 과정 카드 */
+        function paintStepCard(c, s) {
+            const full = { x: 0, y: 0, w: W, h: H };
+            drawPhoto(c, s, 0, full);
+            dimRect(c, s, full);
+            region(s, 0, full);
+            c.fillStyle = rampGrad(c, H * .40, H, 0, .84, '0,0,0');
+            c.fillRect(0, H * .40, W, H * .60);
+            grainAll(c, s);
+            const ol = pOff(s, 'label'),
+                ot = pOff(s, 'title'),
+                os = pOff(s, 'sub'),
+                ob = pOff(s, 'body');
+            drawRich(c, s.label, { x: W / 2 + ol.x, y: H * .06 + ol.y, size: 22, w1: 'regular', w2: 'semibold', ls: '0.2em', align: 'center' });
+            drawRich(c, s.title, { x: 62 + ot.x, y: H * .62 + ot.y, size: 104, w1: 'light', w2: 'regular', ls: '-0.02em' });
+            drawRich(c, s.capL || 'STEP', { x: 58 + ot.x, y: H * .62 + 110 + ot.y, size: 116, w1: 'thin', w2: 'light', ls: '-0.01em' });
+            const rS = drawRich(c, s.sub, { x: 64 + os.x, y: H * .62 + 196 + os.y, size: 44, w1: 'bold', w2: 'xbold', maxW: W - 128 });
+            drawRich(c, s.body, { x: 64 + ob.x, y: rS.bottom + 50 + ob.y, size: s.bodySize, w1: 'regular', w2: 'bold', col1: 'rgba(246,244,239,.86)', lh: 1.55, maxW: W - 200 });
+        }
+
+        /* 공지·이벤트 표지 */
+        function paintNoticeCover(c, s) {
+            const full = { x: 0, y: 0, w: W, h: H };
+            drawPhoto(c, s, 0, full);
+            dimRect(c, s, full);
+            region(s, 0, full);
+            grainAll(c, s);
+            const acc = ACCENT[s.accent] || PAPER;
+            const ot = pOff(s, 'title'),
+                os = pOff(s, 'sub'),
+                ol = pOff(s, 'label'),
+                ob = pOff(s, 'body'),
+                of = pOff(s, 'foot');
+            drawRich(c, s.title, { x: 64 + ot.x, y: H * .20 + ot.y, size: s.titleSize, w1: 'bold', w2: 'xbold', col2: acc, lh: 1.2, maxW: W - 128, ls: '-0.02em' });
+            const rS = drawRich(c, s.sub, { x: 64 + os.x, y: H * .54 + os.y, size: s.subSize, w1: 'light', w2: 'bold', col2: acc, maxW: W - 128 });
+            const tags = (s.label || '').split(',').map(t => t.trim()).filter(Boolean);
+            let y = rS.bottom + 34;
+            if (tags.length) { pillRow(c, tags, 64 + ol.x, y + ol.y, { size: 20, h: 44, padX: 16, gap: 8 });
+                y += 44 + 62; } else y += 30;
+            drawRich(c, s.body, { x: 64 + ob.x, y: y + ob.y, size: s.bodySize, w1: 'regular', w2: 'bold', col1: 'rgba(246,244,239,.84)', lh: 1.55, maxW: W - 128 });
+            if ((s.foot1 || '').trim()) {
+                c.fillStyle = 'rgba(246,244,239,.45)';
+                c.fillRect(64 + of.x, H * .905 + of.y, W - 128, 1);
+                drawRich(c, s.foot1, { x: W / 2 + of.x, y: H * .947 + of.y, size: s.footSize, w1: 'regular', w2: 'bold', align: 'center', col1: 'rgba(246,244,239,.88)' });
+            }
+        }
+
+        /* 카카오 채널 검색 안내 */
+        function paintKakaoSearch(c, s) {
+            const bg = PANEL[s.panel] || WHITE,
+                dark = isDarkPanel(s),
+                ink = dark ? PAPER : INK,
+                sub = dark ? BODY_ON_INK : BODY_ON_PAPER;
+            c.fillStyle = bg;
+            c.fillRect(0, 0, W, H);
+            const oa = pOff(s, 'all');
+            /* 묶음 전체 높이를 먼저 재서 세로 가운데에 둔다 */
+            const nT = Math.max(1, wrapRich(c, parseRich(s.title), { size: s.titleSize, w1: 'regular', w2: 'bold', maxW: W - 160 }).length),
+                nB = Math.max(1, wrapRich(c, parseRich(s.body), { size: s.bodySize, w1: 'regular', w2: 'bold', maxW: W - 200 }).length);
+            const total = (nT - 1) * s.titleSize * 1.5 + 62 + 84 + 62 + (nB - 1) * s.bodySize * 1.5 + 62 + 96 + 104 + 150;
+            const y0 = Math.max(H * .12, (H - total) / 2);
+            const rT = drawRich(c, s.title, { x: W / 2 + oa.x, y: y0 + oa.y, size: s.titleSize, w1: 'regular', w2: 'bold', col1: ink, lh: 1.5, align: 'center', maxW: W - 160 });
+            const pw = 420,
+                ph = 84,
+                px = W / 2 - pw / 2 + oa.x,
+                py = rT.bottom + 62;
+            rr(c, px, py, pw, ph, ph / 2);
+            c.fillStyle = dark ? PAPER : INK;
+            c.fill();
+            const fg = dark ? INK : PAPER;
+            bubbleIcon(c, px + 58, py + ph / 2, 40, fg);
+            c.font = font('xbold', 32);
+            c.fillStyle = fg;
+            c.textBaseline = 'middle';
+            c.fillText((s.sub || '').replace(/\*\*/g, ''), px + 96, py + ph / 2 + 1);
+            c.textBaseline = 'alphabetic';
+            magnifier(c, px + pw - 60, py + ph / 2 - 5, 14, fg, 4);
+            const rB = drawRich(c, s.body, { x: W / 2 + oa.x, y: py + ph + 62, size: s.bodySize, w1: 'regular', w2: 'bold', col1: sub, col2: ink, lh: 1.5, align: 'center', maxW: W - 200 });
+            const sz = 96,
+                gap = 150,
+                iy = rB.bottom + 62,
+                ix0 = W / 2 - (sz * 3 + gap * 2) / 2 + oa.x;
+            const caps = String(s.capL || '').split('\n');
+            [['TALK', '#FEE500', '#191600'], [null, dark ? '#3A3937' : '#EFEFEF', null], ['Ch', '#FEE500', '#191600']].forEach(([t, b, f], k) => {
+                const x = ix0 + k * (sz + gap);
+                appSquare(c, x, iy, sz, b, t, f);
+                if (!t) magnifier(c, x + sz / 2 - 5, iy + sz / 2 - 5, 16, ink, 5);
+                if (k < 2) { const ax = x + sz + gap / 2,
+                        ay = iy + sz / 2;
+                    c.fillStyle = ink;
+                    c.beginPath();
+                    c.moveTo(ax - 7, ay - 10);
+                    c.lineTo(ax + 7, ay);
+                    c.lineTo(ax - 7, ay + 10);
+                    c.closePath();
+                    c.fill(); }
+                if (caps[k]) drawRich(c, caps[k], { x: x + sz / 2, y: iy + sz + 40, size: 20, w1: 'regular', w2: 'bold', col1: sub, col2: ink, align: 'center', maxW: sz + gap - 10 });
+            });
+            const cw = W - 240,
+                ch = 150,
+                cx = 120 + oa.x,
+                cy = iy + sz + 104;
+            rr(c, cx, cy, cw, ch, 24);
+            c.fillStyle = dark ? '#2A2927' : '#F3F3F2';
+            c.fill();
+            const av = { x: cx + 28, y: cy + 27, w: 96, h: 96 };
+            drawPhoto(c, s, 0, av, { circle: true, hint: false });
+            region(s, 0, av);
+            drawRich(c, s.label, { x: cx + 148, y: cy + 66, size: 30, w1: 'bold', w2: 'xbold', col1: ink });
+            drawRich(c, s.foot1, { x: cx + 148, y: cy + 106, size: 20, w1: 'regular', w2: 'bold', col1: sub });
+            c.fillStyle = '#FEE500';
+            c.beginPath();
+            c.arc(cx + cw - 70, cy + ch / 2, 36, 0, Math.PI * 2);
+            c.fill();
+            bubbleIcon(c, cx + cw - 70, cy + ch / 2, 32, '#191600');
+        }
+
+        /* QR 카드 */
+        function paintQrCard(c, s) {
+            const full = { x: 0, y: 0, w: W, h: H };
+            drawPhoto(c, s, 0, full, { proc: s.photoFx });
+            dimRect(c, s, full);
+            region(s, 0, full);
+            grainAll(c, s);
+            const ob = pOff(s, 'box'),
+                of = pOff(s, 'foot');
+            const cw = 500,
+                ch = 590,
+                cx = W / 2 - cw / 2 + ob.x,
+                cy = H * .19 + ob.y;
+            rr(c, cx, cy, cw, ch, 30);
+            c.fillStyle = WHITE;
+            c.fill();
+            drawRich(c, s.title, { x: W / 2 + ob.x, y: cy + 78, size: 30, w1: 'bold', w2: 'xbold', col1: INK, align: 'center' });
+            drawRich(c, s.sub, { x: W / 2 + ob.x, y: cy + 116, size: 19, w1: 'regular', w2: 'bold', col1: '#8A8782', align: 'center' });
+            const q = { x: W / 2 - 180 + ob.x, y: cy + 162, w: 360, h: 360 };
+            drawPhoto(c, s, 1, q, { fit: 'contain', bg: WHITE });
+            region(s, 1, q, true);
+            drawRich(c, s.foot1, { x: W / 2 + of.x, y: cy + ch + 96 + of.y, size: 40, w1: 'bold', w2: 'xbold', align: 'center', ls: '0.02em' });
+            drawRich(c, s.foot2, { x: W / 2 + of.x, y: cy + ch + 146 + of.y, size: 26, w1: 'light', w2: 'semibold', align: 'center', col1: 'rgba(246,244,239,.9)' });
+        }
+
+        /* ── 브랜드 포스터 ── */
+
+        /* 화보 표지: 넓은 로고 + 두 단 작은 글 */
+        function paintBrandCover(c, s) {
+            const full = { x: 0, y: 0, w: W, h: H };
+            drawPhoto(c, s, 0, full, { ghost: s.ghost, proc: s.photoFx });
+            dimRect(c, s, full);
+            region(s, 0, full);
+            grainAll(c, s);
+            const col = ACCENT[s.accent] || PAPER;
+            const ot = pOff(s, 'title'),
+                oc = pOff(s, 'caps'),
+                os = pOff(s, 'sub'),
+                of = pOff(s, 'foot');
+            c.font = font('xbold', s.titleSize, 'wide');
+            ls(c, '0.01em');
+            const tw = c.measureText((s.title || '').replace(/\*\*/g, '')).width;
+            ls(c, '0px');
+            const yT = H * .47 + ot.y;
+            drawRich(c, s.title, { x: W / 2 + ot.x, y: yT, size: s.titleSize, w1: 'xbold', w2: 'black', fk: 'wide', col1: col, align: 'center', ls: '0.01em' });
+            const lx = W / 2 - tw / 2 + ot.x + oc.x,
+                rx = W / 2 + tw / 2 + ot.x + oc.x,
+                cy = yT + 46 + oc.y;
+            drawRich(c, s.capL, { x: lx, y: cy, size: 22, w1: 'light', w2: 'medium', fk: 'thin', col1: col, lh: 1.18, ls: '0.06em' });
+            drawRich(c, s.capR, { x: rx, y: cy, size: 22, w1: 'light', w2: 'medium', fk: 'thin', col1: col, lh: 1.18, ls: '0.06em', align: 'right' });
+            drawRich(c, s.sub, { x: W / 2 + os.x, y: H * .73 + os.y, size: 22, w1: 'light', w2: 'medium', fk: 'thin', col1: col, align: 'center', ls: '0.08em' });
+            drawRich(c, s.foot1, { x: W / 2 + of.x, y: H * .86 + of.y, size: 26, w1: 'medium', w2: 'light', fk2: 'thin', col1: col, align: 'center', ls: '0.02em' });
+        }
+
+        /* 잔상 워드마크 */
+        function paintGhostWordmark(c, s) {
+            const full = { x: 0, y: 0, w: W, h: H };
+            drawPhoto(c, s, 0, full, { ghost: s.ghost, proc: s.photoFx });
+            dimRect(c, s, full);
+            region(s, 0, full);
+            grainAll(c, s);
+            const col = ACCENT[s.accent] || PAPER;
+            const ot = pOff(s, 'title'),
+                os = pOff(s, 'sub');
+            const y = H * .50 + ot.y,
+                t = (s.title || '').replace(/\*\*/g, '');
+            const k = Math.max(.25, s.ghost / 100);
+            const blurOK = typeof c.filter === 'string';
+            [[-70, .22], [70, .18], [-34, .42], [34, .36]].forEach(([dx, a]) => {
+                c.save();
+                c.globalAlpha = a * k;
+                if (blurOK) c.filter = 'blur(6px)';
+                c.font = font('black', s.titleSize, 'wide');
+                c.fillStyle = col;
+                c.textAlign = 'center';
+                c.fillText(t, W / 2 + ot.x + dx * k, y);
+                c.restore();
+            });
+            c.save();
+            c.globalAlpha = .96;
+            c.font = font('black', s.titleSize, 'wide');
+            c.fillStyle = col;
+            c.textAlign = 'center';
+            c.fillText(t, W / 2 + ot.x, y);
+            c.restore();
+            c.textAlign = 'left';
+            drawRich(c, s.sub, { x: W / 2 + os.x, y: H * .895 + os.y, size: 21, w1: 'semibold', w2: 'xbold', fk: 'wide', col1: col, align: 'center', lh: 1.25 });
+        }
+
+        /* 세리프 문구 포스터 */
+        function paintSerifStatement(c, s) {
+            const full = { x: 0, y: 0, w: W, h: H };
+            drawPhoto(c, s, 0, full, { ghost: s.ghost, proc: s.photoFx });
+            dimRect(c, s, full);
+            region(s, 0, full);
+            grainAll(c, s);
+            const col = ACCENT[s.accent] || '#B3262C';
+            const ol = pOff(s, 'label'),
+                ob = pOff(s, 'body');
+            drawRich(c, s.label, { x: W / 2 + ol.x, y: H * .44 + ol.y, size: s.labelSize, w1: 'xbold', w2: 'black', fk: 'wide', col1: col, align: 'center', ls: '0.01em' });
+            drawRich(c, s.body, { x: W / 2 + ob.x, y: H * .44 + 66 + ob.y, size: s.bodySize, w1: 'regular', w2: 'bold', fk: 'serif', col1: col, align: 'center', lh: 1.22, maxW: W * .56 });
+        }
+
+        /* 잡지 표지형 */
+        function paintMagazine(c, s) {
+            const bg = PANEL[s.panel] || WHITE,
+                dark = isDarkPanel(s),
+                ink = dark ? PAPER : INK;
+            c.fillStyle = bg;
+            c.fillRect(0, 0, W, H);
+            const P = { x: 0, y: H * .20, w: W, h: H * .66 };
+            drawPhoto(c, s, 0, P, { proc: s.photoFx });
+            dimRect(c, s, P);
+            region(s, 0, P);
+            c.fillStyle = rampGrad(c, H * .66, H * .86, 0, 1, hexRgb(bg));
+            c.fillRect(0, H * .66, W, H * .20);
+            c.fillStyle = bg;
+            c.fillRect(0, H * .86, W, H * .14);
+            grainAll(c, s);
+            const ot = pOff(s, 'title'),
+                os = pOff(s, 'sub'),
+                oc = pOff(s, 'caps'),
+                ob = pOff(s, 'body'),
+                of = pOff(s, 'foot');
+            drawRich(c, s.title, { x: W / 2 + ot.x, y: H * .135 + ot.y, size: s.titleSize, w1: 'black', w2: 'black', fk: 'wide', col1: ink, align: 'center', ls: '-0.03em' });
+            drawRich(c, s.sub, { x: W / 2 + os.x, y: H * .215 + os.y, size: s.subSize, w1: 'black', w2: 'black', fk: 'wide', col1: ink, align: 'center', stroke: 2, ls: '0.02em' });
+            drawRich(c, s.capR, { x: W - 64 + oc.x, y: H * .40 + oc.y, size: 24, w1: 'semibold', w2: 'bold', col1: ink, align: 'right', lh: 1.6, hl: true, hlBg: ink, hlFg: bg, maxW: W * .42 });
+            drawRich(c, s.body, { x: W / 2 + ob.x, y: H * .885 + ob.y, size: s.bodySize, w1: 'bold', w2: 'xbold', col1: ink, align: 'center', maxW: W - 120 });
+            if ((s.foot1 || '').trim()) { c.fillStyle = ink;
+                c.fillRect(0, H * .955, W, H * .045);
+                drawRich(c, s.foot1, { x: W / 2 + of.x, y: H * .985 + of.y, size: 19, w1: 'regular', w2: 'bold', col1: bg, align: 'center' }); }
+        }
+
+        /* 액자형: 단색 배경 + 가운데 사진 + 필기체 로고 */
+        function paintFrameCard(c, s) {
+            const bg = PANEL[s.panel] || PANEL.navy,
+                dark = isDarkPanel(s),
+                ink = dark ? PAPER : INK;
+            c.fillStyle = bg;
+            c.fillRect(0, 0, W, H);
+            const P = { x: W * .18, y: H * .15, w: W * .64, h: H * .65 };
+            drawPhoto(c, s, 0, P, { proc: s.photoFx });
+            dimRect(c, s, P);
+            region(s, 0, P);
+            grainAll(c, s);
+            const ol = pOff(s, 'label'),
+                os = pOff(s, 'sub');
+            drawRich(c, s.label, { x: W / 2 + ol.x, y: H * .088 + ol.y, size: s.labelSize, w1: 'regular', w2: 'regular', fk: 'script', col1: ink, align: 'center' });
+            drawRich(c, s.sub, { x: W / 2 + os.x, y: H * .885 + os.y, size: s.subSize, w1: 'light', w2: 'semibold', col1: dark ? 'rgba(246,244,239,.86)' : BODY_ON_PAPER, col2: ink, align: 'center', lh: 1.5, maxW: W * .7 });
+        }
+
+        /* 행사·오픈 포스터 */
+        function paintEventPoster(c, s) {
+            const full = { x: 0, y: 0, w: W, h: H };
+            drawPhoto(c, s, 0, full, { proc: s.photoFx });
+            dimRect(c, s, full);
+            region(s, 0, full);
+            grainAll(c, s);
+            const ol = pOff(s, 'label'),
+                ot = pOff(s, 'title'),
+                oc = pOff(s, 'caps'),
+                os = pOff(s, 'sub'),
+                of = pOff(s, 'foot');
+            [0, 1].forEach(k => drawRich(c, s.label, { x: W / 2 + ol.x, y: H * .085 + k * 42 + ol.y, size: 38, w1: 'regular', w2: 'regular', fk: 'wide', col1: 'rgba(246,244,239,' + (k ? .6 : .3) + ')', align: 'center', stroke: 1.3, ls: '0.3em' }));
+            drawRich(c, s.title, { x: W / 2 + ot.x, y: H * .22 + ot.y, size: s.titleSize, w1: 'black', w2: 'black', fk: 'wide', align: 'center', ls: '-0.01em', maxW: W - 60 });
+            drawRich(c, s.capL, { x: 64 + oc.x, y: H * .47 + oc.y, size: 32, w1: 'light', w2: 'bold', lh: 1.35, maxW: W * .46 });
+            drawRich(c, s.capR, { x: W - 64 + oc.x, y: H * .53 + oc.y, size: 30, w1: 'semibold', w2: 'bold', lh: 1.35, align: 'right', maxW: W * .4 });
+            drawRich(c, s.sub, { x: W / 2 + os.x, y: H * .76 + os.y, size: 78, w1: 'bold', w2: 'xbold', align: 'center', lh: 1.15, col1: 'rgba(246,244,239,.32)', maxW: W - 80 });
+            drawRich(c, s.foot1, { x: W / 2 + of.x, y: H * .945 + of.y, size: s.footSize, w1: 'regular', w2: 'bold', align: 'center', col1: 'rgba(246,244,239,.86)' });
+        }
+
+        /* 실루엣 티저 */
+        function paintSilhouette(c, s) {
+            c.fillStyle = WHITE;
+            c.fillRect(0, 0, W, H);
+            const full = { x: 0, y: 0, w: W, h: H };
+            drawPhoto(c, s, 0, full, { proc: 'sil' });
+            region(s, 0, full);
+            grainAll(c, s);
+            const ol = pOff(s, 'label'),
+                os = pOff(s, 'sub');
+            const y = H * .52 + ol.y,
+                col = autoInk(c, W / 2 - 140 + ol.x, y - 40, 280, 50);
+            drawRich(c, s.label, { x: W / 2 + ol.x, y, size: s.labelSize, w1: 'xbold', w2: 'black', fk: 'wide', col1: col, align: 'center', ls: '0.02em' });
+            drawRich(c, s.sub, { x: W / 2 + os.x, y: y + 46 + os.y, size: 18, w1: 'regular', w2: 'bold', col1: col, align: 'center', ls: '0.22em' });
+        }
+
+        /* 룩북 지면 */
+        function paintLookbook(c, s) {
+            const bg = PANEL[s.panel] || WHITE,
+                dark = isDarkPanel(s),
+                ink = dark ? PAPER : INK,
+                sub = dark ? BODY_ON_INK : BODY_ON_PAPER;
+            c.fillStyle = bg;
+            c.fillRect(0, 0, W, H);
+            const A = { x: -W * .08, y: H * .22, w: W * .54, h: H * .56 },
+                B = { x: W * .54, y: H * .30, w: W * .38, h: H * .42 };
+            drawPhoto(c, s, 0, A, { proc: s.photoFx });
+            drawPhoto(c, s, 1, B, { proc: s.photoFx });
+            dimRect(c, s, A);
+            dimRect(c, s, B);
+            region(s, 1, B);
+            region(s, 0, A);
+            grainAll(c, s);
+            const ot = pOff(s, 'title'),
+                ol = pOff(s, 'label'),
+                os = pOff(s, 'sub'),
+                of = pOff(s, 'foot');
+            drawRich(c, s.title, { x: 64 + ot.x, y: H * .135 + ot.y, size: s.titleSize, w1: 'regular', w2: 'bold', fk: 'serif', col1: ink, lh: 1.02 });
+            drawRich(c, s.label, { x: W * .06 + ol.x, y: H * .60 + ol.y, size: 76, w1: 'regular', w2: 'regular', fk: 'script', col1: PAPER });
+            drawRich(c, s.sub, { x: 64 + os.x, y: H * .87 + os.y, size: s.subSize, w1: 'regular', w2: 'bold', col1: sub, col2: ink, lh: 1.5, maxW: W * .5 });
+            drawRich(c, s.foot1, { x: W - 64 + of.x, y: H * .93 + of.y, size: 20, w1: 'regular', w2: 'bold', fk: 'serif', col1: sub, align: 'right' });
+        }
+
+        function paint(c, s) {
+            c.setTransform(1, 0, 0, 1, 0, 0);
+            c.clearRect(0, 0, W, H);
+            s._regions = [];
+            tplOf(s).paint(c, s);
+            handleMark(c, s);
+        }
+
+        function draw() { paint(ctx, cur());
+            paintStrip(); }
+
+        function primeFonts(s) {
+            mirror.textContent = '';
+            const txt = [s.label, s.title, s.sub, s.body, s.capL, s.capR, s.foot1, s.foot2, G.handle].join(' ').replace(/\*\*/g, '');
+            const fams = [fam()].concat(Object.values(FK));
+            fams.forEach(f => [200, 300, 400, 500, 600, 700, 800, 900].forEach(w => {
+                const sp = document.createElement('span');
+                sp.style.cssText = 'font-family:' + f + ';font-weight:' + w + ';font-size:20px';
+                sp.textContent = txt + ' Q';
+                mirror.appendChild(sp);
+            }));
+        }
+
+        function render() { primeFonts(cur());
+            draw();
+            document.fonts.ready.then(draw); }
+
+        /* ---------- template cards ---------- */
+        const tplList = el('tplList');
+        const minis = [];
+        const groups = {};
+        TPL.forEach(t => {
+            if (!groups[t.group]) {
+                const g = document.createElement('div');
+                g.className = 'tplgroup';
+                g.innerHTML = '<span class="gname">' + t.group + '</span><div class="tpl"></div>';
+                tplList.appendChild(g);
+                groups[t.group] = g.querySelector('.tpl');
+            }
+            const b = document.createElement('button');
+            b.className = 'tplcard';
+            b.dataset.id = t.id;
+            const mini = document.createElement('canvas');
+            b.appendChild(mini);
+            const nm = document.createElement('span');
+            nm.className = 'nm';
+            nm.textContent = t.nm;
+            const ds = document.createElement('span');
+            ds.className = 'ds';
+            ds.textContent = t.ds;
+            b.appendChild(nm);
+            b.appendChild(ds);
+            b.onclick = () => { applyTpl(cur(), t.id);
+                S.slot = 0;
+                syncForm();
+                render(); };
+            groups[t.group].appendChild(b);
+            minis.push([mini, t]);
+        });
+
+        function paintMinis() {
+            document.fonts.ready.then(() => minis.forEach(([mini, t]) => {
+                mini.width = W / 3;
+                mini.height = H / 3;
+                const mc = mini.getContext('2d');
+                mc.setTransform(1 / 3, 0, 0, 1 / 3, 0, 0);
+                const demo = newSlide(t.id);
+                demo._regions = [];
+                t.paint(mc, demo);
+            }));
+        }
+
+        function markTpl() {
+            tplList.querySelectorAll('.tplcard').forEach(b => b.classList.toggle('on', b.dataset.id === cur().tpl));
+        }
+
+        /* ---------- strip ---------- */
+        const strip = el('strip');
+
+        function buildStrip() {
+            strip.innerHTML = '';
+            S.slides.forEach((s, idx) => {
+                const d = document.createElement('div');
+                d.className = 'frame';
+                d.innerHTML = '<span class="n">' + (idx + 1) + '</span>';
+                if (S.slides.length > 1) {
+                    const k = document.createElement('button');
+                    k.className = 'kill';
+                    k.textContent = '×';
+                    k.onclick = e => { e.stopPropagation();
+                        S.slides.splice(idx, 1);
+                        S.i = Math.min(S.i, S.slides.length - 1);
+                        S.slot = 0;
+                        buildStrip();
+                        syncForm();
+                        render(); };
+                    d.appendChild(k);
+                }
+                d.onclick = () => { S.i = idx;
+                    S.slot = 0;
+                    syncForm();
+                    render(); };
+                strip.appendChild(d);
+            });
+            const add = document.createElement('button');
+            add.className = 'addframe';
+            add.textContent = '+';
+            add.title = '지금 장과 같은 형식으로 한 장 더';
+            add.onclick = () => {
+                const b = cur(),
+                    n = newSlide(b.tpl);
+                ['dim', 'grain', 'gradA', 'gradB', 'panel', 'accent', 'photoFx'].forEach(k => n[k] = b[k]);
+                S.slides.splice(S.i + 1, 0, n);
+                S.i = S.i + 1;
+                S.slot = 0;
+                buildStrip();
+                syncForm();
+                render();
+            };
+            strip.appendChild(add);
+            paintStrip();
+        }
+
+        function paintStrip() {
+            [...strip.querySelectorAll('.frame')].forEach((elm, idx) => {
+                elm.classList.toggle('active', idx === S.i);
+                const s = S.slides[idx],
+                    ph = s && s.photos.find(p => p.src),
+                    src = ph && ph.src;
+                elm.style.backgroundImage = src ? 'url(' + src + ')' : 'none';
+            });
+        }
+
+        /* ---------- tabs ---------- */
+        el('tabs').onclick = e => {
+            const b = e.target.closest('button');
+            if (!b) return;
+            [...el('tabs').children].forEach(x => x.classList.toggle('on', x === b));
+            document.querySelectorAll('.panel').forEach(p => p.hidden = p.dataset.p !== b.dataset.t);
+            el('panels').scrollTop = 0;
+        };
+
+        /* ---------- position tab ---------- */
+        const POS_UI = [
+            ['all', '문구 전체 이동', '글을 한꺼번에 옮깁니다. 아래에서 각각 미세 조정하세요.'],
+            ['label', '라벨'],
+            ['title', '큰 문장'],
+            ['sub', '아랫줄'],
+            ['body', '본문'],
+            ['caps', '사진 설명'],
+            ['foot', '연락처'],
+            ['box', '후기 박스'],
+            ['inset', '인셋', '확대 사진 칸 자체를 옮깁니다. 칸 안의 사진은 미리보기에서 끌어서 옮겨요.'],
+            ['mark', '원 표시']
+        ];
+        const posPanel = el('posPanel');
+        const fmt = v => (v > 0 ? '+' : '') + v;
+        POS_UI.forEach(([k, nm, hint]) => {
+            const g = document.createElement('div');
+            g.className = 'grp';
+            g.dataset.pos = k;
+            const rng = ax => '<input type="range" data-k="' + k + '" data-ax="' + ax + '" min="' + (ax === 'x' ? -400 : -1000) +
+                '" max="' + (ax === 'x' ? 400 : 1000) + '" step="2" value="0"><span class="val">0</span>';
+            g.innerHTML = '<span class="eyebrow">' + nm + '</span>' +
+                '<div class="row"><span class="name">가로</span>' + rng('x') + '</div>' +
+                '<div class="row"><span class="name">세로</span>' + rng('y') + '</div>' +
+                (hint ? '<div class="hint">' + hint + '</div>' : '');
+            posPanel.appendChild(g);
+        });
+        const posReset = document.createElement('div');
+        posReset.className = 'grp';
+        posReset.innerHTML = '<div class="btns"><button class="btn ghost sm" id="resetPos">위치 초기화</button></div>' +
+            '<div class="hint">1080 폭 기준 픽셀입니다. 세로는 −가 위, +가 아래예요.</div>';
+        posPanel.appendChild(posReset);
+        posPanel.addEventListener('input', e => {
+            const r = e.target;
+            if (!r.dataset.k) return;
+            const p = cur().pos || (cur().pos = newPos());
+            p[r.dataset.k][r.dataset.ax] = +r.value;
+            r.nextElementSibling.textContent = fmt(+r.value);
+            render();
+        });
+        el('resetPos').onclick = () => { cur().pos = newPos();
+            syncForm();
+            render(); };
+
+        /* ---------- visibility per template ---------- */
+        function syncVis() {
+            const s = cur(),
+                t = tplOf(s);
+            document.querySelectorAll('.fld').forEach(f => f.hidden = !t.fields.includes(f.dataset.f));
+            document.querySelectorAll('[data-lb]').forEach(l => {
+                const k = l.dataset.lb;
+                l.textContent = (t.lb && t.lb[k]) || { label: '라벨', title: '큰 문장', sub: '아랫줄', body: '본문', capL: '왼쪽 설명', capR: '오른쪽 설명', foot1: '연락처 1', foot2: '연락처 2' }[k];
+            });
+            el('copyTitle').textContent = t.nm + ' 문구';
+            el('copyNote').textContent = t.note || '';
+            el('copyNote').hidden = !t.note;
+            document.querySelectorAll('#sizeGrp .row[data-sz]').forEach(r => r.hidden = !t.sizes.includes(r.dataset.sz));
+            const POS_NAME = Object.fromEntries(POS_UI.map(([k, nm]) => [k, nm]));
+            posPanel.querySelectorAll('.grp[data-pos]').forEach(g => {
+                const k = g.dataset.pos;
+                g.hidden = !t.pos.includes(k) || (k === 'mark' && !+s.mark && !(t.posLb && t.posLb.mark));
+                g.querySelector('.eyebrow').textContent = (t.posLb && t.posLb[k]) || POS_NAME[k];
+            });
+            /* 효과: 'photo:dim,grain' 처럼 그룹:보일 줄. 이름표 없는 줄은 늘 보인다 */
+            const fx = {};
+            t.fx.forEach(f => { const [g, rows] = f.split(':');
+                fx[g] = rows ? rows.split(',') : true; });
+            document.querySelectorAll('[data-fx]').forEach(g => {
+                const on = fx[g.dataset.fx];
+                g.hidden = !on;
+                g.querySelectorAll('[data-fxr]').forEach(r => {
+                    const k = r.dataset.fxr;
+                    let vis = on === true || (Array.isArray(on) && on.includes(k));
+                    if (k === 'markW' || k === 'markH') vis = Array.isArray(on) && on.includes('mark') && !!+s.mark;
+                    if (k === 'thr') vis = !!on && (s.photoFx === 'sil' || s.tpl === 'silhouette');
+                    r.hidden = !vis;
+                });
+            });
+            el('gradTitle').textContent = s.tpl === 'qaCover' ? '아래 어둡게' : s.tpl === 'caseDetail' ? '아래 어두운 패널' : '어두운 패널';
+            el('alignGrp').hidden = !t.al.length;
+            document.querySelectorAll('[data-al-row]').forEach(r => r.hidden = !t.al.includes(r.dataset.alRow));
+            /* 사진 칸 */
+            const names = slotNames(s);
+            const seg = el('slotSeg');
+            seg.innerHTML = '';
+            names.forEach((nm, k) => { const b = document.createElement('button');
+                b.dataset.v = k;
+                b.textContent = nm.split(' · ')[0];
+                b.classList.toggle('on', k === S.slot);
+                seg.appendChild(b); });
+            seg.hidden = names.length < 2;
+            const hasSlot = names.length > 0;
+            el('drop').disabled = !hasSlot;
+            el('pickImg').disabled = !hasSlot;
+            el('drop').style.opacity = hasSlot ? 1 : .45;
+            el('dropSub').textContent = hasSlot ? ('지금 칸: ' + names[S.slot]) : '이 템플릿은 사진 없이 글만 들어가요';
+            el('slotNote').textContent = names.length > 1 ? ('사진 넣을 칸: ' + names[S.slot]) : '';
+        }
+
+        /* ---------- inputs ---------- */
+        ['label', 'title', 'sub', 'body', 'capL', 'capR', 'foot1', 'foot2'].forEach(k => el('f_' + k).addEventListener('input', e => { cur()[k] = e.target.value;
+            render(); }));
+        el('handleTxt').addEventListener('input', e => { G.handle = e.target.value;
+            render(); });
+
+        const R = {
+            zoom: [null, v => v / 100, v => (v / 100).toFixed(1) + '×'],
+            labelSize: ['labelSize'],
+            titleSize: ['titleSize'],
+            subSize: ['subSize'],
+            bodySize: ['bodySize'],
+            footSize: ['footSize'],
+            dim: ['dim'],
+            grain: ['grain'],
+            ghost: ['ghost'],
+            gradA: ['gradA'],
+            gradB: ['gradB'],
+            seamY: ['seamY'],
+            band: ['band'],
+            markW: ['markW'],
+            markH: ['markH'],
+            thr: ['thr']
+        };
+        Object.keys(R).forEach(id => {
+            el(id).addEventListener('input', e => {
+                const v = +e.target.value,
+                    cfg = R[id];
+                if (id === 'zoom') cur().photos[S.slot].zoom = cfg[1](v);
+                else cur()[cfg[0]] = v;
+                el(id + 'V').textContent = cfg[2] ? cfg[2](v) : v;
+                render();
+            });
+        });
+        /* 세그먼트 옵션(이음새·인셋 선·원 표시·배경색·정렬) */
+        document.querySelectorAll('.seg[data-opt], .seg[data-al]').forEach(seg => seg.addEventListener('click', e => {
+            const b = e.target.closest('button[data-v]');
+            if (!b) return;
+            const k = seg.dataset.opt || seg.dataset.al;
+            cur()[k] = b.dataset.v;
+            syncForm();
+            render();
+        }));
+        el('slotSeg').addEventListener('click', e => {
+            const b = e.target.closest('button[data-v]');
+            if (!b) return;
+            S.slot = +b.dataset.v;
+            syncForm();
+        });
+        el('ratioSeg').addEventListener('click', e => {
+            const b = e.target.closest('button[data-v]');
+            if (!b || b.dataset.v === G.ratio) return;
+            setRatio(b.dataset.v);
+        });
+        el('fontSeg').addEventListener('click', e => {
+            const b = e.target.closest('button[data-v]');
+            if (!b) return;
+            G.font = b.dataset.v;
+            syncForm();
+            render();
+            paintMinis();
+        });
+
+        function setRatio(v) {
+            G.ratio = v;
+            H = RATIO[v];
+            cv.height = H;
+            document.documentElement.style.setProperty('--ar', v === '34' ? .75 : .8);
+            document.documentElement.style.setProperty('--ars', v === '34' ? '3/4' : '4/5');
+            el('sizeTag').textContent = '1080 × ' + H;
+            el('saveHint').textContent = '1080×' + H + ' PNG로 내려받습니다. 인스타에 그대로 올리세요.';
+            syncForm();
+            render();
+            paintMinis();
+        }
+
+        function syncForm() {
+            const s = cur();
+            markTpl();
+            S.slot = Math.min(S.slot, Math.max(0, slotNames(s).length - 1));
+            ['label', 'title', 'sub', 'body', 'capL', 'capR', 'foot1', 'foot2'].forEach(k => el('f_' + k).value = s[k] || '');
+            el('handleTxt').value = G.handle;
+            const p = s.photos[S.slot];
+            el('zoom').value = Math.round(p.zoom * 100);
+            el('zoomV').textContent = p.zoom.toFixed(1) + '×';
+            ['labelSize', 'titleSize', 'subSize', 'bodySize', 'footSize', 'dim', 'grain', 'ghost', 'gradA', 'gradB', 'seamY', 'band', 'markW', 'markH', 'thr'].forEach(k => { el(k).value = s[k];
+                el(k + 'V').textContent = s[k]; });
+            document.querySelectorAll('.seg[data-opt], .seg[data-al]').forEach(seg => {
+                const v = String(s[seg.dataset.opt || seg.dataset.al]);
+                [...seg.children].forEach(b => b.classList.toggle('on', b.dataset.v === v));
+            });
+            [...el('ratioSeg').children].forEach(b => b.classList.toggle('on', b.dataset.v === G.ratio));
+            [...el('fontSeg').children].forEach(b => b.classList.toggle('on', b.dataset.v === G.font));
+            const pos = s.pos || (s.pos = newPos());
+            posPanel.querySelectorAll('input[type=range]').forEach(r => { r.value = pos[r.dataset.k][r.dataset.ax];
+                r.nextElementSibling.textContent = fmt(+r.value); });
+            syncVis();
+            paintStrip();
+        }
+
+        /* ---------- image ---------- */
+        const file = el('file');
+
+        function loadFile(f) {
+            if (!f || !f.type.startsWith('image/')) return;
+            const names = slotNames(cur());
+            if (!names.length) return;
+            const fr = new FileReader();
+            fr.onload = () => {
+                const im = new Image();
+                im.onload = () => {
+                    const s = cur(),
+                        k = S.slot,
+                        p = s.photos[k];
+                    p.img = im;
+                    p.src = fr.result;
+                    p.ox = 0;
+                    p.oy = 0;
+                    const inset = TPL_BY[s.tpl].d.insetZoom;
+                    /* 인셋 칸에 따로 넣으면 1배부터 */
+                    if (k === 1 && inset) p.zoom = 1;
+                    /* 여러 칸짜리는 다음 빈 칸으로(확대 인셋은 제외) */
+                    if (names.length > 1 && !(inset && k === 0)) { const nx = names.findIndex((_, j) => j > k && !s.photos[j].img);
+                        if (nx > -1) S.slot = nx; }
+                    syncForm();
+                    render();
+                };
+                im.src = fr.result;
+            };
+            fr.readAsDataURL(f);
+        }
+        file.onchange = e => { loadFile(e.target.files[0]);
+            file.value = ''; };
+        el('drop').onclick = () => file.click();
+        el('pickImg').onclick = () => file.click();
+        el('resetImg').onclick = () => { const s = cur(),
+                p = s.photos[S.slot],
+                t = tplOf(s);
+            p.ox = 0;
+            p.oy = 0;
+            p.zoom = (S.slot === 1 && t.d.insetZoom && !p.img) ? t.d.insetZoom : 1;
+            syncForm();
+            render(); };
+        el('clearImg').onclick = () => { const s = cur(),
+                p = s.photos[S.slot],
+                t = tplOf(s);
+            Object.assign(p, newPhoto((S.slot === 1 && t.d.insetZoom) ? t.d.insetZoom : 1));
+            syncForm();
+            render(); };
+        ['dragenter', 'dragover'].forEach(ev => document.addEventListener(ev, e => { e.preventDefault();
+            el('drop').classList.add('hot'); }));
+        document.addEventListener('dragleave', e => { if (e.target === document.body) el('drop').classList
+                .remove('hot'); });
+        document.addEventListener('drop', e => { e.preventDefault();
+            el('drop').classList.remove('hot');
+            loadFile(e.dataTransfer.files[0]); });
+
+        /* ---------- drag: 누른 칸의 사진을 옮긴다 ---------- */
+        let drag = null;
+        cv.addEventListener('pointerdown', e => {
+            const s = cur(),
+                rect = cv.getBoundingClientRect(),
+                k = W / rect.width;
+            const px = (e.clientX - rect.left) * k,
+                py = (e.clientY - rect.top) * k;
+            const hit = (s._regions || []).find(r => px >= r.x && px <= r.x + r.w && py >= r.y && py <= r.y + r.h);
+            if (!hit) return;
+            if (hit.slot !== S.slot) { S.slot = hit.slot;
+                syncForm(); }
+            const p = s.photos[hit.slot];
+            if (!p.img && !(hit.slot === 1 && s.photos[0].img)) return;
+            drag = { x: e.clientX, y: e.clientY, ox: p.ox, oy: p.oy, k, p };
+            cv.setPointerCapture(e.pointerId);
+            cv.classList.add('dragging');
+        });
+        cv.addEventListener('pointermove', e => {
+            if (!drag) return;
+            drag.p.ox = drag.ox + (e.clientX - drag.x) * drag.k;
+            drag.p.oy = drag.oy + (e.clientY - drag.y) * drag.k;
+            draw();
+        });
+        ['pointerup', 'pointercancel'].forEach(ev => cv.addEventListener(ev, () => { drag = null;
+            cv.classList.remove('dragging'); }));
+
+        /* ---------- big view ---------- */
+        const big = el('big'),
+            plate = el('plate'),
+            stage = el('stage');
+
+        function openBig() { big.insertBefore(plate, big.firstChild);
+            big.hidden = false; }
+
+        function closeBig() { stage.insertBefore(plate, stage.firstChild);
+            big.hidden = true; }
+        el('bigView').onclick = openBig;
+        el('bigClose').onclick = closeBig;
+        big.addEventListener('click', e => { if (e.target === big) closeBig(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape' && !big.hidden) closeBig(); });
+
+        /* ---------- save ---------- */
+        function saveAt(idx) {
+            return new Promise(res => {
+                primeFonts(S.slides[idx]);
+                document.fonts.ready.then(() => {
+                    const off = document.createElement('canvas');
+                    off.width = W;
+                    off.height = H;
+                    paint(off.getContext('2d'), S.slides[idx]);
+                    off.toBlob(b => {
+                        const a = document.createElement('a');
+                        a.href = URL.createObjectURL(b);
+                        a.download = 'case_' + String(idx + 1).padStart(2, '0') + '.png';
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+                        res();
+                    }, 'image/png');
+                });
+            });
+        }
+        el('dl').onclick = () => saveAt(S.i);
+        el('dl2').onclick = () => saveAt(S.i);
+        el('dlAll').onclick = async () => { for (let k = 0; k < S.slides.length; k++) { await saveAt(k);
+                await new Promise(r => setTimeout(r, 450)); } };
+
+        /* ---------- kakao bar ---------- */
+        el('kx').onclick = e => { e.preventDefault();
+            e.stopPropagation();
+            el('kbar').classList.add('gone');
+            document.body.classList.add('nokbar'); };
+
+        /* ---------- viewport (고정 레이아웃 · 키보드 대응) ---------- */
+        const vv = window.visualViewport;
+        function fitVH() {
+            if (vv && vv.scale > 1.02) return; // 핀치 줌 중에는 건드리지 않음
+            const h = vv ? vv.height : window.innerHeight;
+            document.documentElement.style.setProperty('--vvh', Math.round(h) + 'px');
+            if (window.scrollY) window.scrollTo(0, 0);
+            const a = document.activeElement;
+            if (a && a.closest && a.closest('.panels')) a.scrollIntoView({ block: 'nearest' });
+        }
+        if (vv) { vv.addEventListener('resize', fitVH); vv.addEventListener('scroll', fitVH); }
+        window.addEventListener('resize', fitVH);
+        fitVH();
+
+        /* ---------- go ---------- */
+        buildStrip();
+        syncForm();
+        render();
+        paintMinis();
+    </script>
+</body>
+</html>
