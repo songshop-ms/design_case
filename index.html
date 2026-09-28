@@ -1127,11 +1127,11 @@
                     <div class="row" data-fxr="mat"><span class="name">재질</span>
                         <div class="seg" style="flex:1" data-opt="mat"><button data-v="ink">먹 유광</button><button data-v="ceramic">미색 도자기</button><button data-v="glass">반무광 유리</button></div>
                     </div>
-                    <div class="row" data-fxr="stage"><span class="name">받침대 위</span>
-                        <div class="seg" style="flex:1" data-opt="stageObj"><button data-v="photo">사진</button><button data-v="none">비움</button></div>
+                    <div class="row" data-fxr="stage"><span class="name">무대</span>
+                        <div class="seg" style="flex:1" data-opt="stageObj"><button data-v="arch">아치 벽</button><button data-v="steps">계단 석판</button><button data-v="easel">이젤</button></div>
                     </div>
-                    <div class="row" data-fxr="news"><span class="name">기물</span>
-                        <div class="seg" style="flex:1" data-opt="newsObj"><button data-v="letter">봉투</button><button data-v="calendar">탁상 달력</button><button data-v="bell">호출 벨</button></div>
+                    <div class="row" data-fxr="news"><span class="name">기호</span>
+                        <div class="seg" style="flex:1" data-opt="newsObj"><button data-v="question">물음표</button><button data-v="exclaim">느낌표</button><button data-v="check">체크</button><button data-v="bubble">말풍선</button><button data-v="quote">따옴표</button></div>
                     </div>
                     <div class="row" data-fxr="info"><span class="name">물체</span>
                         <div class="seg" style="flex:1" data-opt="infoObj"><button data-v="strands">결 가닥</button><button data-v="drop">물방울</button><button data-v="dumbbell">덤벨</button></div>
@@ -1395,15 +1395,15 @@
             id: 'reviewCover',
             group: '후기 · 마무리',
             nm: '후기 모음 · 표지',
-            ds: '잔상 사진 + REAL / REVIEW',
+            ds: '잔상 사진 + 영문 CUSTOMER REVIEW',
             slots: ['사진'],
             fields: ['title', 'sub'],
-            lb: { title: '큰 글 · 둘째 줄 **굵게**', sub: '아랫줄' },
+            lb: { title: '큰 글 · 영문이면 첫 줄은 기울인 세리프, **굵게** 줄은 디도 대문자', sub: '아랫줄' },
             sizes: ['titleSize', 'subSize'],
             pos: ['all', 'title', 'sub'],
             fx: ['photo:dim,grain,ghost'],
             al: ['align'],
-            d: { title: '있는 그대로\n**후기**', sub: '손님이 보내주신 글을\n그대로 옮겼어요', titleSize: 104, subSize: 26, align: 'center', dim: 12, grain: 0, ghost: 60 },
+            d: { title: 'Customer\n**REVIEW**', sub: '손님이 보내주신 글을\n그대로 옮겼어요', titleSize: 104, subSize: 26, align: 'center', dim: 12, grain: 0, ghost: 60 },
             paint: paintReviewCover
         }, {
             id: 'endCard',
@@ -1515,7 +1515,7 @@
             pos: ['all', 'label', 'body'],
             fx: ['photo:dim,grain'],
             al: [],
-            d: { label: '손님 후기', body: '가장 와닿은 **한 문장**', bodySize: 32, dim: 30 },
+            d: { label: 'CUSTOMER REVIEW', body: '가장 와닿은 **한 문장**', bodySize: 32, dim: 30 },
             paint: paintReviewCollage
         }, {
             id: 'gridCollage',
@@ -1939,17 +1939,17 @@
             paint: paint3D
         }, {
             id: 'm3News',
-            nm: '새 소식',
-            ds: '봉투·탁상 달력·호출 벨로 알리는 장',
+            nm: '기호 오브제',
+            ds: '정보 카드 표지를 물음표·느낌표·체크·말풍선·따옴표로 여는 장',
             slots: [],
-            fields: ['label', 'title', 'sub', 'foot1', 'foot2'],
-            lb: { label: '맨 위 작은 글', title: '큰 문장 · 핵심어 **굵게**', sub: '아랫줄 · 영문이면 기울인 세리프', foot1: '달력 큰 글자 · 달력일 때만(예: 10)', foot2: '달력 작은 글자 · 달력일 때만(예: OCTOBER)' },
-            note: '효과 탭 ‘입체’에서 기물을 봉투·달력·벨 중에 골라요.',
+            fields: ['label', 'title', 'sub'],
+            lb: { label: '맨 위 작은 글', title: '큰 문장 · 핵심어 **굵게**', sub: '아랫줄 · 영문이면 기울인 세리프' },
+            note: '효과 탭 ‘입체’에서 기호를 골라요. 물음표=질문·Q&A, 느낌표=주의·중요, 체크=정리·관리법, 말풍선=상담·후기, 따옴표=원장의 문장·손님 말.',
             sizes: ['labelSize', 'titleSize', 'subSize'],
             pos: ['all', 'label', 'title', 'sub', 'obj'],
             fx: ['photo:grain', 'panel', 'r3d:mat,news,rot,size'],
             al: [],
-            d: { label: '', title: '**새 소식**이\n도착했어요', sub: 'News from Songshop.', foot1: '10', foot2: 'OCTOBER', labelSize: 24, titleSize: 64, subSize: 26, panel: 'paper', mat: 'ink', newsObj: 'letter', rot: 0, objSize: 100 },
+            d: { label: '', title: '자주 묻는\n**질문**', sub: 'Frequently asked.', labelSize: 24, titleSize: 64, subSize: 26, panel: 'paper', mat: 'ink', newsObj: 'question', rot: 0, objSize: 100 },
             paint: paint3D
         }, {
             id: 'm3Info',
@@ -1967,17 +1967,17 @@
             paint: paint3D
         }, {
             id: 'm3Stage',
-            nm: '받침대 무대',
-            ds: '받침대 위에 손님 사진을 전시하듯',
-            slots: ['받침대 위 사진 · 비워도 됨'],
+            nm: '전시 무대',
+            ds: '아치 벽·계단 석판·이젤 위에 사진을 전시하듯',
+            slots: ['전시할 사진 · 고화질 그대로'],
             fields: ['label', 'title', 'sub'],
             lb: { label: '맨 위 작은 글', title: '큰 문장 · 핵심어 **굵게**', sub: '아랫줄 · 영문이면 기울인 세리프' },
-            note: '사진을 넣으면 받침대 위에 사진 블록으로 세워져요.',
+            note: '효과 탭 ‘입체’에서 무대를 골라요. 사진은 줄이지 않고 원본 해상도로 붙어요.',
             sizes: ['labelSize', 'titleSize', 'subSize'],
             pos: ['all', 'label', 'title', 'sub', 'obj'],
             fx: ['photo:grain', 'panel', 'r3d:mat,stage,rot,size'],
             al: [],
-            d: { label: '', title: '오늘의 **결**', sub: 'Today’s brows, on display.', labelSize: 24, titleSize: 64, subSize: 26, panel: 'paper', mat: 'ceramic', stageObj: 'photo', rot: 0, objSize: 100 },
+            d: { label: '', title: '오늘의 **결**', sub: 'Today’s brows, on display.', labelSize: 24, titleSize: 64, subSize: 26, panel: 'paper', mat: 'ceramic', stageObj: 'arch', rot: 0, objSize: 100 },
             paint: paint3D
         });
         /* 묶음·순서 */
@@ -2000,7 +2000,7 @@
         const TPL_BY = Object.fromEntries(TPL.map(t => [t.id, t]));
         /* 캐러셀 묶음: 한 편 = 장 순서가 정해진 한 세트.
            r=장 역할, ph=사진 칸별 공용 역할(같은 역할은 한 번 넣으면 묶음 전체에 들어감, null=그 장에만), o=그 장만의 문구·효과 */
-        const ROLE_NM = { before: '시술 전', after: '시술 후', before2: '시술 전 2', after2: '시술 후 2', detail: '접사', design: '펜슬 디자인', model: '인물 화보', profile: '프로필', space: '공간', sw1: '견본 1', sw2: '견본 2', sw3: '견본 3', sw4: '견본 4' };
+        const ROLE_NM = { before: '시술 전', after: '시술 후', before2: '시술 전 2', after2: '시술 후 2', detail: '접사', detail2: '접사 2', detail3: '접사 3', design: '펜슬 디자인', model: '인물 화보', profile: '프로필', space: '공간', sw1: '견본 1', sw2: '견본 2', sw3: '견본 3', sw4: '견본 4' };
         const BUNDLES = [{
             id: 'case', nm: '케이스 · 전후 사례', ds: '손님 한 분의 전후를 처음부터 끝까지', src: '관찰한 순서 그대로',
             slides: [
@@ -2020,9 +2020,9 @@
                 { t: 'endCard', r: '연락처' }
             ]
         }, {
-            id: 'review', nm: '리얼 리뷰', ds: '받은 후기 캡처를 한 편으로 모으기', src: '관찰한 순서 + 끝 장 문의',
+            id: 'review', nm: 'CUSTOMER REVIEW', ds: '받은 후기 캡처를 영문 표지로 한 편에 모으기', src: '관찰한 순서 + 끝 장 문의',
             slides: [
-                { t: 'reviewCover', r: '표지 · 있는 그대로 후기', ph: ['model'] },
+                { t: 'reviewCover', r: '표지 · CUSTOMER REVIEW', ph: ['model'] },
                 { t: 'reviewCollage', r: '후기 1', ph: ['model', null, null, null] },
                 { t: 'reviewCollage', r: '후기 2', ph: ['model', null, null, null], o: { body: '두 번째로 와닿은 **한 문장**' } },
                 { t: 'reviewCollage', r: '후기 3', ph: ['model', null, null, null], o: { body: '세 번째로 와닿은 **한 문장**' } },
@@ -2118,7 +2118,7 @@
 
         function newPhoto(z) { return { img: null, src: null, zoom: z || 1, ox: 0, oy: 0 }; }
 
-        const DEF = { label: '', title: '', sub: '', body: '', capL: '', capR: '', foot1: '', foot2: '', labelSize: 40, titleSize: 36, subSize: 27, bodySize: 28, footSize: 26, align: 'left', bAlign: 'left', dim: 0, grain: 0, ghost: 60, gradA: 46, gradB: 61, seam: 'line', seamY: 50, band: 45, feather: 16, pi: 0, border: 1, mark: 0, markW: 118, markH: 58, panel: 'paper', accent: 'paper', photoFx: 'none', thr: 110, cells: '6', bandPos: 'top', mat: 'ink', rot: 0, objSize: 100, stageObj: 'none', newsObj: 'letter', infoObj: 'strands' };
+        const DEF = { label: '', title: '', sub: '', body: '', capL: '', capR: '', foot1: '', foot2: '', labelSize: 40, titleSize: 36, subSize: 27, bodySize: 28, footSize: 26, align: 'left', bAlign: 'left', dim: 0, grain: 0, ghost: 60, gradA: 46, gradB: 61, seam: 'line', seamY: 50, band: 45, feather: 16, pi: 0, border: 1, mark: 0, markW: 118, markH: 58, panel: 'paper', accent: 'paper', photoFx: 'none', thr: 110, cells: '6', bandPos: 'top', mat: 'ink', rot: 0, objSize: 100, stageObj: 'arch', newsObj: 'question', infoObj: 'strands' };
 
         function tplValues(t) { const v = Object.assign({}, DEF, t.d);
             delete v.insetZoom;
@@ -2345,19 +2345,30 @@
             }
             if (opt.proc && opt.proc !== 'none') img = procImg(img, opt.proc, s.thr);
             /* 프리셋 초점: 사진 속 fy·fx 지점을 칸 안 ty·tx 자리에 둔다(손으로 끌면 해제) */
+            let zoom = p.zoom;
             if (p.fy != null) {
                 const iw0 = img.naturalWidth || img.width,
-                    ih0 = img.naturalHeight || img.height;
-                const sc0 = (opt.fit === 'contain' ? Math.min(r.w / iw0, r.h / ih0) : Math.max(r.w / iw0, r.h / ih0)) * p.zoom;
-                p.oy = ih0 * sc0 * (.5 - p.fy) - r.h * (.5 - (p.ty != null ? p.ty : .5));
-                p.ox = iw0 * sc0 * (.5 - (p.fx != null ? p.fx : .5)) - r.w * (.5 - (p.tx != null ? p.tx : .5));
+                    ih0 = img.naturalHeight || img.height,
+                    b0 = opt.fit === 'contain' ? Math.min(r.w / iw0, r.h / ih0) : Math.max(r.w / iw0, r.h / ih0),
+                    fx = p.fx != null ? p.fx : .5,
+                    tx = p.tx != null ? p.tx : .5,
+                    ty = p.ty != null ? p.ty : .5;
+                /* 눈썹 가운데 고정(lock): 초점이 칸 자리에 정확히 오도록, 가장자리가 비면 필요한 만큼만 더 키운다 */
+                if (p.lock && opt.fit !== 'contain') {
+                    const e = 1e-3,
+                        need = Math.max(tx * r.w / Math.max(e, fx * iw0), (1 - tx) * r.w / Math.max(e, (1 - fx) * iw0), ty * r.h / Math.max(e, p.fy * ih0), (1 - ty) * r.h / Math.max(e, (1 - p.fy) * ih0));
+                    zoom = Math.max(zoom, need / b0 * 1.002);
+                }
+                const sc0 = b0 * zoom;
+                p.oy = ih0 * sc0 * (.5 - p.fy) - r.h * (.5 - ty);
+                p.ox = iw0 * sc0 * (.5 - fx) - r.w * (.5 - tx);
             }
             if (opt.bg) { c.fillStyle = opt.bg;
                 c.fillRect(r.x, r.y, r.w, r.h); }
             const iw = img.naturalWidth || img.width,
                 ih = img.naturalHeight || img.height;
             const base = opt.fit === 'contain' ? Math.min(r.w / iw, r.h / ih) : Math.max(r.w / iw, r.h / ih),
-                sc = base * p.zoom;
+                sc = base * zoom;
             const w = iw * sc,
                 h = ih * sc;
             const mx = Math.max(0, (w - r.w) / 2),
@@ -2845,7 +2856,19 @@
             const x = alignX(s.align, 110);
             const ot = pOff(s, 'title'),
                 os = pOff(s, 'sub');
-            drawRich(c, s.title, { x: x + ot.x, y: Y(560) + ot.y, size: s.titleSize, w1: 'light', w2: 'xbold', lh: .98, align: s.align, ls: '-0.01em' });
+            const t = String(s.title || '');
+            if (t.trim() && !/[ㄱ-ㅎ가-힣]/.test(t)) {
+                /* 영문 제목(예: Customer / **REVIEW**): 첫 줄은 기울인 디도, 굵게 표시한 줄은 굵은 디도 대문자 */
+                const lines = t.split('\n'),
+                    k = s.titleSize / 104;
+                const soft = lines.filter(l => !/\*\*/.test(l)).join(' ').trim(),
+                    bold = lines.filter(l => /\*\*/.test(l)).join(' ').replace(/\*\*/g, '').trim();
+                /* 눈썹이 정중앙이라 제목은 그 아래(얼굴 아래쪽)에 두고, 아래를 옅게 어둡게 해서 읽히게 한다 */
+                c.fillStyle = rampGrad(c, H * .52, H, 0, .5, '0,0,0');
+                c.fillRect(0, H * .52, W, H * .48);
+                if (soft) drawRich(c, soft, { x: x + ot.x, y: Y(905) - 92 * k + ot.y, size: 64 * k, w1: 'regular', fk: 'bodoni', it1: true, col1: PAPER, align: s.align, ls: '0.01em' });
+                if (bold) drawRich(c, bold.toUpperCase(), { x: x + ot.x, y: Y(905) + 58 * k + ot.y, size: 132 * k, w1: 'xbold', fk: 'bodoni', col1: PAPER, align: s.align, ls: '0.02em' });
+            } else drawRich(c, s.title, { x: x + ot.x, y: Y(560) + ot.y, size: s.titleSize, w1: 'light', w2: 'xbold', lh: .98, align: s.align, ls: '-0.01em' });
             drawRich(c, s.sub, { x: x + os.x, y: Y(1130) + os.y, size: s.subSize, w1: 'regular', w2: 'bold', col1: 'rgba(246,244,239,.92)', align: s.align, lh: 1.5, maxW: W - 160 });
         }
 
@@ -3088,7 +3111,8 @@
             });
             const ob = pOff(s, 'body'),
                 ol = pOff(s, 'label');
-            drawRich(c, s.label, { x: W / 2 + ol.x, y: H * .045 + ol.y, size: 22, w1: 'semibold', w2: 'bold', ls: '0.22em', align: 'center' });
+            if (!/[ㄱ-ㅎ가-힣]/.test(s.label || '')) drawRich(c, s.label, { x: W / 2 + ol.x, y: H * .045 + ol.y, size: 26, w1: 'medium', w2: 'bold', fk: 'thin', ls: '0.34em', align: 'center' });
+            else drawRich(c, s.label, { x: W / 2 + ol.x, y: H * .045 + ol.y, size: 22, w1: 'semibold', w2: 'bold', ls: '0.22em', align: 'center' });
             if ((s.body || '').trim()) {
                 const o = { size: s.bodySize, w1: 'bold', w2: 'xbold', col1: INK, lh: 1.4, maxW: W - 260, align: 'center' };
                 const lines = wrapRich(c, parseRich(s.body), o);
@@ -3575,17 +3599,16 @@
                 o.imgs = [p];
                 if (!p) extra = 'screen:' + s.body + G.font; }
             if (kind === 'prints') o.imgs = [ph(0), ph(1), ph(2)];
-            if (kind === 'stage') { o.obj = s.stageObj; if (s.stageObj === 'photo') o.imgs = [ph(0)]; }
+            if (kind === 'stage') { o.obj = ({ photo: 'arch', none: 'arch' })[s.stageObj] || s.stageObj || 'arch';
+                o.imgs = [ph(0)]; }
             if (kind === 'type') o.text = String(s.title || '').replace(/\*\*/g, '').trim() || '01';
             if (kind === 'info') o.obj = s.infoObj || 'strands';
-            if (kind === 'news') { o.obj = s.newsObj;
-                if (s.newsObj === 'calendar') extra = 'page:' + s.foot1 + '|' + s.foot2 + G.font; }
+            if (kind === 'news') o.obj = ({ letter: 'question', calendar: 'exclaim', bell: 'check' })[s.newsObj] || s.newsObj || 'question';
             const key = [kind, o.bg, o.mat, o.rot, o.w, o.h, o.obj || '', o.text || '', extra,
                 o.imgs.map(p => p ? [r3dImgId(p.img), p.fy.toFixed(3), p.fx.toFixed(3), p.zoom.toFixed(2)].join(':') : 0).join(',')].join('|');
             /* 텍스처용 캔버스는 실제로 그릴 때만 만든다 */
             const make = () => {
                 if (kind === 'phone' && !o.imgs[0]) o.imgs = [{ img: phoneScreen(s), fy: .5, fx: .5, zoom: 1 }];
-                if (kind === 'news' && s.newsObj === 'calendar') o.pageCv = calendarPage(s);
                 return o;
             };
             return { key, make };
@@ -3614,8 +3637,13 @@
             R3D.busy = true;
             let o;
             try { o = j.make(); } catch (e) { o = null; }
+            /* 큰 그림은 두 번: 먼저 빠른 그림(바로 보이게) → 이어서 경로 추적 고화질로 바꿔 끼운다 */
+            const noPT = o && (o.kind === 'type' || (o.kind === 'info' && o.obj === 'dumbbell')),
+                upgrade = !!(o && !j.pt && !noPT && o.w > W * .6 && window.R3D_PT !== false);
+            if (o) o.pt = !!j.pt;
             (o ? window.R3D_RENDER(o) : Promise.reject(new Error('주문서 오류')))
-            .then(cv => r3dPut(j.key, { cv }), e => { console.warn('3D', e);
+            .then(cv => { r3dPut(j.key, { cv, draft: upgrade });
+                    if (upgrade && !R3D.q.some(q => q.owner === j.owner)) R3D.q.unshift({ key: j.key, make: j.make, owner: j.owner, pt: true }); }, e => { console.warn('3D', e);
                     r3dPut(j.key, { err: String(e && e.message || e) }); })
                 .then(() => { R3D.busy = false;
                     r3dRepaint();
@@ -3650,8 +3678,9 @@
         /* 내려받기 전에 큰 그림을 기다린다 */
         async function r3dReady(s) {
             if (!R3D_TPL[s.tpl]) return;
-            for (let i = 0; i < 400; i++) { const e = r3dGet(s, false);
-                if (!e || e.cv || e.err) return;
+            /* 경로 추적 고화질이 끝날 때까지(한 장에 수십 초 걸릴 수 있다) */
+            for (let i = 0; i < 3600; i++) { const e = r3dGet(s, false);
+                if (!e || (e.cv && !e.draft) || e.err) return;
                 await new Promise(r => setTimeout(r, 50)); }
         }
 
@@ -3669,22 +3698,6 @@
         }
 
         /* 탁상 달력 한 장: 제본 구멍 + 위 작은 글(foot2) + 큰 숫자(foot1, 디도). 앞판 종이 비율 1.564:1.26 */
-        function calendarPage(s) {
-            const cv2 = document.createElement('canvas');
-            cv2.width = 1000;
-            cv2.height = 806;
-            const x = cv2.getContext('2d');
-            x.fillStyle = '#F4F0E8';
-            x.fillRect(0, 0, 1000, 806);
-            x.fillStyle = 'rgba(22,21,20,.6)';
-            for (let i = 0; i < 9; i++) { x.beginPath();
-                x.arc(100 + i * 100, 34, 10, 0, Math.PI * 2);
-                x.fill(); }
-            drawRich(x, s.foot2 || '', { x: 500, y: 200, size: 46, w1: 'medium', w2: 'bold', col1: INK, align: 'center', ls: '0.3em' });
-            drawRich(x, s.foot1 || '', { x: 500, y: 690, size: 420, w1: 'regular', w2: 'bold', fk: 'bodoni', col1: INK, align: 'center', ls: '-0.04em' });
-            return cv2;
-        }
-
         function paint3D(c, s) {
             const L = LAY3D[s.tpl],
                 lo = c.getTransform().a < .6,
@@ -5003,12 +5016,12 @@
                 { t: 'lockupEnd', r: '끝 장' }
             ]
         }, {
-            id: 'set3Prints', nm: '사진 겹쳐 놓기', ds: '인화한 사진처럼 쌓은 후기 모음', src: '3D',
+            id: 'set3Prints', nm: '사진 겹쳐 놓기', ds: '접사 세 장을 고화질 판으로 겹친 결 모음', src: '3D',
             slides: [
-                { t: 'm3Prints', r: '표지 · 세 장', ph: ['guest1', 'guest2', 'guest3'] },
-                { t: 'photoOnly', r: '손님 1', ph: ['guest1'] },
-                { t: 'photoOnly', r: '손님 2', ph: ['guest2'] },
-                { t: 'photoOnly', r: '손님 3', ph: ['guest3'] },
+                { t: 'm3Prints', r: '표지 · 접사 세 장', ph: ['detail', 'detail2', 'detail3'], o: { label: '', title: '가까이서 본 **결**', sub: 'Up close.' } },
+                { t: 'photoOnly', r: '접사 1', ph: ['detail'] },
+                { t: 'photoOnly', r: '접사 2', ph: ['detail2'] },
+                { t: 'photoOnly', r: '접사 3', ph: ['detail3'] },
                 { t: 'lockupEnd', r: '끝 장' }
             ]
         }, {
@@ -5020,24 +5033,24 @@
                 { t: 'lockupEnd', r: '끝 장' }
             ]
         }, {
-            id: 'set3Letter', nm: '새 소식 · 봉투', ds: '봉투로 여는 새 소식', src: '3D',
+            id: 'set3Question', nm: '질문 · 물음표', ds: '자주 묻는 질문을 여는 정보 카드', src: '3D',
             slides: [
-                { t: 'm3News', r: '표지 · 봉투' },
-                { t: 'textOnly', r: '소식 내용', o: { label: '', body: '**알릴 내용**을\n두세 줄로 적어 주세요.', sub: '' } },
+                { t: 'm3News', r: '표지 · 물음표' },
+                { t: 'textOnly', r: '답', o: { label: '', body: '**질문 하나에 답 하나**를\n두세 줄로 적어 주세요.', sub: '' } },
                 { t: 'lockupEnd', r: '끝 장' }
             ]
         }, {
-            id: 'set3Calendar', nm: '날짜 안내 · 탁상 달력', ds: '예약 오픈·휴무처럼 날짜가 있는 알림', src: '3D',
+            id: 'set3Exclaim', nm: '주의 · 느낌표', ds: '시술 전·후 꼭 알아 둘 것', src: '3D',
             slides: [
-                { t: 'm3News', r: '표지 · 탁상 달력', o: { newsObj: 'calendar', mat: 'ceramic', title: '**10월** 예약,\n미리 안내해요', sub: 'Booking notice for October.' } },
-                { t: 'noticeCover', r: '일정 안내', ph: ['after'] },
+                { t: 'm3News', r: '표지 · 느낌표', o: { newsObj: 'exclaim', panel: 'ink', mat: 'ceramic', title: '시술 전\n**꼭 확인할 것**', sub: 'Before your visit.' } },
+                { t: 'textOnly', r: '확인할 것', o: { label: '', body: '**꼭 알아 둘 것**을\n두세 줄로 적어 주세요.', sub: '', panel: 'ink' } },
                 { t: 'lockupEnd', r: '끝 장' }
             ]
         }, {
-            id: 'set3Bell', nm: '알림 · 호출 벨', ds: '가볍게 알려 드리는 공지', src: '3D',
+            id: 'set3Check', nm: '정리 · 체크', ds: '관리법·준비물을 한 장으로 정리', src: '3D',
             slides: [
-                { t: 'm3News', r: '표지 · 호출 벨', o: { newsObj: 'bell', mat: 'ink', panel: 'gray', title: '**알려 드릴** 게\n있어요', sub: 'A little notice.' } },
-                { t: 'textOnly', r: '알림 내용', o: { label: '', body: '**알릴 내용**을\n두세 줄로 적어 주세요.', sub: '' } },
+                { t: 'm3News', r: '표지 · 체크', o: { newsObj: 'check', mat: 'ink', panel: 'gray', title: '관리법\n**한 장 정리**', sub: 'Aftercare checklist.' } },
+                { t: 'textOnly', r: '정리', o: { label: '', body: '**정리할 항목**을\n두세 줄로 적어 주세요.', sub: '' } },
                 { t: 'lockupEnd', r: '끝 장' }
             ]
         }, {
@@ -5057,16 +5070,17 @@
                 { t: 'lockupEnd', r: '끝 장' }
             ]
         }, {
-            id: 'set3Stage', nm: '받침대 무대', ds: '손님 사진을 받침대에 올려 전시하듯', src: '3D',
+            id: 'set3Stage', nm: '전시 무대', ds: '아치 벽·계단 석판·이젤에 사진을 전시하듯', src: '3D',
             slides: [
-                { t: 'm3Stage', r: '사진 올리기', ph: ['after'] },
-                { t: 'm3Stage', r: '접사 · 먹색', ph: ['detail'], o: { panel: 'ink', mat: 'ink', title: '가까이서 본 **결**', sub: 'A closer look.' } },
+                { t: 'm3Stage', r: '아치 벽', ph: ['after'] },
+                { t: 'm3Stage', r: '계단 석판 · 먹색', ph: ['detail'], o: { stageObj: 'steps', panel: 'ink', mat: 'ink', title: '가까이서 본 **결**', sub: 'A closer look.' } },
+                { t: 'm3Stage', r: '이젤', ph: ['detail'], o: { stageObj: 'easel', panel: 'gray', title: '결 하나까지 **선명하게**', sub: 'Every stroke, in focus.' } },
                 { t: 'lockupEnd', r: '끝 장' }
             ]
         });
         const PV_CATS = [
             ['내 패턴 · 한 줄 캐러셀', ['oneLine']],
-            ['3D 오브제', ['set3Phone', 'set3Prints', 'set3Tools', 'set3Letter', 'set3Calendar', 'set3Bell', 'set3Info', 'set3Type', 'set3Stage']],
+            ['3D 오브제', ['set3Phone', 'set3Prints', 'set3Tools', 'set3Question', 'set3Exclaim', 'set3Check', 'set3Info', 'set3Type', 'set3Stage']],
             ['새 제안', ['seamCase', 'twoWeightCase', 'browIndexSet', 'notes', 'caseFileSet']],
             ['케이스 · 후기', ['case', 'report', 'review']],
             ['설명 · 정보', ['qa', 'edu', 'info', 'process']],
@@ -5076,7 +5090,7 @@
         const PRESET_BY = Object.fromEntries(PRESETS.map(p => [p.id, p]));
         const ROLE_IMG = {};
         /* 누운 정면 사진은 눈썹·눈이 위에서 45% 근처 */
-        const ROLE_FY = { detail: .5, design: .48, space: .5, sw1: .5, sw2: .5, sw3: .5, sw4: .5, capture: 0 };
+        const ROLE_FY = { detail: .5, detail2: .5, detail3: .5, design: .48, space: .5, sw1: .5, sw2: .5, sw3: .5, sw4: .5, capture: 0 };
         const PFRAME = {
             caseCover: { z: 1.15, ty: .5 }, caseBefore: { z: 1.25, ty: .26 }, caseAfter: { z: 1.25, ty: .66 }, clientSays: { z: 1.2, ty: .36 }, caseDetail: { z: 1, ty: .42 },
             splitSeam: { z: 1.3, ty: .38 }, caseReport: { z: 2, ty: .5 }, circlePair: { z: 2, ty: .5 }, zoomCircle: { z: 1.2, ty: .4 },
@@ -5299,7 +5313,7 @@
         openPv();
     </script>
     <script type="importmap">
-        { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
+        { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/", "three/examples/jsm/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/", "three-mesh-bvh": "https://cdn.jsdelivr.net/npm/three-mesh-bvh@0.7.8/src/index.js", "three-gpu-pathtracer": "https://cdn.jsdelivr.net/npm/three-gpu-pathtracer@0.0.23/src/index.js" } }
     </script>
     <script type="module">
         /* ---------- 3D 오브제: three.js(처음 쓸 때만 불러온다) ----------
@@ -5307,6 +5321,7 @@
            재질: ink 먹 유광 · ceramic 미색 도자기 · glass 반무광 유리 */
         let T = null,
             U = null,
+            RB = null,
             R = null,
             ENV = null,
             FONT = null,
@@ -5319,6 +5334,7 @@
             T = await import('three');
             const { RoomEnvironment } = await import('three/addons/environments/RoomEnvironment.js');
             U = await import('three/addons/utils/BufferGeometryUtils.js');
+            RB = (await import('three/addons/geometries/RoundedBoxGeometry.js')).RoundedBoxGeometry;
             R = new T.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
             R.setPixelRatio(1);
             R.outputColorSpace = T.SRGBColorSpace;
@@ -5408,6 +5424,7 @@
             m.rotation.x = -Math.PI / 2;
             m.position.set(x, .003, z);
             m.userData.flat = 1;
+            m.userData.contact = 1;
             sc.add(m);
         }
 
@@ -5523,22 +5540,30 @@
         }
 
         /* 7. 사진 겹쳐 놓기: 0번이 맨 위 */
+        /* 사진 겹쳐 놓기: 접사 세 장을 테두리 없는 얇은 판으로. 사진은 원본에 가까운 해상도(긴 변 2000px)로 붙인다 */
+        function photoMat(img, w, h) {
+            const L = 2000,
+                cw = w >= h ? L : Math.round(L * w / h),
+                ch = w >= h ? Math.round(L * h / w) : L;
+            return new T.MeshPhysicalMaterial({ map: tex(photoCv(img, cw, ch, '#d6d2ca')), roughness: .42, clearcoat: .22, clearcoatRoughness: .3 });
+        }
+
         function scenePrints(o) {
             const sc = base(o, [-5, 10, -3.5]),
                 g = new T.Group(),
-                pw = 1.62,
-                pl = 2.02,
-                b = .08;
-            const lay = [[.02, .2, -2], [-.66, -.1, 8.5], [.66, .02, -8]];
+                pw = 1.5,
+                pl = 2.0,
+                th = .024;
+            const lay = [[.02, .2, -2], [-.74, -.12, 9], [.74, 0, -8.5]];
             lay.forEach(([x, z, d], k) => {
-                const card = new T.Group();
-                card.add(new T.Mesh(new T.BoxGeometry(pw, .012, pl), MAT.paper()));
-                const cv = photoCv(o.imgs[k], 720, Math.round(720 * (pl - 2 * b) / (pw - 2 * b)), '#d6d2ca');
-                const ph = new T.Mesh(new T.PlaneGeometry(pw - 2 * b, pl - 2 * b), new T.MeshStandardMaterial({ map: tex(cv), roughness: .62 }));
+                const card = new T.Group(),
+                    side = MAT.paper();
+                card.add(new T.Mesh(new T.BoxGeometry(pw, th, pl), side));
+                const ph = new T.Mesh(new T.PlaneGeometry(pw, pl), photoMat(o.imgs[k], pw, pl));
                 ph.rotation.x = -Math.PI / 2;
-                ph.position.y = .0065;
+                ph.position.y = th / 2 + .0008;
                 card.add(ph);
-                card.position.set(x, .006 + (2 - k) * .014, z);
+                card.position.set(x, th / 2 + (2 - k) * (th + .004), z);
                 card.rotation.y = d * D2R;
                 g.add(card);
             });
@@ -5670,178 +5695,186 @@
         }
 
         /* 11. 빈 받침대 무대: 낮고 넓은 것 + 높고 좁은 것. 위에 로고나 사진 블록 */
+        /* 전시 무대(원통 받침대 대체): 제품 사진 연출에서 쓰는 세 가지 무대
+           arch 아치 벽 — 둥근 머리 판(석고) 앞 낮은 석판 위에 사진판을 세운다
+           steps 계단 석판 — 모서리 둥근 석판 세 장을 어긋나게 쌓고 맨 위에 사진판
+           block 아크릴 블록 — 두꺼운 투명 블록 안에 사진을 넣어 세운다 */
+        function photoBoard(img, w, h) {
+            const g = new T.Group(),
+                d = .035;
+            g.add(new T.Mesh(new T.BoxGeometry(w, h, d), MAT.paper()));
+            const ph = new T.Mesh(new T.PlaneGeometry(w, h), photoMat(img, w, h));
+            ph.position.z = d / 2 + .0008;
+            g.add(ph);
+            return g;
+        }
+
         function sceneStage(o) {
             const sc = base(o),
-                m = () => mat(o.mat),
-                g = new T.Group();
-            const A = { r: 1.22, h: .42, x: -.58, z: .34 },
-                B = { r: .6, h: 1.72, x: 1.08, z: -.66 };
-            g.add(pedestal(A.r, A.h, m(), A.x, A.z));
-            g.add(pedestal(B.r, B.h, m(), B.x, B.z));
-            if (o.obj === 'photo') {
-                const bw = 1.5,
-                    bh = 1.96,
-                    bd = .12,
-                    blk = new T.Group();
-                blk.add(new T.Mesh(new T.BoxGeometry(bw, bh, bd), MAT.paper()));
-                const cv = photoCv(o.imgs[0], 640, Math.round(640 * (bh - .12) / (bw - .12)), '#d6d2ca');
-                const ph = new T.Mesh(new T.PlaneGeometry(bw - .12, bh - .12), new T.MeshStandardMaterial({ map: tex(cv), roughness: .55 }));
-                ph.position.z = bd / 2 + .001;
-                blk.add(ph);
-                blk.position.set(A.x, A.h + bh / 2, A.z);
-                blk.rotation.y = 12 * D2R;
-                g.add(blk);
+                g = new T.Group(),
+                dark = o.mat === 'ink',
+                stone = () => new T.MeshPhysicalMaterial({ color: dark ? '#2b2927' : '#ece6db', roughness: .8, clearcoat: .04, clearcoatRoughness: .6 }),
+                slab = (w, h, d) => new T.Mesh(RB ? new RB(w, h, d, 4, Math.min(.05, h / 3)) : new T.BoxGeometry(w, h, d), stone());
+            const img = o.imgs && o.imgs[0],
+                pw = 1.02,
+                ph = 1.36,
+                form = o.obj || 'arch';
+            let el = 9,
+                fh = .5,
+                fw = .74,
+                turn = -18;
+            if (form === 'steps') {
+                const S = [[2.9, .32, 1.8, 0, 0], [2.05, .32, 1.36, .28, -.12], [1.36, .3, 1.02, .56, -.26]];
+                let y = 0;
+                S.forEach(([w, h, d, x, z]) => { const b = slab(w, h, d);
+                    b.position.set(x, y + h / 2, z);
+                    g.add(b);
+                    y += h; });
+                if (img) { const bd = photoBoard(img, pw * .92, ph * .92);
+                    bd.position.set(.56, y + ph * .46 + .005, -.26);
+                    bd.rotation.x = -7 * D2R;
+                    g.add(bd); }
+                el = 12;
+            } else if (form === 'easel' || form === 'block') {
+                /* 미니 이젤: 가는 막대 A자(앞다리 둘 + 뒷다리 하나) + 받침 턱 위에 사진판 */
+                const rod = new T.MeshPhysicalMaterial({ color: dark ? '#1c1b1a' : '#d9c9b0', roughness: dark ? .35 : .55, clearcoat: dark ? .8 : .2, clearcoatRoughness: .2 });
+                const stick = (a, b, r) => { const d = new T.Vector3().subVectors(b, a),
+                        cy = new T.Mesh(new T.CylinderGeometry(r, r, d.length(), 24), rod);
+                    cy.position.copy(a).addScaledVector(d, .5);
+                    cy.quaternion.setFromUnitVectors(new T.Vector3(0, 1, 0), d.clone().normalize());
+                    return cy; };
+                const H = 2.5,
+                    lean = .34;
+                g.add(stick(V3(-.62, 0, .2), V3(-.1, H, -lean + .2), .035));
+                g.add(stick(V3(.62, 0, .2), V3(.1, H, -lean + .2), .035));
+                g.add(stick(V3(0, 0, -.72), V3(0, H - .12, -lean + .12), .03));
+                const ledgeY = .62,
+                    ledge = new T.Mesh(new T.BoxGeometry(1.34, .06, .16), rod);
+                ledge.position.set(0, ledgeY, .2 - lean * ledgeY / H + .06);
+                g.add(ledge);
+                if (img) { const bd = photoBoard(img, pw * 1.05, ph * 1.05);
+                    const tilt = Math.atan2(lean, H);
+                    bd.rotation.x = -tilt;
+                    bd.position.set(0, ledgeY + .03 + ph * 1.05 / 2 * Math.cos(tilt), .2 - lean * (ledgeY + ph * .52) / H + .04);
+                    g.add(bd); }
+                turn = -22;
+                el = 9;
+                fh = .56;
+                fw = .64;
+            } else {
+                /* 아치 벽: 판(상자) + 반원 머리(반원기둥) = 둥근 머리 판 */
+                const pl = slab(2.7, .22, 1.46);
+                pl.position.y = .11;
+                g.add(pl);
+                const aw = 1.84,
+                    ah = 2.2,
+                    ad = .16,
+                    wm = stone();
+                const body = new T.Mesh(new T.BoxGeometry(aw, ah, ad), wm);
+                body.position.set(0, .22 + ah / 2, -.46);
+                g.add(body);
+                const top = new T.Mesh(new T.CylinderGeometry(aw / 2, aw / 2, ad, 96, 1, false, -Math.PI / 2, Math.PI), wm);
+                top.rotation.x = -Math.PI / 2;
+                top.position.set(0, .22 + ah, -.46);
+                g.add(top);
+                if (img) { const k = 1.18,
+                        bd = photoBoard(img, pw * k, ph * k);
+                    bd.position.set(.02, .22 + ph * k / 2 + .005, .12);
+                    bd.rotation.x = -5 * D2R;
+                    g.add(bd); }
+                el = 7;
+                fh = .54;
+                fw = .7;
             }
-            const c = fit(o, 22, 11, g, .56, .8);
-            g.rotation.y = o.rot * D2R;
-            sc.add(shade(g));
-            [A, B].forEach(p => { const v = new T.Vector3(p.x, 0, p.z).applyAxisAngle(new T.Vector3(0, 1, 0), o.rot * D2R);
-                contact(sc, p.r * 1.3, p.r * 1.3, v.x, v.z, o.dark ? .5 : .28); });
+            const w = new T.Group();
+            w.add(g);
+            const c = fit(o, 22, el, w, fh, fw);
+            w.rotation.y = (turn + o.rot) * D2R;
+            sc.add(shade(w));
             return [sc, c];
         }
 
-        /* 새 소식: 봉투(ink면 검은 종이) · 탁상 달력 · 호출 벨 */
-        const paperMat = dark => new T.MeshStandardMaterial({ color: dark ? '#22211f' : '#f4f0e8', roughness: dark ? .6 : .86 });
+        /* ---------- 기호 오브제: 정보 카드 표지용 물음표·느낌표·체크·말풍선·따옴표 ----------
+           글자를 돌출하지 않고 둥근 관(끝은 구)과 구로 만든다 → 모서리 없이 매끈하고 그림자가 부드럽다 */
+        const V3 = (x, y, z) => new T.Vector3(x, y, z || 0);
 
-        function envelope(w, d, dark, seal) {
+        function tubeOf(pts, r, m) {
+            const cv = new T.CatmullRomCurve3(pts, false, 'centripetal'),
+                g = new T.Group();
+            g.add(new T.Mesh(new T.TubeGeometry(cv, Math.max(96, pts.length * 6), r, 48, false), m));
+            [cv.getPointAt(0), cv.getPointAt(1)].forEach(p => { const b = new T.Mesh(new T.SphereGeometry(r, 48, 24), m);
+                b.position.copy(p);
+                g.add(b); });
+            return g;
+        }
+
+        function ball(r, m, x, y, z) { const b = new T.Mesh(new T.SphereGeometry(r, 64, 32), m);
+            b.position.set(x, y, z || 0);
+            return b; }
+
+        function symQuestion(m) {
             const g = new T.Group(),
-                pm = paperMat(dark),
-                th = .016;
-            const body = new T.Mesh(new T.BoxGeometry(w, th, d), pm);
-            body.position.y = th / 2;
+                pts = [],
+                cy = 1.62,
+                r = .52;
+            for (let a = 168; a >= -46; a -= 4) { const t = a * D2R;
+                pts.push(V3(Math.cos(t) * r, cy + Math.sin(t) * r)); }
+            const p0 = pts[pts.length - 1];
+            new T.CubicBezierCurve3(p0, V3(p0.x - .2, p0.y - .18), V3(.02, 1.12), V3(.02, .9)).getPoints(16).slice(1).forEach(p => pts.push(p));
+            g.add(tubeOf(pts, .17, m));
+            g.add(ball(.205, m, .02, .205));
+            return g;
+        }
+
+        function symExclaim(m) {
+            const g = new T.Group();
+            g.add(new T.Mesh(taper(new T.LineCurve3(V3(0, 1.98), V3(0, .84)), .199, .135, 24, 48), m));
+            g.add(ball(.2, m, 0, 2.05), ball(.135, m, 0, .84), ball(.205, m, 0, .205));
+            return g;
+        }
+
+        function symCheck(m) {
+            const g = tubeOf([V3(-.66, 1.2), V3(-.44, .98), V3(-.22, .74), V3(-.08, .67), V3(.08, .82), V3(.42, 1.28), V3(.8, 1.86)], .19, m);
+            g.position.y = .02;
+            return g;
+        }
+
+        function symBubble(m, dots) {
+            const g = new T.Group(),
+                body = new T.Mesh(new T.SphereGeometry(1, 96, 64), m);
+            body.scale.set(1.26, .92, .44);
+            body.position.set(0, 1.42, 0);
             g.add(body);
-            /* 옆 날개가 접힌 옅은 선 */
-            const cv = document.createElement('canvas');
-            cv.width = 1024;
-            cv.height = Math.round(1024 * d / w);
-            const x = cv.getContext('2d');
-            x.fillStyle = dark ? '#22211f' : '#f4f0e8';
-            x.fillRect(0, 0, cv.width, cv.height);
-            x.strokeStyle = dark ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.075)';
-            x.lineWidth = 3;
-            x.beginPath();
-            x.moveTo(0, cv.height);
-            x.lineTo(cv.width * .5, cv.height * .5);
-            x.lineTo(cv.width, cv.height);
-            x.stroke();
-            const top = new T.Mesh(new T.PlaneGeometry(w, d), new T.MeshStandardMaterial({ map: tex(cv), roughness: dark ? .6 : .86 }));
-            top.rotation.x = -Math.PI / 2;
-            top.position.y = th + .0006;
-            top.userData.flat = 1;
-            top.receiveShadow = true;
-            g.add(top);
-            /* 윗날개: 얇은 삼각 판, 끝은 둥글게 */
-            const ay = -d * .12,
-                sh = new T.Shape();
-            sh.moveTo(-w / 2, d / 2);
-            sh.lineTo(w / 2, d / 2);
-            sh.lineTo(w * .07, ay + d * .035);
-            sh.quadraticCurveTo(0, ay - d * .015, -w * .07, ay + d * .035);
-            sh.closePath();
-            const flap = new T.Mesh(new T.ExtrudeGeometry(sh, { depth: .005, bevelEnabled: true, bevelThickness: .002, bevelSize: .002, bevelSegments: 2 }), pm);
-            flap.rotation.x = -Math.PI / 2;
-            flap.position.y = th + .002;
-            g.add(flap);
-            if (seal) {
-                const light = seal === 'light',
-                    sz = -ay - .07,
-                    sy = th + .009;
-                const disc = new T.Mesh(new T.CylinderGeometry(.17, .17, .014, 64), light ? MAT.ceramic() : MAT.ink());
-                disc.position.set(0, sy + .007, sz);
-                g.add(disc);
-            }
+            const tail = new T.Mesh(new T.ConeGeometry(.24, .62, 48), m);
+            tail.rotation.z = 150 * D2R;
+            tail.scale.set(1, 1, .55);
+            tail.position.set(-.6, .6, 0);
+            g.add(tail);
+            [-.42, 0, .42].forEach(x => g.add(ball(.12, dots, x, 1.42, .4)));
             return g;
         }
 
-        function calendar(o) {
-            const g = new T.Group(),
-                bw = 1.7,
-                bh = 1.34,
-                t = .03,
-                lean = 17 * D2R,
-                Hh = bh * Math.cos(lean),
-                Sd = bh * Math.sin(lean),
-                bm = mat(o.mat);
-            const front = new T.Mesh(new T.BoxGeometry(bw, bh, t), bm);
-            front.rotation.x = -lean;
-            front.position.set(0, Hh / 2, Sd / 2);
-            const back = new T.Mesh(new T.BoxGeometry(bw, bh, t), mat(o.mat));
-            back.rotation.x = lean;
-            back.position.set(0, Hh / 2, -Sd / 2);
-            g.add(front, back);
-            if (o.pageCv) {
-                const pw = 1.564,
-                    ph = 1.26;
-                const page = new T.Mesh(new T.PlaneGeometry(pw, ph), new T.MeshStandardMaterial({ map: tex(o.pageCv), roughness: .85 }));
-                page.position.z = t / 2 + .002;
-                front.add(page);
-                /* 제본 고리: 종이 구멍 자리에서 꼭대기를 감싼다 */
-                for (let i = 0; i < 9; i++) {
-                    const ring = new T.Mesh(new T.TorusGeometry(.09, .009, 10, 36), MAT.steel());
-                    ring.rotation.y = Math.PI / 2;
-                    ring.position.set((-.4 + .1 * i) * pw, Hh, 0);
-                    g.add(ring);
-                }
-            }
-            return g;
-        }
-
-        function bell(o) {
-            const g = new T.Group(),
-                bh = .18;
-            g.add(pedestal(1.0, bh, o.mat === 'ceramic' || o.mat === 'glass' && o.dark ? MAT.ink() : MAT.ceramic()));
-            const pts = [new T.Vector2(.9, 0), new T.Vector2(.9, .025)];
-            for (let i = 0; i <= 40; i++) { const a = i / 40 * Math.PI / 2;
-                pts.push(new T.Vector2(Math.cos(a) * .86, .03 + Math.sin(a) * .64)); }
-            const dm = mat(o.mat);
-            dm.roughness = Math.max(dm.roughness, .5);
-            dm.clearcoat = Math.min(dm.clearcoat || 0, .25);
-            dm.clearcoatRoughness = .45;
-            const dome = new T.Mesh(new T.LatheGeometry(pts, 128), dm);
-            dome.position.y = bh;
-            g.add(dome);
-            const top = bh + .03 + .64;
-            const stem = new T.Mesh(new T.CylinderGeometry(.034, .034, .2, 24), MAT.steel());
-            stem.position.y = top + .08;
-            g.add(stem);
-            const btn = new T.Mesh(new T.CylinderGeometry(.12, .125, .05, 48), MAT.steel());
-            btn.position.y = top + .19;
-            g.add(btn);
+        function symQuote(m) {
+            const g = new T.Group();
+            [-.44, .44].forEach(x => {
+                g.add(ball(.29, m, x, 1.38));
+                g.add(new T.Mesh(taper(new T.CatmullRomCurve3([V3(x - .25, 1.45), V3(x - .3, 1.68), V3(x - .2, 1.9), V3(x + .02, 2.04)], false, 'centripetal'), .19, .05, 40, 32), m));
+            });
             return g;
         }
 
         function sceneNews(o) {
-            if (o.obj === 'calendar') {
-                const sc = base(o),
-                    g = calendar(o);
-                const c = fit(o, 22, 12, g, .5, .72);
-                g.rotation.y = (-24 + o.rot) * D2R;
-                sc.add(shade(g));
-                return [sc, c];
-            }
-            if (o.obj === 'bell') {
-                const sc = base(o),
-                    g = bell(o);
-                const c = fit(o, 22, 14, g, .44, .62);
-                g.rotation.y = o.rot * D2R;
-                sc.add(shade(g));
-                contact(sc, 1.3, 1.3, 0, 0, o.dark ? .5 : .3);
-                return [sc, c];
-            }
-            const sc = base(o, [-5, 10, -3.5]),
-                dark = o.mat === 'ink',
-                g = new T.Group();
-            const e1 = envelope(2.1, 1.44, dark, null);
-            e1.position.set(.4, 0, -.32);
-            e1.rotation.y = 13 * D2R;
-            g.add(e1);
-            const e2 = envelope(2.1, 1.44, dark, dark ? 'light' : 'dark');
-            e2.position.set(-.12, .02, .14);
-            e2.rotation.y = -7 * D2R;
-            g.add(e2);
-            const c = fit(o, 22, 64, g, .48, .84);
-            g.rotation.y = o.rot * D2R;
-            sc.add(shade(g));
+            const sc = base(o),
+                m = mat(o.mat),
+                dots = o.mat === 'ink' ? MAT.ceramic() : MAT.ink(),
+                kind = o.obj || 'question';
+            const obj = kind === 'exclaim' ? symExclaim(m) : kind === 'check' ? symCheck(m) : kind === 'bubble' ? symBubble(m, dots) : kind === 'quote' ? symQuote(m) : symQuestion(m);
+            if (kind === 'check') obj.position.y = .26;
+            const w = new T.Group();
+            w.add(obj);
+            const c = fit(o, 22, 10, w, .42, .62);
+            w.rotation.y = ((kind === 'bubble' || kind === 'quote' ? -14 : -18) + o.rot) * D2R;
+            sc.add(shade(w));
             return [sc, c];
         }
 
@@ -5867,7 +5900,7 @@
             for (let i = 0; i < n; i++)
                 for (let j = 0; j < rad; j++) { const a = i * (rad + 1) + j,
                         b = a + rad + 1;
-                    idx.push(a, b, a + 1, b, b + 1, a + 1); }
+                    idx.push(a, a + 1, b, b, a + 1, b + 1); }
             const g = new T.BufferGeometry();
             g.setAttribute('position', new T.Float32BufferAttribute(pos, 3));
             g.setIndex(idx);
@@ -5915,7 +5948,7 @@
             for (let i = 0; i <= 80; i++) { const t = i / 80 * Math.PI;
                 pts.push(new T.Vector2(.78 * Math.sin(t) * Math.pow(Math.sin(t / 2), 1.5), 1.02 * (1 + Math.cos(t)))); }
             const geo = new T.LatheGeometry(pts, 128),
-                m = o.mat === 'ink' || o.mat === 'ceramic' ? mat(o.mat) : new T.MeshPhysicalMaterial({ color: '#fbf8f2', roughness: .06, transmission: 1, thickness: 1.4, ior: 1.42, attenuationColor: new T.Color('#b8ad9c'), attenuationDistance: 2.4, clearcoat: 1, clearcoatRoughness: .04, specularIntensity: 1 });
+                m = o.mat === 'ink' || o.mat === 'ceramic' ? mat(o.mat) : new T.MeshPhysicalMaterial({ color: '#fbf8f2', roughness: .06, transmission: 1, thickness: 1.4, ior: 1.42, attenuationColor: new T.Color('#e8dcc6'), attenuationDistance: 7, clearcoat: 1, clearcoatRoughness: .04, specularIntensity: 1 });
             const g = new T.Group(),
                 d1 = new T.Mesh(geo, m);
             g.add(d1);
@@ -6003,15 +6036,242 @@
             });
         }
 
+        /* ---------- 경로 추적(three-gpu-pathtracer): 실제 빛처럼 부드러운 그림자·반사 ----------
+           조명은 스튜디오 환경(바탕 밝기 + 소프트박스)만 쓴다. 바닥은 배경색 확산 면이고,
+           가려지지 않은 바닥이 정확히 배경색이 되도록 환경 밝기를 맞춘다(그래서 수평선이 안 보인다). */
+        /* 경로 추적 전용 렌더러·추적기는 하나씩만 만든다(더 만들거나 reset하면 다음 그림이 까맣게 나온다) */
+        let PTL = null,
+            PTR = null,
+            PTG = null;
+        const PT_BOXES = [{ dir: [-1, 1.3, 1.1], r: .52, i: 30 }, { dir: [1.3, .8, -.5], r: .36, i: 9 }, { dir: [.2, 1.6, 1.6], r: .3, i: 6 }];
+
+        function studioEnv(boxes, base) {
+            const W = 512,
+                H = 256,
+                data = new Float32Array(W * H * 4),
+                dirs = boxes.map(b => ({ d: new T.Vector3(...b.dir).normalize(), r: b.r, i: b.i }));
+            let E = 0;
+            for (let j = 0; j < H; j++) {
+                const lat = ((j + .5) / H - .5) * Math.PI,
+                    cl = Math.cos(lat),
+                    sl = Math.sin(lat);
+                for (let i = 0; i < W; i++) {
+                    const ph = ((i + .5) / W - .5) * Math.PI * 2,
+                        dx = cl * Math.cos(ph),
+                        dz = cl * Math.sin(ph);
+                    let L = base;
+                    for (const b of dirs) {
+                        const a = Math.acos(Math.min(1, Math.max(-1, dx * b.d.x + sl * b.d.y + dz * b.d.z))),
+                            t = Math.min(1, Math.max(0, (b.r - a) / (b.r * .35)));
+                        L += b.i * t * t * (3 - 2 * t);
+                    }
+                    const k = (j * W + i) * 4;
+                    data[k] = data[k + 1] = data[k + 2] = L;
+                    data[k + 3] = 1;
+                    if (sl > 0) E += L * sl * cl * (2 * Math.PI / W) * (Math.PI / H);
+                }
+            }
+            const sc = Math.PI / E;
+            for (let k = 0; k < data.length; k += 4) { data[k] *= sc;
+                data[k + 1] *= sc;
+                data[k + 2] *= sc; }
+            const tex = new T.DataTexture(data, W, H, T.RGBAFormat, T.FloatType);
+            tex.mapping = T.EquirectangularReflectionMapping;
+            tex.magFilter = tex.minFilter = T.LinearFilter;
+            tex.needsUpdate = true;
+            return tex;
+        }
+
+        /* 래스터 장면 → 경로 추적 장면: 빛·접촉 그림자 면을 빼고, 그림자 받는 바닥은 배경색 확산 면으로, 화면(기본 재질)은 스스로 빛나는 면으로 */
+        function toPT(sc, o) {
+            const rm = [],
+                inst = [];
+            sc.traverse(m => {
+                if (m.isLight || m.userData.contact) { rm.push(m); return; }
+                if (!m.isMesh) return;
+                if (m.isInstancedMesh) { inst.push(m); return; }
+                /* 경로 추적기는 모든 도형에 법선·uv가 있어야 합친다 */
+                const g = m.geometry;
+                if (!g.attributes.normal) g.computeVertexNormals();
+                if (!g.attributes.uv) g.setAttribute('uv', new T.Float32BufferAttribute(new Float32Array(g.attributes.position.count * 2), 2));
+                const mt = m.material;
+                if (mt && mt.isMeshPhysicalMaterial) {
+                    const n = new T.MeshPhysicalMaterial();
+                    ['color', 'emissive', 'attenuationColor', 'sheenColor', 'specularColor'].forEach(k => { if (mt[k] && n[k]) n[k].copy(mt[k]); });
+                    ['roughness', 'metalness', 'clearcoat', 'clearcoatRoughness', 'transmission', 'thickness', 'ior', 'attenuationDistance', 'specularIntensity', 'emissiveIntensity', 'opacity', 'sheen', 'sheenRoughness', 'iridescence'].forEach(k => { if (mt[k] != null) n[k] = mt[k]; });
+                    ['map', 'normalMap', 'roughnessMap', 'emissiveMap', 'alphaMap'].forEach(k => { if (mt[k]) n[k] = mt[k]; });
+                    n.transparent = mt.transparent;
+                    n.side = mt.side;
+                    m.material = n;
+                } else if (mt && mt.isShadowMaterial) { m.material = new T.MeshPhysicalMaterial({ color: o.bg, roughness: 1, specularIntensity: 0, ior: 1 });
+                    m.geometry.dispose();
+                    m.geometry = new T.PlaneGeometry(600, 600);
+                    /* 물체 밑면과 바닥이 같은 높이(동일 평면)면 경로 추적이 통째로 깨지는 경우가 있어 바닥을 살짝 내린다 */
+                    m.position.y -= .002; } else if (mt && mt.isMeshBasicMaterial) m.material = new T.MeshStandardMaterial({ color: '#000000', emissive: '#ffffff', emissiveMap: mt.map, map: mt.map, roughness: .35, transparent: mt.transparent });
+            });
+            rm.forEach(x => x.parent && x.parent.remove(x));
+            /* 여러 벌 복제 도형(스풀리 솔 등)은 한 도형으로 합친다 */
+            inst.forEach(m => {
+                const parts = [],
+                    mx = new T.Matrix4();
+                for (let i = 0; i < m.count; i++) { m.getMatrixAt(i, mx);
+                    const g = m.geometry.clone().applyMatrix4(mx);
+                    if (!g.attributes.uv) g.setAttribute('uv', new T.Float32BufferAttribute(new Float32Array(g.attributes.position.count * 2), 2));
+                    parts.push(g.index ? g.toNonIndexed() : g); }
+                const one = new T.Mesh(U.mergeGeometries(parts), m.material);
+                one.position.copy(m.position);
+                one.quaternion.copy(m.quaternion);
+                one.scale.copy(m.scale);
+                m.parent.add(one);
+                m.parent.remove(m);
+            });
+            /* 합칠 때 정점 번호 있는 도형과 없는 도형이 섞이면 한쪽이 빠진다 → 모두 번호 없는 도형으로 */
+            sc.traverse(m => { if (m.isMesh && m.geometry.index) { const g = m.geometry.toNonIndexed();
+                    m.geometry.dispose();
+                    m.geometry = g; } });
+            /* 넓이 0 삼각형(글자 윤곽·회전체 이음매)의 법선이 NaN이면 경로 추적 전체가 까맣게 된다 → 숫자 아닌 값을 정리 */
+            sc.traverse(m => {
+                if (!m.isMesh) return;
+                const at = m.geometry.attributes;
+                for (const k in at) { const a = at[k].array;
+                    for (let i = 0; i < a.length; i++)
+                        if (!Number.isFinite(a[i])) a[i] = 0; }
+                const nm = at.normal;
+                if (nm) { const a = nm.array;
+                    for (let i = 0; i < a.length; i += 3) { const l = Math.hypot(a[i], a[i + 1], a[i + 2]);
+                        if (!(l > 1e-8)) { a[i] = 0;
+                            a[i + 1] = 1;
+                            a[i + 2] = 0; } else if (Math.abs(l - 1) > 1e-3) { a[i] /= l;
+                            a[i + 1] /= l;
+                            a[i + 2] /= l; } }
+                    nm.needsUpdate = true; }
+            });
+            sc.environment = studioEnv(PT_BOXES, .55);
+            sc.background = new T.Color(o.bg);
+        }
+
+        /* 창이 뒤에 있어도 느려지지 않게 setTimeout 대신 MessageChannel로 양보한다 */
+        const yieldNow = () => new Promise(r => { const ch = new MessageChannel();
+            ch.port1.onmessage = () => r();
+            ch.port2.postMessage(0); });
+
+        async function renderPT(o, sc, c) {
+            if (!PTL) { PTL = await import('three-gpu-pathtracer');
+                if (!('environmentRotation' in T.Scene.prototype)) { T.Scene.prototype.environmentRotation = new T.Euler();
+                    T.Scene.prototype.backgroundRotation = new T.Euler(); } }
+            if (!PTG) { PTG = new T.WebGLRenderer({ antialias: false, preserveDrawingBuffer: true });
+                PTG.setPixelRatio(1);
+                PTG.outputColorSpace = T.SRGBColorSpace;
+                PTG.toneMapping = T.NoToneMapping; }
+            if (!PTR) { PTR = new PTL.WebGLPathTracer(PTG);
+                PTR.tiles.set(2, 2);
+                PTR.minSamples = 1;
+                PTR.fadeDuration = 0;
+                PTR.renderToCanvas = true;
+                PTR.bounces = 6;
+                PTR.filterGlossyFactor = .5;
+                PTR.textureSize.set(2048, 2048); }
+            toPT(sc, o);
+            PTG.setSize(o.w, o.h, false);
+            PTR.setScene(sc, c);
+            const N = window.R3D_PT_SAMPLES || o.samples || (o.w > 700 ? 220 : 64);
+            const t1 = performance.now();
+            let k = 0;
+            while (PTR.samples < N && performance.now() - t1 < 90000) { PTR.renderSample();
+                if (++k % 4 === 0 || PTR.samples < 1) await yieldNow(); }
+            return PTG.domElement;
+        }
+
+        /* 경로 추적 그림을 슬라이드 배경에 맞춘다
+           1) 그림자 없는 바닥 조각(아래 모서리·가운데 중 가장 밝은 곳)이 정확히 배경색이 되도록 채널별 밝기를 맞추고
+           2) 가장자리(위 14%, 옆·아래 4%)를 배경색으로 부드럽게 섞어 경계선이 안 보이게 한다 */
+        function ptMatch(cv, bg) {
+            const w = cv.width,
+                h = cv.height,
+                x = cv.getContext('2d', { willReadFrequently: true }),
+                id = x.getImageData(0, 0, w, h),
+                d = id.data;
+            const lin = v => (v /= 255) <= .04045 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4),
+                enc = v => Math.round(255 * (v <= .0031308 ? v * 12.92 : 1.055 * Math.pow(v, 1 / 2.4) - .055));
+            const t = new T.Color(bg),
+                tg = [t.r, t.g, t.b],
+                tb = [enc(t.r), enc(t.g), enc(t.b)];
+            /* 먼 바닥은 비스듬히 빛을 반사해 위로 갈수록 밝아진다 → 줄마다 양쪽 가장자리 바닥(물체 없는 곳)을 재서 그 줄을 배경색에 맞춘다.
+               그림자가 한쪽 가장자리에 닿는 줄이 있어서 두 쪽 중 밝은 쪽을 쓰고, 위아래로 부드럽게 이어 붙인다 */
+            const strip = (x0, x1, y) => { const acc = [0, 0, 0];
+                let n = 0;
+                for (let xx = Math.round(x0 * w); xx < Math.round(x1 * w); xx += 2) { const i = (y * w + xx) * 4;
+                    acc[0] += lin(d[i]);
+                    acc[1] += lin(d[i + 1]);
+                    acc[2] += lin(d[i + 2]);
+                    n++; }
+                return acc.map(v => v / n); };
+            const rowRef = new Array(h);
+            for (let y = 0; y < h; y++) { const a = strip(.012, .04, y),
+                    b = strip(.96, .988, y);
+                rowRef[y] = a[0] + a[1] + a[2] >= b[0] + b[1] + b[2] ? a : b; }
+            const R2 = Math.max(4, Math.round(h * .02)),
+                rowGain = new Array(h);
+            for (let y = 0; y < h; y++) { const acc = [0, 0, 0];
+                let n = 0;
+                for (let k = Math.max(0, y - R2); k <= Math.min(h - 1, y + R2); k++) { acc[0] += rowRef[k][0];
+                    acc[1] += rowRef[k][1];
+                    acc[2] += rowRef[k][2];
+                    n++; }
+                rowGain[y] = tg.map((v, c) => Math.min(1.35, Math.max(.75, v / Math.max(1e-5, acc[c] / n)))); }
+            const ft = h * .14,
+                fs = w * .04,
+                fb = h * .04;
+            for (let yy = 0; yy < h; yy++)
+                for (let xx = 0; xx < w; xx++) {
+                    const i = (yy * w + xx) * 4;
+                    let r = d[i],
+                        g = d[i + 1],
+                        b = d[i + 2];
+                    if (Math.abs(r - tb[0]) > 1 || Math.abs(g - tb[1]) > 1 || Math.abs(b - tb[2]) > 1) { const gn = rowGain[yy];
+                        r = enc(Math.min(1, lin(r) * gn[0]));
+                        g = enc(Math.min(1, lin(g) * gn[1]));
+                        b = enc(Math.min(1, lin(b) * gn[2])); }
+                    const e = Math.min(1, yy / ft, xx / fs, (w - 1 - xx) / fs, (h - 1 - yy) / fb),
+                        a = e * e * (3 - 2 * e);
+                    d[i] = tb[0] + (r - tb[0]) * a;
+                    d[i + 1] = tb[1] + (g - tb[1]) * a;
+                    d[i + 2] = tb[2] + (b - tb[2]) * a;
+                }
+            x.putImageData(id, 0, 0);
+        }
+
         async function render(o) {
             await init();
-            const [sc, c] = await SCENES[o.kind](o);
-            R.setSize(o.w, o.h, false);
-            R.render(sc, c);
+            let [sc, c] = await SCENES[o.kind](o);
+            let src = null;
+            /* 경로 추적은 큰 그림(미리보기·저장)에만. 프리셋 썸네일 같은 작은 그림은 빠른 일반 렌더 */
+            /* 경로 추적에서 통째로 까맣게 나오는 장면(돌출 글자, 덤벨)은 처음부터 일반 렌더 */
+            const noPT = o.kind === 'type' || (o.kind === 'info' && o.obj === 'dumbbell');
+            if (window.R3D_PT !== false && o.w > 700 && !noPT && o.pt !== false) try { src = await renderPT(o, sc, c);
+                /* 일부 도형(글자 돌출·회전체)은 경로 추적 결과가 통째로 까맣게 나온다 → 그런 장은 일반 렌더로 */
+                const pk = document.createElement('canvas');
+                pk.width = pk.height = 8;
+                const px = pk.getContext('2d', { willReadFrequently: true });
+                px.drawImage(src, 0, 0, 8, 8);
+                const d = px.getImageData(0, 0, 8, 8).data;
+                let mx = 0;
+                for (let i = 0; i < d.length; i += 4) mx = Math.max(mx, d[i], d[i + 1], d[i + 2]);
+                if (mx < 3 && new T.Color(o.bg).getHSL({}).l > .05) { console.warn('경로 추적 결과가 비어 일반 렌더로', o.kind, o.obj || '');
+                    src = null;
+                    const [sc2, c2] = await SCENES[o.kind](o);
+                    dispose(sc);
+                    sc = sc2;
+                    c = c2; } } catch (e) { console.warn('경로 추적 실패, 이 장만 일반 렌더로', e);
+                if (!PTL) window.R3D_PT = false; }
+            if (!src) { R.setSize(o.w, o.h, false);
+                R.render(sc, c);
+                src = R.domElement; }
             const out = document.createElement('canvas');
             out.width = o.w;
             out.height = o.h;
-            out.getContext('2d').drawImage(R.domElement, 0, 0);
+            out.getContext('2d').drawImage(src, 0, 0);
+            if (src === PTG?.domElement) ptMatch(out, o.bg);
             dispose(sc);
             return out;
         }
