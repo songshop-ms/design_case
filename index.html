@@ -1852,24 +1852,24 @@
             paint: paintStatement
         }, {
             id: 'lockupEnd',
-            nm: '워드마크 끝 장',
-            ds: '송샵 로고 + 연락처',
+            nm: '끝 장 · 아웃트로',
+            ds: '영상 아웃트로와 같은 워드마크 + 상담·예약 문의',
             slots: [],
-            fields: ['title', 'sub', 'body'],
-            lb: { title: '로고 · SONGSHOP이라고 쓰면 로고로 나와요', sub: '로고 아래 한 줄 · 비우면 숨김', body: '연락처 · 한 줄에 하나' },
-            sizes: ['labelSize', 'titleSize', 'subSize', 'bodySize'],
+            fields: ['title', 'sub', 'body', 'foot1'],
+            lb: { title: '워드마크 · SONGSHOP이라고 쓰면 아웃트로 워드마크', sub: '워드마크 아래 작은 글 · 비우면 숨김', body: 'CTA 윗줄', foot1: 'CTA 이름 · 앞에 카톡·인스타 아이콘' },
+            sizes: ['titleSize', 'bodySize'],
             pos: ['all', 'title', 'body'],
             fx: ['panel'],
             al: [],
-            d: { label: '', title: 'SONGSHOP', sub: '', body: '**예약** 카카오톡 채널\n**문의** DM · 프로필 링크', labelSize: 30, titleSize: 130, subSize: 22, bodySize: 24, panel: 'paper' },
+            d: { label: '', title: 'SONGSHOP', sub: 'BROW STUDIO', body: '상담·예약 문의', foot1: '송샵', labelSize: 30, titleSize: 136, subSize: 34, bodySize: 40, panel: 'paper' },
             paint: paintLockupEnd
         }, {
             id: 'oneLine',
             nm: '한 줄 캐러셀',
             ds: '여섯 장이 한 장처럼 이어지는 캐러셀',
             slots: ['시술 전', '시술 후', '접사'],
-            fields: ['label', 'title', 'sub', 'capL', 'body'],
-            lb: { label: '선 위 작은 글(끝 장은 워드마크 뒤 세리프)', title: '큰 글 · 핵심어만 **굵게**(끝 장은 워드마크)', sub: '영문 한 줄 · 기울인 세리프(끝 장은 태그라인)', capL: '선 위 메모 · "항목 내용" 한 줄씩', body: '끝 장 연락처 · 한 줄에 하나' },
+            fields: ['label', 'title', 'sub', 'capL', 'body', 'foot1'],
+            lb: { label: '선 위 작은 글', title: '큰 글 · 핵심어만 **굵게**(끝 장은 SONGSHOP 워드마크)', sub: '영문 한 줄 · 기울인 세리프(끝 장은 워드마크 아래 글)', capL: '선 위 메모 · "항목 내용" 한 줄씩', body: '끝 장 CTA 윗줄', foot1: '끝 장 CTA 이름 · 앞에 카톡·인스타 아이콘' },
             note: '여섯 장이 사진을 함께 씁니다. 한 장에서 사진을 바꾸거나 옮기면 모든 장이 같이 바뀌어요.',
             sizes: ['titleSize', 'subSize'],
             pos: ['all', 'label', 'title', 'sub', 'caps', 'body'],
@@ -1880,19 +1880,6 @@
         });
         /* 3D 오브제: three.js로 그린 물체를 배경 위에 깐다(재질·돌리기·크기는 효과 탭, 위치는 위치 탭) */
         TPL.push({
-            id: 'm3Logo',
-            nm: '입체 로고',
-            ds: '결로 만든 S를 세운 표지',
-            slots: [],
-            fields: ['label', 'title', 'sub'],
-            lb: { label: '맨 위 작은 글 · SONGSHOP이라고 쓰면 로고', title: '아래 문장 · 핵심어 **굵게**', sub: '아랫줄 · 영문이면 기울인 세리프' },
-            sizes: ['labelSize', 'titleSize', 'subSize'],
-            pos: ['all', 'label', 'title', 'sub', 'obj'],
-            fx: ['photo:grain', 'panel', 'r3d:mat,rot,size'],
-            al: [],
-            d: { label: '', title: '결로 그리는 **눈썹**', sub: 'Brows, drawn stroke by stroke.', labelSize: 24, titleSize: 56, subSize: 26, panel: 'paper', mat: 'ink', rot: 10, objSize: 100 },
-            paint: paint3D
-        }, {
             id: 'm3Phone',
             nm: '휴대폰 목업',
             ds: '화면 캡처를 띄운 휴대폰 · 문의 끝 장',
@@ -1979,7 +1966,7 @@
         /* 묶음·순서 */
         const GROUP_OF = {
             oneLine: '내 패턴',
-            m3Logo: '3D 오브제', m3Phone: '3D 오브제', m3Prints: '3D 오브제', m3Tools: '3D 오브제', m3News: '3D 오브제', m3Type: '3D 오브제', m3Stage: '3D 오브제',
+            m3Phone: '3D 오브제', m3Prints: '3D 오브제', m3Tools: '3D 오브제', m3News: '3D 오브제', m3Type: '3D 오브제', m3Stage: '3D 오브제',
             twoWeight: '새 제안', seamSplit: '새 제안', seamStack: '새 제안', browIndex: '새 제안', didoneCover: '새 제안', fadeCard: '새 제안', caseFile: '새 제안', statement: '새 제안', lockupEnd: '새 제안',
             caseCover: '케이스 · 전후', caseBefore: '케이스 · 전후', caseAfter: '케이스 · 전후', caseDetail: '케이스 · 전후', splitSeam: '케이스 · 전후', caseReport: '케이스 · 전후', circlePair: '케이스 · 전후', zoomCircle: '케이스 · 전후',
             clientSays: '후기', selfieChip: '후기', testimonial: '후기', reviewCover: '후기', reviewCollage: '후기', gridCollage: '후기',
@@ -3376,83 +3363,115 @@
             }
         }
 
-        /* ── 송샵 로고: 결 다섯 올로 만든 S (2D·3D가 같은 모양을 쓴다) ──
-           처음 시안 모양: 베지어 하나를 다섯 올이 옆으로 나란히 따라간다.
-           올은 오른쪽 위에서 굵게 시작해 왼쪽 아래로 가늘어진다. 단위: 높이 1, 외곽 = 왼쪽 가장자리 + 거꾸로 된 오른쪽 가장자리 */
-        const LOGO_S = (() => {
-            const h = 150,
-                w = 96,
-                N = 160,
-                strokes = [];
-            for (let k = 0; k < 5; k++) {
-                const d = (k - 2) * 11,
-                    ad = Math.abs(d),
-                    w0 = 9 - Math.abs(k - 2) * 1.6,
-                    w1 = 1.2;
-                const p = [[w * .42 + d, h * .06 + ad * .2], [-w * .75 + d, h * .05], [w * .75 + d, h * .95], [-w * .42 + d, h * .94 - ad * .2]];
-                const B = t => { const u = 1 - t; return [u * u * u * p[0][0] + 3 * u * u * t * p[1][0] + 3 * u * t * t * p[2][0] + t * t * t * p[3][0], u * u * u * p[0][1] + 3 * u * u * t * p[1][1] + 3 * u * t * t * p[2][1] + t * t * t * p[3][1]]; };
-                const L = [],
-                    R = [];
-                for (let i = 0; i <= N; i++) {
-                    const t = i / N,
-                        A = B(Math.max(0, t - .005)),
-                        C = B(Math.min(1, t + .005)),
-                        c = B(t);
-                    const dx = C[0] - A[0],
-                        dy = C[1] - A[1],
-                        len = Math.hypot(dx, dy) || 1,
-                        nx = -dy / len,
-                        ny = dx / len;
-                    const ww = (w0 + (w1 - w0) * Math.pow(t, .8)) * (t < .06 ? .55 + t * 7.5 : 1) / 2;
-                    L.push([c[0] + nx * ww, c[1] + ny * ww]);
-                    R.push([c[0] - nx * ww, c[1] - ny * ww]);
-                }
-                strokes.push(L.concat(R.reverse()));
-            }
-            let x0 = 1e9,
-                y0 = 1e9,
-                x1 = -1e9,
-                y1 = -1e9;
-            strokes.forEach(p => p.forEach(([x, y]) => { x0 = Math.min(x0, x);
-                y0 = Math.min(y0, y);
-                x1 = Math.max(x1, x);
-                y1 = Math.max(y1, y); }));
-            const hh = y1 - y0;
-            return { strokes: strokes.map(p => p.map(([x, y]) => [(x - x0) / hh, (y - y0) / hh])), w: (x1 - x0) / hh };
-        })();
-        window.LOGO_S = LOGO_S;
+        /* ── 송샵 워드마크: 결과형 영상 아웃트로와 같은 규격(2026-09-28, 아웃트로 시안 6 '잔상 워드마크') ──
+           SONGSHOP(Paperlogy ExtraBold, 자간 0.02em) 뒤에 번짐 없는 옅은 잔상 두 겹 + 아래 BROW STUDIO(Medium, 자간 0.45em).
+           수치는 영상의 글자 136px 기준을 글자 크기에 비례시켰다: 잔상 −44·−22px(농도 38·70/255), BROW STUDIO 34px, 간격 46px. 기호 로고는 쓰지 않는다. */
+        const WM = { track: .02, echoes: [[-44 / 136, 38 / 255], [-22 / 136, 70 / 255]], subK: 34 / 136, subTrack: .45, gapK: 46 / 136 };
+        const PAP = 'Paperlogy, Pretendard, sans-serif';
 
-        /* S만 그리기: (x,y)=왼쪽 위, h=높이 */
-        function drawLogoS(c, x, y, h, col) {
+        /* (cx, cy) = 워드마크 글자 가운데. opt.echo: 잔상, opt.sub: 아래 글(null이면 없음). 반환: 글자 왼쪽·오른쪽 끝, 위, 기준선, 맨 아래 */
+        function drawWordmark(c, cx, cy, size, col, opt) {
+            opt = Object.assign({ echo: true, sub: 'BROW STUDIO', word: 'SONGSHOP' }, opt);
+            c.save();
+            c.font = '800 ' + size + 'px ' + PAP;
+            ls(c, (WM.track * size) + 'px');
+            const m = c.measureText(opt.word),
+                tw = m.width - WM.track * size,
+                asc = m.actualBoundingBoxAscent || size * .72,
+                x0 = cx - tw / 2,
+                base = cy + asc / 2;
+            c.textAlign = 'left';
+            c.textBaseline = 'alphabetic';
+            c.fillStyle = col;
+            if (opt.echo) WM.echoes.forEach(([dx, a]) => { c.globalAlpha = a;
+                c.fillText(opt.word, x0 + dx * size, base); });
+            c.globalAlpha = 1;
+            c.fillText(opt.word, x0, base);
+            let bottom = base;
+            if (opt.sub) {
+                const ss = size * WM.subK;
+                c.font = '500 ' + ss + 'px ' + PAP;
+                ls(c, (WM.subTrack * ss) + 'px');
+                const sm = c.measureText(opt.sub),
+                    sw = sm.width - WM.subTrack * ss,
+                    sa = sm.actualBoundingBoxAscent || ss * .72;
+                bottom = base + WM.gapK * size + sa;
+                c.fillText(opt.sub, cx - sw / 2, bottom);
+            }
+            ls(c, '0px');
+            c.restore();
+            return { x0, x1: x0 + tw, top: base - asc, base, bottom };
+        }
+
+        /* 예전 로고 자리(끝 장·화보 표지·작은 표시)도 워드마크로: stack=잔상+BROW STUDIO, row=글자만 */
+        function drawLogo(c, cx, cy, h, col, mode) {
+            return mode === 'row' ? drawWordmark(c, cx, cy, h * .42, col, { echo: false, sub: null }) : drawWordmark(c, cx, cy, h * .6, col);
+        }
+
+        /* 카톡 말풍선·인스타 글리프 아이콘(영상 icon_img와 같은 비율, 한 색). bg는 말풍선 속 TALK 글자색 */
+        function drawIcon(c, kind, x, y, sz, col, bg) {
             c.save();
             c.fillStyle = col;
-            LOGO_S.strokes.forEach(p => { c.beginPath();
-                p.forEach(([px, py], i) => i ? c.lineTo(x + px * h, y + py * h) : c.moveTo(x + px * h, y + py * h));
+            c.strokeStyle = col;
+            if (kind === 'insta') {
+                const sw = sz * .095;
+                c.lineWidth = sw;
+                rr(c, x + sw / 2, y + sw / 2, sz - sw, sz - sw, sz * .29 - sw / 2);
+                c.stroke();
+                c.beginPath();
+                c.arc(x + sz / 2, y + sz / 2, sz * .25 - sw / 2, 0, Math.PI * 2);
+                c.stroke();
+                c.beginPath();
+                c.arc(x + sz * .765, y + sz * .235, sz * .06, 0, Math.PI * 2);
+                c.fill();
+            } else {
+                c.beginPath();
+                c.ellipse(x + sz / 2, y + sz * .48, sz / 2, sz * .42, 0, 0, Math.PI * 2);
+                c.fill();
+                c.beginPath();
+                c.moveTo(x + sz * .21, y + sz * .74);
+                c.lineTo(x + sz * .15, y + sz * .995);
+                c.lineTo(x + sz * .42, y + sz * .86);
                 c.closePath();
-                c.fill(); });
+                c.fill();
+                c.fillStyle = bg;
+                c.font = '800 ' + (sz * .28) + 'px ' + PAP;
+                c.textAlign = 'center';
+                c.textBaseline = 'middle';
+                c.fillText('TALK', x + sz / 2, y + sz * .48);
+            }
             c.restore();
         }
 
-        /* 로고 묶음: stack=S 위·SONGSHOP 아래(끝 장), row=S 옆에 SONGSHOP(작은 표시). (cx,cy)=묶음 가운데, h=S 높이 */
-        function drawLogo(c, cx, cy, h, col, mode, word) {
-            word = word || 'SONGSHOP';
-            const ts = mode === 'row' ? h * .4 : h * .2;
-            c.font = font('medium', ts);
-            ls(c, (ts * .34) + 'px');
-            const tw = c.measureText(word).width - ts * .34;
-            ls(c, '0px');
-            const sw = LOGO_S.w * h;
-            if (mode === 'row') {
-                const gap = h * .38,
-                    total = sw + gap + tw,
-                    x0 = cx - total / 2;
-                drawLogoS(c, x0, cy - h / 2, h, col);
-                drawRich(c, word, { x: x0 + sw + gap, y: cy + ts * .36, size: ts, w1: 'medium', w2: 'bold', col1: col, ls: '0.34em' });
-                return { w: total, h };
+        /* 아웃트로 CTA: 윗줄 문구(Regular) + 아랫줄 카톡·인스타 아이콘 + 이름(SemiBold). x=왼쪽 끝, cy=아이콘 줄 가운데, size=윗줄 글자(영상 40) */
+        function drawCta(c, x, cy, label, name, size, ink, bg) {
+            const ih = size * 1.5,
+                gap = size * .4;
+            if (String(label || '').trim()) {
+                c.save();
+                c.font = '400 ' + size + 'px ' + PAP;
+                ls(c, (-.01 * size) + 'px');
+                c.fillStyle = ink;
+                c.textAlign = 'left';
+                c.textBaseline = 'alphabetic';
+                c.fillText(label.replace(/\*\*/g, ''), x, cy - ih / 2 - size * .55);
+                ls(c, '0px');
+                c.restore();
             }
-            drawLogoS(c, cx - sw / 2, cy - h / 2, h, col);
-            drawRich(c, word, { x: cx, y: cy + h / 2 + h * .5, size: ts, w1: 'medium', w2: 'bold', col1: col, ls: '0.34em', align: 'center' });
-            return { w: Math.max(sw, tw), h: h * 1.55 };
+            drawIcon(c, 'kakao', x, cy - ih / 2, ih, ink, bg);
+            drawIcon(c, 'insta', x + ih + gap, cy - ih / 2, ih, ink, bg);
+            if (String(name || '').trim()) {
+                const ns = size * 1.25;
+                c.save();
+                c.font = '600 ' + ns + 'px ' + PAP;
+                ls(c, (-.02 * ns) + 'px');
+                c.fillStyle = ink;
+                c.textAlign = 'left';
+                c.textBaseline = 'middle';
+                c.fillText(name.replace(/\*\*/g, ''), x + 2 * (ih + gap) + size * .1, cy + ns * .04);
+                ls(c, '0px');
+                c.restore();
+            }
         }
 
         /* 글자 칸에 SONGSHOP이라고 쓰면 로고로, 아니면 글자로 */
@@ -3461,34 +3480,39 @@
         function brandMark(c, text, o) {
             if (!String(text || '').trim()) return;
             if (isLogoWord(text)) {
-                const h = o.h || o.size * 2.3;
-                let cx = o.x;
-                if (o.align !== 'center') { c.font = font('medium', h * .4);
-                    ls(c, (h * .4 * .34) + 'px');
-                    const tw = c.measureText('SONGSHOP').width;
-                    ls(c, '0px');
-                    const total = LOGO_S.w * h + h * .38 + tw;
-                    cx = o.align === 'right' ? o.x - total / 2 : o.x + total / 2; }
-                drawLogo(c, cx, o.y - h * .36, h, o.col1, o.mode || 'row');
+                const size = o.size * 1.3;
+                c.font = '800 ' + size + 'px ' + PAP;
+                ls(c, (WM.track * size) + 'px');
+                const tw = c.measureText('SONGSHOP').width - WM.track * size;
+                ls(c, '0px');
+                const cx = o.align === 'right' ? o.x - tw / 2 : o.align === 'center' ? o.x : o.x + tw / 2;
+                drawWordmark(c, cx, o.y - size * .36, size, o.col1, { echo: false, sub: null });
                 return;
             }
             drawRich(c, text, Object.assign({}, o, { fk: undefined, st: undefined, w1: 'bold', w2: 'black', ls: '0.12em' }));
         }
 
-        /* 끝 장 로고 묶음 + 연락처(지점명 없이) */
-        function drawEndLockup(c, s, cx, cy, ink, sub, contactY) {
-            if (isLogoWord(s.title)) drawLogo(c, cx, cy, s.titleSize * 1.35, ink, 'stack');
-            else drawRich(c, s.title, { x: cx, y: cy + s.titleSize * .35, size: s.titleSize * .6, w1: 'bold', w2: 'black', col1: ink, align: 'center', ls: '0.04em' });
-            if ((s.sub || '').trim()) drawRich(c, s.sub, { x: cx, y: cy + s.titleSize * 1.35 * 1.05 + s.subSize * 2.4, size: s.subSize, w1: 'regular', w2: 'bold', col1: sub, align: 'center', ls: '0.02em' });
-            drawRich(c, s.body, { x: cx, y: contactY, size: 24, w1: 'regular', w2: 'bold', col1: sub, col2: ink, align: 'center', lh: 1.75, ls: '-0.005em' });
+        /* 끝 장 = 영상 아웃트로 카드: 가운데 워드마크(잔상) + 아래 작은 글, 왼쪽 아래 CTA(윗줄 + 카톡·인스타 아이콘 + 이름).
+           CTA 왼쪽 끝은 워드마크 왼쪽 끝에 맞춘다(영상 "songshop 안쪽으로"). 지점명·권유 문구는 넣지 않는다. */
+        function drawEndLockup(c, s, cx, cy, ink, bg, ctaY) {
+            const size = s.titleSize || 136;
+            let x0;
+            if (isLogoWord(s.title)) x0 = drawWordmark(c, cx, cy, size, ink, { sub: (s.sub || '').trim() || null }).x0;
+            else {
+                c.font = '800 ' + size * .6 + 'px ' + PAP;
+                const tw = c.measureText(String(s.title || '').replace(/\*\*/g, '')).width;
+                drawRich(c, s.title, { x: cx, y: cy + size * .2, size: size * .6, w1: 'xbold', w2: 'xbold', col1: ink, align: 'center', ls: '0.02em' });
+                x0 = cx - tw / 2;
+                if ((s.sub || '').trim()) drawRich(c, s.sub, { x: cx, y: cy + size * .75, size: size * .2, w1: 'medium', w2: 'bold', col1: ink, align: 'center', ls: '0.45em' });
+            }
+            drawCta(c, x0, ctaY, s.body, s.foot1, s.bodySize || 40, ink, bg);
         }
 
         /* ── 3D 오브제 ── */
         /* 맨 아래 module 스크립트가 window.R3D_RENDER를 채운다. 결과 그림은 배경색까지 같아서 크기·위치를 바꿔도 가장자리가 안 보인다 */
-        const R3D_TPL = { m3Logo: 'logo', m3Phone: 'phone', m3Prints: 'prints', m3Tools: 'tools', m3News: 'news', m3Type: 'type', m3Stage: 'stage' };
+        const R3D_TPL = { m3Phone: 'phone', m3Prints: 'prints', m3Tools: 'tools', m3News: 'news', m3Type: 'type', m3Stage: 'stage' };
         /* oy: 물체 가운데를 화면 높이 %만큼 내림, zone: 글 자리 */
         const LAY3D = {
-            m3Logo: { oy: -4, zone: 'bottom', al: 'center' },
             m3Phone: { oy: 12, zone: 'top', al: 'left' },
             m3Prints: { oy: 12, zone: 'top', al: 'left' },
             m3Tools: { oy: 12, zone: 'top', al: 'left' },
@@ -3600,7 +3624,7 @@
             const x = cv2.getContext('2d');
             x.fillStyle = INK;
             x.fillRect(0, 0, cv2.width, cv2.height);
-            drawLogo(x, 345, 590, 170, PAPER, 'stack');
+            drawWordmark(x, 345, 600, 96, PAPER);
             drawRich(x, s.body || '', { x: 345, y: 950, size: 28, w1: 'regular', w2: 'bold', col1: 'rgba(246,244,239,.62)', col2: PAPER, align: 'center', lh: 1.8 });
             return cv2;
         }
@@ -3954,21 +3978,16 @@
             drawRich(c, s.label, { x: 108 + ol.x, y: (rS.n ? rS.bottom : rT.bottom) + Y(78) + ol.y, size: s.labelSize, w1: 'regular', w2: 'semibold', col1: sub, ls: '0.04em' });
         }
 
-        /* 워드마크 끝 장: 넓은 워드마크 + 뒤에 겹친 가는 세리프 + 폭을 맞춘 좁은 태그라인 + 연락처 */
+        /* 끝 장 · 아웃트로: 영상 마무리 카드와 같은 배치(워드마크 44%, CTA 83%) */
         function paintLockupEnd(c, s) {
             const bg = PANEL[s.panel] || PAPER,
-                dark = isDarkPanel(s),
-                ink = dark ? PAPER : INK,
-                sub = dark ? BODY_ON_INK : BODY_ON_PAPER,
-                rgb = hexRgb(ink);
+                ink = isDarkPanel(s) ? PAPER : INK;
             c.fillStyle = bg;
             c.fillRect(0, 0, W, H);
             grainAll(c, s);
             const oa = pOff(s, 'title'),
                 ob = pOff(s, 'body');
-            drawEndLockup(c, s, W / 2 + oa.x, Y(560) + oa.y, ink, sub, Y(1060) + ob.y);
-            c.fillStyle = 'rgba(' + rgb + ',.3)';
-            c.fillRect(W / 2 - 32 + ob.x, Y(980) + ob.y, 64, 1);
+            drawEndLockup(c, s, W / 2 + oa.x, H * .44 + oa.y, ink, bg, H * .83 + ob.y);
         }
 
         /* ── 내 패턴: 한 줄 캐러셀 ──
@@ -4101,7 +4120,7 @@
                 if ((s.sub || '').trim()) ital(s.sub, 108 + os.x, r.bottom + s.subSize * 2.1 + os.y);
                 if ((s.label || '').trim()) drawRich(c, s.label, { x: 108 + ol.x, y: yL - 16 + ol.y, size: 20, w1: 'regular', w2: 'semibold', col1: 'rgba(246,244,239,.72)', ls: '0.04em' });
             } else {
-                drawEndLockup(c, s, W / 2 + ot.x, H * .4 + ot.y, INK, BODY_ON_PAPER, yL - 16 - 24 * 1.75 + ob.y);
+                drawEndLockup(c, s, W / 2 + ot.x, H * .4 + ot.y, INK, PAPER, yL - 70 + ob.y);
             }
         }
 
@@ -4881,7 +4900,7 @@
                 { t: 'oneLine', r: '접사 · 꼬리', ph: ONE_PH, o: { pi: 2, label: '', title: '한 올씩,\n**모가 난 방향대로**', sub: 'One stroke at a time, along the hair.', capL: 'TAIL 꼬리는 **가늘게** 끝까지', titleSize: 58, subSize: 26 } },
                 { t: 'oneLine', r: '접사 · 결 사이', ph: ONE_PH, o: { pi: 3, label: '', title: '', sub: '', capL: 'BODY 결 사이는 **비워 두고**' } },
                 { t: 'oneLine', r: '원장의 문장', ph: ONE_PH, o: { pi: 4, label: '— 송샵 원장', title: '결 사이가 비어 있어야\n**자연스럽습니다**', sub: 'Natural brows need space between the strokes.', titleSize: 58, subSize: 26 } },
-                { t: 'oneLine', r: '끝 장 · 밝아짐', ph: ONE_PH, o: { pi: 5, label: '', title: 'SONGSHOP', sub: '', body: '**예약** 카카오톡 채널\n**문의** DM · 프로필 링크', titleSize: 120, subSize: 22 } }
+                { t: 'oneLine', r: '끝 장 · 밝아짐', ph: ONE_PH, o: { pi: 5, label: '', title: 'SONGSHOP', sub: 'BROW STUDIO', body: '상담·예약 문의', foot1: '송샵', titleSize: 128, bodySize: 38 } }
             ]
         }, {
             id: 'seamCase', nm: '심리스 케이스', ds: '선 없는 전후 표지부터 끝 장까지', src: '새 제안',
@@ -4930,14 +4949,6 @@
         }];
         /* 3D 오브제: 물체 하나로 여는 캐러셀 */
         NEW_PRESETS.push({
-            id: 'set3Logo', nm: '입체 로고', ds: '결로 만든 S를 세운 브랜드 표지', src: '3D',
-            slides: [
-                { t: 'm3Logo', r: '표지 · 먹 유광' },
-                { t: 'm3Logo', r: '먹색 배경 · 도자기', o: { panel: 'ink', mat: 'ceramic', rot: -26, title: '자연스러운 **결**', sub: 'Natural strokes, by Songshop.' } },
-                { t: 'm3Logo', r: '유리 · 연회색', o: { panel: 'gray', mat: 'glass', rot: 34, title: '', sub: '' } },
-                { t: 'lockupEnd', r: '끝 장' }
-            ]
-        }, {
             id: 'set3Phone', nm: '휴대폰 목업', ds: '예약 화면을 띄운 문의 장', src: '3D',
             slides: [
                 { t: 'm3Phone', r: '예약 안내', ph: ['capture'] },
@@ -5000,7 +5011,7 @@
         });
         const PV_CATS = [
             ['내 패턴 · 한 줄 캐러셀', ['oneLine']],
-            ['3D 오브제', ['set3Logo', 'set3Phone', 'set3Prints', 'set3Tools', 'set3Letter', 'set3Calendar', 'set3Bell', 'set3Type', 'set3Stage']],
+            ['3D 오브제', ['set3Phone', 'set3Prints', 'set3Tools', 'set3Letter', 'set3Calendar', 'set3Bell', 'set3Type', 'set3Stage']],
             ['새 제안', ['seamCase', 'twoWeightCase', 'browIndexSet', 'notes', 'caseFileSet']],
             ['케이스 · 후기', ['case', 'report', 'review']],
             ['설명 · 정보', ['qa', 'edu', 'info', 'process']],
@@ -5387,63 +5398,6 @@
         }
 
         /* 로고 S: 2D 로고의 가닥을 그대로 따라가는 둥근 관 다섯 개(끝으로 갈수록 가늘어진다) */
-        function strandGeo(line, rads, M) {
-            const n = line.length,
-                rings = [],
-                K = 6;
-            const dir = i => { const a = line[Math.max(0, i - 1)],
-                    b = line[Math.min(n - 1, i + 1)],
-                    tx = b.x - a.x,
-                    ty = b.y - a.y,
-                    l = Math.hypot(tx, ty) || 1;
-                return [tx / l, ty / l]; };
-            /* 양 끝은 반구로 막는다(굵게 시작하는 끝이 뚫려 보이지 않게) */
-            const cap = (i, sgn) => { const [tx, ty] = dir(i),
-                    r = rads[i],
-                    out = [];
-                for (let q = 1; q <= K; q++) { const f = q / K * Math.PI / 2 * .98;
-                    out.push({ x: line[i].x + sgn * tx * r * Math.sin(f), y: line[i].y + sgn * ty * r * Math.sin(f), z: line[i].z, r: r * Math.cos(f), tx, ty }); }
-                return out; };
-            rings.push(...cap(0, -1).reverse());
-            for (let i = 0; i < n; i++) { const [tx, ty] = dir(i);
-                rings.push({ x: line[i].x, y: line[i].y, z: line[i].z, r: rads[i], tx, ty }); }
-            rings.push(...cap(n - 1, 1));
-            const pos = [],
-                idx = [];
-            rings.forEach(g => { const nx = -g.ty,
-                    ny = g.tx;
-                for (let j = 0; j < M; j++) { const f = j / M * Math.PI * 2;
-                    pos.push(g.x + g.r * Math.cos(f) * nx, g.y + g.r * Math.cos(f) * ny, g.z + g.r * Math.sin(f)); } });
-            for (let i = 0; i < rings.length - 1; i++)
-                for (let j = 0; j < M; j++) { const a = i * M + j,
-                        b = i * M + (j + 1) % M,
-                        c = (i + 1) * M + j,
-                        d = (i + 1) * M + (j + 1) % M;
-                    idx.push(a, b, d, a, d, c); }
-            const g = new T.BufferGeometry();
-            g.setAttribute('position', new T.Float32BufferAttribute(pos, 3));
-            g.setIndex(idx);
-            g.computeVertexNormals();
-            return g;
-        }
-
-        function logoMesh(h, m) {
-            const S = window.LOGO_S,
-                g = new T.Group();
-            S.strokes.forEach((p, j) => {
-                const n = p.length / 2,
-                    line = [],
-                    rads = [];
-                for (let i = 0; i < n; i++) { const A = p[i],
-                        B = p[p.length - 1 - i];
-                    line.push(new T.Vector3(((A[0] + B[0]) / 2 - S.w / 2) * h, (1 - (A[1] + B[1]) / 2) * h, (j - 2) * h * .008));
-                    /* 번들거리는 가장자리 때문에 가늘어 보이므로 2D보다 조금 굵게 */
-                    rads.push(Math.hypot(A[0] - B[0], A[1] - B[1]) / 2 * h * 1.2); }
-                g.add(new T.Mesh(strandGeo(line, rads, 18), m));
-            });
-            return g;
-        }
-
         function rrect(w, h, r) {
             const s = new T.Shape(),
                 x = -w / 2,
@@ -5471,28 +5425,6 @@
             const p = new T.Mesh(new T.LatheGeometry(pts, 128), m);
             p.position.set(x || 0, 0, z || 0);
             return p;
-        }
-
-        /* 1. 입체 로고: 받침대 없이 바닥에 바로 선다(아래 꼬리가 바닥에 닿는다) */
-        function sceneLogo(o) {
-            const sc = base(o, [-2.5, 12, 3.5]),
-                hS = 2,
-                g = new T.Group(),
-                S = logoMesh(hS, mat(o.mat));
-            S.position.y = -.004;
-            g.add(S);
-            /* 바닥에 닿는 꼬리 아래만 옅게 그늘 */
-            let x0 = 1e9,
-                x1 = -1e9;
-            S.children.forEach(m => { const p = m.geometry.attributes.position;
-                for (let i = 0; i < p.count; i++)
-                    if (p.getY(i) < .05) { x0 = Math.min(x0, p.getX(i));
-                        x1 = Math.max(x1, p.getX(i)); } });
-            const c = fit(o, 22, 8, S, .64, .64);
-            if (x1 > x0) contact(g, (x1 - x0) / 2 + .18, .2, (x0 + x1) / 2, 0, o.dark ? .45 : .22);
-            g.rotation.y = o.rot * D2R;
-            sc.add(shade(g));
-            return [sc, c];
         }
 
         /* 4. 휴대폰 */
@@ -5716,25 +5648,6 @@
         /* 새 소식: 봉투(ink면 검은 종이) · 탁상 달력 · 호출 벨 */
         const paperMat = dark => new T.MeshStandardMaterial({ color: dark ? '#22211f' : '#f4f0e8', roughness: dark ? .6 : .86 });
 
-        function sealDecal(size, col) {
-            const cv = document.createElement('canvas');
-            cv.width = cv.height = 256;
-            const x = cv.getContext('2d'),
-                S = window.LOGO_S,
-                hh = 150,
-                ox = 128 - S.w * hh / 2,
-                oy = 128 - hh / 2;
-            x.fillStyle = col;
-            S.strokes.forEach(p => { x.beginPath();
-                p.forEach(([px, py], i) => i ? x.lineTo(ox + px * hh, oy + py * hh) : x.moveTo(ox + px * hh, oy + py * hh));
-                x.closePath();
-                x.fill(); });
-            const m = new T.Mesh(new T.PlaneGeometry(size, size), new T.MeshBasicMaterial({ map: tex(cv), transparent: true, toneMapped: false }));
-            m.rotation.x = -Math.PI / 2;
-            m.userData.flat = 1;
-            return m;
-        }
-
         function envelope(w, d, dark, seal) {
             const g = new T.Group(),
                 pm = paperMat(dark),
@@ -5781,9 +5694,6 @@
                 const disc = new T.Mesh(new T.CylinderGeometry(.17, .17, .014, 64), light ? MAT.ceramic() : MAT.ink());
                 disc.position.set(0, sy + .007, sz);
                 g.add(disc);
-                const dec = sealDecal(.3, light ? '#1c1b1a' : '#efebe3');
-                dec.position.set(0, sy + .0145, sz);
-                g.add(dec);
             }
             return g;
         }
@@ -5880,7 +5790,7 @@
             return [sc, c];
         }
 
-        const SCENES = { logo: sceneLogo, phone: scenePhone, prints: scenePrints, tools: sceneTools, news: sceneNews, type: sceneType, stage: sceneStage };
+        const SCENES = { phone: scenePhone, prints: scenePrints, tools: sceneTools, news: sceneNews, type: sceneType, stage: sceneStage };
 
         function dispose(sc) {
             sc.traverse(m => {
