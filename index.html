@@ -1133,6 +1133,9 @@
                     <div class="row" data-fxr="news"><span class="name">기물</span>
                         <div class="seg" style="flex:1" data-opt="newsObj"><button data-v="letter">봉투</button><button data-v="calendar">탁상 달력</button><button data-v="bell">호출 벨</button></div>
                     </div>
+                    <div class="row" data-fxr="info"><span class="name">물체</span>
+                        <div class="seg" style="flex:1" data-opt="infoObj"><button data-v="strands">결 가닥</button><button data-v="drop">물방울</button><button data-v="dumbbell">덤벨</button></div>
+                    </div>
                     <div class="row" data-fxr="rot"><span class="name">돌리기</span><input type="range" id="rot" min="-60" max="60" value="0"><span class="val" id="rotV">0</span></div>
                     <div class="row" data-fxr="size"><span class="name">크기</span><input type="range" id="objSize" min="50" max="125" value="100"><span class="val" id="objSizeV">100</span></div>
                     <div class="hint">물체는 미리보기에서 끌거나 위치 탭 ‘입체 물체’에서 옮겨요. 재질·돌리기를 바꾸면 잠깐 뒤에 다시 그려져요.</div>
@@ -1856,7 +1859,7 @@
             ds: '영상 아웃트로와 같은 워드마크 + 상담·예약 문의',
             slots: [],
             fields: ['title', 'sub', 'body', 'foot1'],
-            lb: { title: '워드마크 · SONGSHOP이라고 쓰면 아웃트로 워드마크', sub: '워드마크 아래 작은 글 · 비우면 숨김', body: 'CTA 윗줄', foot1: 'CTA 이름 · 앞에 카톡·인스타 아이콘' },
+            lb: { title: '워드마크 · 이름을 쓰면 잔상 워드마크로(예: SONGSHOP, HOSOO STUDIO)', sub: '워드마크 아래 작은 글 · 비우면 숨김', body: 'CTA 윗줄', foot1: 'CTA 이름 · 앞에 카톡·인스타 아이콘 · **굵게** 가능(예: **hosoo** 검색)' },
             sizes: ['titleSize', 'bodySize'],
             pos: ['all', 'title', 'body'],
             fx: ['panel'],
@@ -1947,6 +1950,20 @@
             fx: ['photo:grain', 'panel', 'r3d:mat,news,rot,size'],
             al: [],
             d: { label: '', title: '**새 소식**이\n도착했어요', sub: 'News from Songshop.', foot1: '10', foot2: 'OCTOBER', labelSize: 24, titleSize: 64, subSize: 26, panel: 'paper', mat: 'ink', newsObj: 'letter', rot: 0, objSize: 100 },
+            paint: paint3D
+        }, {
+            id: 'm3Info',
+            nm: '정보 오브제',
+            ds: '정보 글과 뜻이 이어지는 물체 하나(결 가닥·물방울·덤벨)',
+            slots: [],
+            fields: ['label', 'title', 'sub'],
+            lb: { label: '맨 위 작은 글', title: '큰 문장 · 핵심어 **굵게**', sub: '아랫줄 · 영문이면 기울인 세리프' },
+            note: '효과 탭 ‘입체’에서 물체를 결 가닥(결·여백 이야기)·물방울(피부·유분)·덤벨(운동·땀) 중에 골라요.',
+            sizes: ['labelSize', 'titleSize', 'subSize'],
+            pos: ['all', 'label', 'title', 'sub', 'obj'],
+            fx: ['photo:grain', 'panel', 'r3d:mat,info,rot,size'],
+            al: [],
+            d: { label: 'BROW NOTE', title: '결 사이를\n**비워 두는** 이유', sub: 'Space between the strokes.', labelSize: 20, titleSize: 54, subSize: 24, panel: 'paper', mat: 'ink', infoObj: 'strands', rot: 0, objSize: 100 },
             paint: paint3D
         }, {
             id: 'm3Stage',
@@ -2101,7 +2118,7 @@
 
         function newPhoto(z) { return { img: null, src: null, zoom: z || 1, ox: 0, oy: 0 }; }
 
-        const DEF = { label: '', title: '', sub: '', body: '', capL: '', capR: '', foot1: '', foot2: '', labelSize: 40, titleSize: 36, subSize: 27, bodySize: 28, footSize: 26, align: 'left', bAlign: 'left', dim: 0, grain: 0, ghost: 60, gradA: 46, gradB: 61, seam: 'line', seamY: 50, band: 45, feather: 16, pi: 0, border: 1, mark: 0, markW: 118, markH: 58, panel: 'paper', accent: 'paper', photoFx: 'none', thr: 110, cells: '6', bandPos: 'top', mat: 'ink', rot: 0, objSize: 100, stageObj: 'none', newsObj: 'letter' };
+        const DEF = { label: '', title: '', sub: '', body: '', capL: '', capR: '', foot1: '', foot2: '', labelSize: 40, titleSize: 36, subSize: 27, bodySize: 28, footSize: 26, align: 'left', bAlign: 'left', dim: 0, grain: 0, ghost: 60, gradA: 46, gradB: 61, seam: 'line', seamY: 50, band: 45, feather: 16, pi: 0, border: 1, mark: 0, markW: 118, markH: 58, panel: 'paper', accent: 'paper', photoFx: 'none', thr: 110, cells: '6', bandPos: 'top', mat: 'ink', rot: 0, objSize: 100, stageObj: 'none', newsObj: 'letter', infoObj: 'strands' };
 
         function tplValues(t) { const v = Object.assign({}, DEF, t.d);
             delete v.insetZoom;
@@ -2841,7 +2858,7 @@
                 subC = dark ? BODY_ON_INK : BODY_ON_PAPER;
             const ot = pOff(s, 'title'),
                 ob = pOff(s, 'body');
-            if (isLogoWord(s.title)) drawLogo(c, W / 2 + ot.x, H * .36 + ot.y, s.titleSize * 2.2, inkC, 'stack');
+            if (isLogoWord(s.title)) drawLogo(c, W / 2 + ot.x, H * .36 + ot.y, s.titleSize * 2.2, inkC, 'stack', s.title);
             else drawRich(c, s.title, { x: W / 2 + ot.x, y: H * .44 + ot.y, size: s.titleSize, w1: 'xbold', w2: 'xbold', col1: inkC, ls: '0.06em', align: 'center' });
             /* 연락처 줄은 가장 긴 줄 폭만큼의 블록을 가운데에 두고 왼쪽 정렬 */
             const o = { size: s.bodySize, w1: 'light', w2: 'semibold' };
@@ -3404,8 +3421,20 @@
         }
 
         /* 예전 로고 자리(끝 장·화보 표지·작은 표시)도 워드마크로: stack=잔상+BROW STUDIO, row=글자만 */
-        function drawLogo(c, cx, cy, h, col, mode) {
-            return mode === 'row' ? drawWordmark(c, cx, cy, h * .42, col, { echo: false, sub: null }) : drawWordmark(c, cx, cy, h * .6, col);
+        /* 워드마크로 그리는 이름과 그 아래 작은 글(송샵·호수 영상 아웃트로와 같은 짝) */
+        const LOGO_SUB = { 'SONGSHOP': 'BROW STUDIO', 'HOSOO STUDIO': "MEN'S BROW & SCALP" };
+        const logoWord = t => String(t || '').replace(/\*\*/g, '').trim().toUpperCase();
+
+        function drawLogo(c, cx, cy, h, col, mode, word) {
+            word = LOGO_SUB[logoWord(word)] ? logoWord(word) : 'SONGSHOP';
+            let size = mode === 'row' ? h * .42 : h * .6;
+            c.save();
+            c.font = '800 ' + size + 'px ' + PAP;
+            c.letterSpacing = (WM.track * size) + 'px';
+            const tw = c.measureText(word).width - WM.track * size;
+            c.restore();
+            if (tw > 852) size *= 852 / tw;
+            return mode === 'row' ? drawWordmark(c, cx, cy, size, col, { echo: false, sub: null, word }) : drawWordmark(c, cx, cy, size, col, { word, sub: LOGO_SUB[word] });
         }
 
         /* 카톡 말풍선·인스타 글리프 아이콘(영상 icon_img와 같은 비율, 한 색). bg는 말풍선 속 TALK 글자색 */
@@ -3461,21 +3490,26 @@
             drawIcon(c, 'kakao', x, cy - ih / 2, ih, ink, bg);
             drawIcon(c, 'insta', x + ih + gap, cy - ih / 2, ih, ink, bg);
             if (String(name || '').trim()) {
-                const ns = size * 1.25;
+                /* 이름 칸에 **굵게**를 쓰면 그 부분만 SemiBold, 나머지는 Regular(예: **hosoo** 검색). 표시가 없으면 전체 SemiBold */
+                const ns = size * 1.25,
+                    marked = /\*\*/.test(name),
+                    segs = String(name).split(/(\*\*[^*]+\*\*)/).filter(Boolean).map(t => /^\*\*/.test(t) ? [t.slice(2, -2), 600] : [t, marked ? 400 : 600]);
                 c.save();
-                c.font = '600 ' + ns + 'px ' + PAP;
                 ls(c, (-.02 * ns) + 'px');
                 c.fillStyle = ink;
                 c.textAlign = 'left';
                 c.textBaseline = 'middle';
-                c.fillText(name.replace(/\*\*/g, ''), x + 2 * (ih + gap) + size * .1, cy + ns * .04);
+                let nx = x + 2 * (ih + gap) + size * .1;
+                segs.forEach(([t, w]) => { c.font = w + ' ' + ns + 'px ' + PAP;
+                    c.fillText(t, nx, cy + ns * .04);
+                    nx += c.measureText(t).width; });
                 ls(c, '0px');
                 c.restore();
             }
         }
 
         /* 글자 칸에 SONGSHOP이라고 쓰면 로고로, 아니면 글자로 */
-        function isLogoWord(t) { return String(t || '').replace(/\*\*/g, '').trim().toUpperCase() === 'SONGSHOP'; }
+        function isLogoWord(t) { return !!LOGO_SUB[logoWord(t)]; }
 
         function brandMark(c, text, o) {
             if (!String(text || '').trim()) return;
@@ -3483,10 +3517,11 @@
                 const size = o.size * 1.3;
                 c.font = '800 ' + size + 'px ' + PAP;
                 ls(c, (WM.track * size) + 'px');
-                const tw = c.measureText('SONGSHOP').width - WM.track * size;
+                const word = logoWord(text),
+                    tw = c.measureText(word).width - WM.track * size;
                 ls(c, '0px');
                 const cx = o.align === 'right' ? o.x - tw / 2 : o.align === 'center' ? o.x : o.x + tw / 2;
-                drawWordmark(c, cx, o.y - size * .36, size, o.col1, { echo: false, sub: null });
+                drawWordmark(c, cx, o.y - size * .36, size, o.col1, { echo: false, sub: null, word });
                 return;
             }
             drawRich(c, text, Object.assign({}, o, { fk: undefined, st: undefined, w1: 'bold', w2: 'black', ls: '0.12em' }));
@@ -3495,28 +3530,31 @@
         /* 끝 장 = 영상 아웃트로 카드: 가운데 워드마크(잔상) + 아래 작은 글, 왼쪽 아래 CTA(윗줄 + 카톡·인스타 아이콘 + 이름).
            CTA 왼쪽 끝은 워드마크 왼쪽 끝에 맞춘다(영상 "songshop 안쪽으로"). 지점명·권유 문구는 넣지 않는다. */
         function drawEndLockup(c, s, cx, cy, ink, bg, ctaY) {
-            const size = s.titleSize || 136;
-            let x0;
-            if (isLogoWord(s.title)) x0 = drawWordmark(c, cx, cy, size, ink, { sub: (s.sub || '').trim() || null }).x0;
-            else {
-                c.font = '800 ' + size * .6 + 'px ' + PAP;
-                const tw = c.measureText(String(s.title || '').replace(/\*\*/g, '')).width;
-                drawRich(c, s.title, { x: cx, y: cy + size * .2, size: size * .6, w1: 'xbold', w2: 'xbold', col1: ink, align: 'center', ls: '0.02em' });
-                x0 = cx - tw / 2;
-                if ((s.sub || '').trim()) drawRich(c, s.sub, { x: cx, y: cy + size * .75, size: size * .2, w1: 'medium', w2: 'bold', col1: ink, align: 'center', ls: '0.45em' });
+            /* 어떤 이름이든 같은 워드마크로(예: HOSOO STUDIO). 긴 이름은 폭 852px(영상 SONGSHOP 폭) 안으로 줄인다 */
+            const word = String(s.title || '').replace(/\*\*/g, '').trim();
+            let size = s.titleSize || 136,
+                x0 = cx - W * .39;
+            if (word) {
+                c.font = '800 ' + size + 'px ' + PAP;
+                ls(c, (WM.track * size) + 'px');
+                const tw = c.measureText(word).width - WM.track * size;
+                ls(c, '0px');
+                size = Math.min(size, size * 852 / tw);
+                x0 = drawWordmark(c, cx, cy, size, ink, { word, sub: (s.sub || '').trim() || null }).x0;
             }
             drawCta(c, x0, ctaY, s.body, s.foot1, s.bodySize || 40, ink, bg);
         }
 
         /* ── 3D 오브제 ── */
         /* 맨 아래 module 스크립트가 window.R3D_RENDER를 채운다. 결과 그림은 배경색까지 같아서 크기·위치를 바꿔도 가장자리가 안 보인다 */
-        const R3D_TPL = { m3Phone: 'phone', m3Prints: 'prints', m3Tools: 'tools', m3News: 'news', m3Type: 'type', m3Stage: 'stage' };
+        const R3D_TPL = { m3Phone: 'phone', m3Prints: 'prints', m3Tools: 'tools', m3News: 'news', m3Info: 'info', m3Type: 'type', m3Stage: 'stage' };
         /* oy: 물체 가운데를 화면 높이 %만큼 내림, zone: 글 자리 */
         const LAY3D = {
             m3Phone: { oy: 12, zone: 'top', al: 'left' },
             m3Prints: { oy: 12, zone: 'top', al: 'left' },
             m3Tools: { oy: 12, zone: 'top', al: 'left' },
             m3News: { oy: 12, zone: 'top', al: 'left' },
+            m3Info: { oy: 12, zone: 'top', al: 'left' },
             m3Type: { oy: -9, zone: 'bottom', al: 'left' },
             m3Stage: { oy: 12, zone: 'top', al: 'center' }
         };
@@ -3539,6 +3577,7 @@
             if (kind === 'prints') o.imgs = [ph(0), ph(1), ph(2)];
             if (kind === 'stage') { o.obj = s.stageObj; if (s.stageObj === 'photo') o.imgs = [ph(0)]; }
             if (kind === 'type') o.text = String(s.title || '').replace(/\*\*/g, '').trim() || '01';
+            if (kind === 'info') o.obj = s.infoObj || 'strands';
             if (kind === 'news') { o.obj = s.newsObj;
                 if (s.newsObj === 'calendar') extra = 'page:' + s.foot1 + '|' + s.foot2 + G.font; }
             const key = [kind, o.bg, o.mat, o.rot, o.w, o.h, o.obj || '', o.text || '', extra,
@@ -3933,7 +3972,15 @@
                 ot = pOff(s, 'title'),
                 oc = pOff(s, 'caps');
             drawRich(c, s.label, { x: 106 + ol.x, y: Y(150) + ol.y, size: s.labelSize, w1: 'medium', w2: 'bold', fk: 'any', col1: ink, ls: '0.36em' });
-            drawRich(c, s.title, { x: 84 + ot.x, y: Y(555) + ot.y, size: s.titleSize, w1: 'regular', w2: 'regular', fk: 'bodoni', col1: ink, ls: '-0.06em' });
+            /* 숫자면 큰 디도 숫자, 글이면 케이스 이름(가늘게 + 핵심어 굵게)을 왼쪽 칸 안에 맞춘다 */
+            if (/^[\s\d.#]*$/.test(String(s.title || '').replace(/\*\*/g, ''))) drawRich(c, s.title, { x: 84 + ot.x, y: Y(555) + ot.y, size: s.titleSize, w1: 'regular', w2: 'regular', fk: 'bodoni', col1: ink, ls: '-0.06em' });
+            else {
+                let size = Math.min(s.titleSize, 150);
+                const lines = parseRich(s.title),
+                    widest = sz => Math.max(...lines.map(l => lineW(c, l, { size: sz, w1: 'light', w2: 'xbold', ls: '-0.04em' })));
+                while (size > 56 && widest(size) > W * .58 - 150) size -= 4;
+                drawRich(c, s.title, { x: 96 + ot.x, y: Y(250) + size * .88 + ot.y, size, w1: 'light', w2: 'xbold', col1: ink, lh: 1.1, ls: '-0.04em' });
+            }
             const rows = String(s.capL || '').split('\n').filter(t => t.trim()),
                 x0 = W * .58 + oc.x,
                 x1 = W - 106 + oc.x,
@@ -4143,7 +4190,7 @@
             const tw = c.measureText((s.title || '').replace(/\*\*/g, '')).width;
             ls(c, '0px');
             const yT = H * .47 + ot.y;
-            if (isLogoWord(s.title)) drawLogo(c, W / 2 + ot.x, yT - s.titleSize * .55, s.titleSize * 1.9, col, 'stack');
+            if (isLogoWord(s.title)) drawLogo(c, W / 2 + ot.x, yT - s.titleSize * .55, s.titleSize * 1.9, col, 'stack', s.title);
             else drawRich(c, s.title, { x: W / 2 + ot.x, y: yT, size: s.titleSize, w1: 'xbold', w2: 'black', col1: col, align: 'center', ls: '0.01em' });
             const lx = W / 2 - tw / 2 + ot.x + oc.x,
                 rx = W / 2 + tw / 2 + ot.x + oc.x,
@@ -4994,6 +5041,14 @@
                 { t: 'lockupEnd', r: '끝 장' }
             ]
         }, {
+            id: 'set3Info', nm: '정보 오브제', ds: '정보 글 표지를 뜻이 이어지는 물체로', src: '3D',
+            slides: [
+                { t: 'm3Info', r: '결 가닥 · 결 사이 여백' },
+                { t: 'm3Info', r: '물방울 · 지성 피부', o: { infoObj: 'drop', mat: 'glass', label: '', title: '지성 피부는\n**빨리 지워지나요?**', sub: 'Does oily skin fade faster?' } },
+                { t: 'm3Info', r: '덤벨 · 운동·땀', o: { infoObj: 'dumbbell', panel: 'ink', mat: 'ceramic', label: '', title: '운동하고 땀 흘려도\n**남나요?**', sub: 'Does sweat fade it?' } },
+                { t: 'lockupEnd', r: '끝 장' }
+            ]
+        }, {
             id: 'set3Type', nm: '입체 숫자', ds: '01·02·03으로 나눈 과정 시리즈', src: '3D',
             slides: [
                 { t: 'm3Type', r: '01 디자인' },
@@ -5011,7 +5066,7 @@
         });
         const PV_CATS = [
             ['내 패턴 · 한 줄 캐러셀', ['oneLine']],
-            ['3D 오브제', ['set3Phone', 'set3Prints', 'set3Tools', 'set3Letter', 'set3Calendar', 'set3Bell', 'set3Type', 'set3Stage']],
+            ['3D 오브제', ['set3Phone', 'set3Prints', 'set3Tools', 'set3Letter', 'set3Calendar', 'set3Bell', 'set3Info', 'set3Type', 'set3Stage']],
             ['새 제안', ['seamCase', 'twoWeightCase', 'browIndexSet', 'notes', 'caseFileSet']],
             ['케이스 · 후기', ['case', 'report', 'review']],
             ['설명 · 정보', ['qa', 'edu', 'info', 'process']],
@@ -5790,7 +5845,153 @@
             return [sc, c];
         }
 
-        const SCENES = { phone: scenePhone, prints: scenePrints, tools: sceneTools, news: sceneNews, type: sceneType, stage: sceneStage };
+        /* ---------- 정보 오브제: 글의 뜻과 이어지는 물체 하나 ---------- */
+        /* 끝으로 갈수록 가늘어지는 관 = 털 한 올 */
+        function taper(curve, r0, r1, n, rad) {
+            const fr = curve.computeFrenetFrames(n, false),
+                pos = [],
+                idx = [];
+            for (let i = 0; i <= n; i++) {
+                const t = i / n,
+                    p = curve.getPointAt(t),
+                    N = fr.normals[i],
+                    B = fr.binormals[i],
+                    r = r0 + (r1 - r0) * Math.pow(t, 1.15);
+                for (let j = 0; j <= rad; j++) {
+                    const a = j / rad * Math.PI * 2,
+                        cs = Math.cos(a),
+                        sn = Math.sin(a);
+                    pos.push(p.x + r * (cs * N.x + sn * B.x), p.y + r * (cs * N.y + sn * B.y), p.z + r * (cs * N.z + sn * B.z));
+                }
+            }
+            for (let i = 0; i < n; i++)
+                for (let j = 0; j < rad; j++) { const a = i * (rad + 1) + j,
+                        b = a + rad + 1;
+                    idx.push(a, b, a + 1, b, b + 1, a + 1); }
+            const g = new T.BufferGeometry();
+            g.setAttribute('position', new T.Float32BufferAttribute(pos, 3));
+            g.setIndex(idx);
+            g.computeVertexNormals();
+            return g;
+        }
+
+        /* 결 가닥: 앞머리는 위로, 몸통은 아래·위 두 겹이 가운데서 만나고, 꼬리는 옆으로 눕는다. 올 사이는 비워 둔다 */
+        function strands(o) {
+            const g = new T.Group(),
+                m = mat(o.mat),
+                v = (x, y, z) => new T.Vector3(x, y, z || 0);
+            let seed = 11;
+            const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; },
+                j = k => (rnd() - .5) * 2 * k;
+            const low = x => x < .7 ? .04 + .3 * Math.sin((x + 2.3) / 3 * Math.PI / 2) : .34 - .2 * (x - .7) / 1.6,
+                up = x => x < .6 ? .62 + .36 * Math.sin((x + 2.3) / 2.9 * Math.PI / 2) : .98 - .72 * Math.pow((x - .6) / 1.7, 1.2);
+            const hair = (x0, y0, ang, len, bend, r0) => {
+                const a = ang * D2R,
+                    dx = Math.cos(a),
+                    dy = Math.sin(a),
+                    z0 = j(.07);
+                const p0 = v(x0, y0, z0),
+                    p2 = v(x0 + dx * len, y0 + dy * len, z0 + j(.05)),
+                    p1 = v(x0 + dx * len * .5 - dy * bend, y0 + dy * len * .5 + dx * bend, z0 + j(.03));
+                g.add(new T.Mesh(taper(new T.QuadraticBezierCurve3(p0, p1, p2), r0, r0 * .1, 40, 12), m));
+                const cap = new T.Mesh(new T.SphereGeometry(r0, 12, 8), m);
+                cap.position.copy(p0);
+                g.add(cap);
+            };
+            /* 앞머리: 곧게 선 올, 간격은 조금씩 다르게 */
+            for (let x = -2.25; x < -1.5; x += .13 + rnd() * .07) hair(x, low(x) + .02 + j(.03), 80 - (x + 2.25) * 20 + j(8), .46 + j(.07), .04 + j(.03), .033);
+            /* 몸통: 대부분 위·바깥으로 비스듬히 */
+            for (let x = -1.5; x < .8; x += .15 + rnd() * .09) hair(x, low(x) + .03 + rnd() * .12, 40 - (x + 1.5) * 8 + j(9), .62 + j(.1), -.07 + j(.03), .031);
+            /* 위 겹은 드문드문: 아래·바깥으로 */
+            for (let x = -1.1; x < .55; x += .3 + rnd() * .12) hair(x, up(x) - .04 + j(.03), -10 - (x + 1.1) * 5 + j(7), .46 + j(.06), -.05, .028);
+            /* 꼬리: 옆으로 눕는 가는 올 */
+            for (let x = .8; x < 2.1; x += .15 + rnd() * .08) hair(x, (low(x) + up(x)) / 2 + j(.05), -20 - (x - .8) * 9 + j(6), .56 - (x - .8) * .12 + j(.05), -.04, .027 - (x - .8) * .005);
+            return g;
+        }
+
+        /* 물방울(유리): 아래는 둥글고 위는 뾰족 */
+        function drop(o, sc) {
+            const pts = [];
+            for (let i = 0; i <= 80; i++) { const t = i / 80 * Math.PI;
+                pts.push(new T.Vector2(.78 * Math.sin(t) * Math.pow(Math.sin(t / 2), 1.5), 1.02 * (1 + Math.cos(t)))); }
+            const geo = new T.LatheGeometry(pts, 128),
+                m = o.mat === 'ink' || o.mat === 'ceramic' ? mat(o.mat) : new T.MeshPhysicalMaterial({ color: '#fbf8f2', roughness: .06, transmission: 1, thickness: 1.4, ior: 1.42, attenuationColor: new T.Color('#b8ad9c'), attenuationDistance: 2.4, clearcoat: 1, clearcoatRoughness: .04, specularIntensity: 1 });
+            const g = new T.Group(),
+                d1 = new T.Mesh(geo, m);
+            g.add(d1);
+            const d2 = new T.Mesh(geo, m.clone());
+            d2.scale.setScalar(.42);
+            d2.position.set(1.05, 0, .55);
+            g.add(d2);
+            return g;
+        }
+
+        /* 덤벨: 손잡이(쇠) + 원판 두 장씩 */
+        function dumbbell(o) {
+            const g = new T.Group(),
+                pm = mat(o.mat),
+                st = MAT.steel();
+            const bar = new T.Mesh(new T.CylinderGeometry(.075, .075, 2.1, 40), st);
+            bar.rotation.z = Math.PI / 2;
+            g.add(bar);
+            [-1, 1].forEach(sd => {
+                [[.62, .5, .13], [.74, .38, .11]].forEach(([x, r, t]) => {
+                    const f = .025,
+                        pr = [new T.Vector2(.08, -t / 2), new T.Vector2(r - f, -t / 2)];
+                    for (let i = 1; i <= 6; i++) { const a = -Math.PI / 2 + i / 6 * Math.PI / 2;
+                        pr.push(new T.Vector2(r - f + Math.cos(a) * f, -t / 2 + f + Math.sin(a) * f)); }
+                    for (let i = 0; i <= 6; i++) { const a = i / 6 * Math.PI / 2;
+                        pr.push(new T.Vector2(r - f + Math.cos(a) * f, t / 2 - f + Math.sin(a) * f)); }
+                    pr.push(new T.Vector2(.08, t / 2));
+                    const pl = new T.Mesh(new T.LatheGeometry(pr, 96), pm);
+                    pl.rotation.z = Math.PI / 2;
+                    pl.position.x = sd * x;
+                    g.add(pl);
+                });
+                const col = new T.Mesh(new T.CylinderGeometry(.11, .11, .08, 40), st);
+                col.rotation.z = Math.PI / 2;
+                col.position.x = sd * .51;
+                g.add(col);
+            });
+            g.position.y = .5;
+            return g;
+        }
+
+        function sceneInfo(o) {
+            if (o.obj === 'drop') {
+                const sc = base(o),
+                    g = drop(o);
+                const c = fit(o, 22, 10, g, .44, .6);
+                g.rotation.y = o.rot * D2R;
+                sc.add(shade(g));
+                contact(sc, 1, 1, 0, 0, o.dark ? .4 : .22);
+                return [sc, c];
+            }
+            if (o.obj === 'dumbbell') {
+                const sc = base(o),
+                    g = dumbbell(o),
+                    w = new T.Group();
+                w.add(g);
+                const c = fit(o, 22, 22, w, .36, .72);
+                w.rotation.y = (-28 + o.rot) * D2R;
+                sc.add(shade(w));
+                contact(sc, 1.5, .8, 0, 0, o.dark ? .45 : .25);
+                return [sc, c];
+            }
+            /* 결 가닥: 바닥 위에 살짝 떠서 뒤로 눕고, 그림자가 바닥에 한 번 더 그려진다 */
+            const sc = base(o, [-3, 9, 5]),
+                g = strands(o),
+                w = new T.Group();
+            g.rotation.x = -38 * D2R;
+            g.position.y = .8;
+            w.add(g);
+            const c = fit(o, 22, 20, w, .36, .86);
+            w.rotation.y = o.rot * D2R;
+            sc.add(shade(w));
+            return [sc, c];
+        }
+
+        const SCENES = { phone: scenePhone, prints: scenePrints, tools: sceneTools, news: sceneNews, info: sceneInfo, type: sceneType, stage: sceneStage };
 
         function dispose(sc) {
             sc.traverse(m => {
