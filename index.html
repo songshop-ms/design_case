@@ -1136,12 +1136,24 @@
                     <div class="row" data-fxr="brand"><span class="name">물건</span>
                         <div class="seg" style="flex:1" data-opt="brandObj"><button data-v="plaque">명판</button><button data-v="cards">명함</button><button data-v="echo">잔상 판</button><button data-v="mirror">탁상 거울</button></div>
                     </div>
+                    <div class="row" data-fxr="scalp"><span class="name">물체</span>
+                        <div class="seg" style="flex:1" data-opt="scalpObj"><button data-v="tiles">회차 타일</button><button data-v="slab">헤어라인 판</button><button data-v="layers">피부층 단면</button></div>
+                    </div>
                     <div class="row" data-fxr="info"><span class="name">물체</span>
                         <div class="seg" style="flex:1" data-opt="infoObj"><button data-v="strands">결 가닥</button><button data-v="drop">물방울</button><button data-v="dumbbell">덤벨</button></div>
                     </div>
                     <div class="row" data-fxr="rot"><span class="name">돌리기</span><input type="range" id="rot" min="-60" max="60" value="0"><span class="val" id="rotV">0</span></div>
                     <div class="row" data-fxr="size"><span class="name">크기</span><input type="range" id="objSize" min="50" max="125" value="100"><span class="val" id="objSizeV">100</span></div>
                     <div class="hint">물체는 미리보기에서 끌거나 위치 탭 ‘입체 물체’에서 옮겨요. 재질·돌리기를 바꾸면 잠깐 뒤에 다시 그려져요.</div>
+                </div>
+                <div class="grp" data-fx="scalp">
+                    <span class="eyebrow">두피</span>
+                    <div class="row" data-fxr="zone"><span class="name">부위</span>
+                        <div class="seg wrap" style="flex:1" data-opt="zone"><button data-v="crown">정수리</button><button data-v="hairline">헤어라인</button><button data-v="part">가르마</button><button data-v="scar">흉터</button><button data-v="full">전체</button></div>
+                    </div>
+                    <div class="row" data-fxr="mapSize"><span class="name">그림 크기</span><input type="range" id="mapSize" min="70" max="120" value="100"><span class="val" id="mapSizeV">100</span></div>
+                    <div class="row" data-fxr="edge"><span class="name">헤어라인 높이</span><input type="range" id="edge" min="25" max="60" value="42"><span class="val" id="edgeV">42</span></div>
+                    <div class="hint">점은 같은 장이면 늘 같은 자리에 찍혀요. 머리 그림은 위치 탭 ‘머리 그림’에서 옮겨요.</div>
                 </div>
                 <div class="grp" data-fx="accent">
                     <span class="eyebrow">포인트 색</span>
@@ -1789,29 +1801,15 @@
             d: { label: 'MEN’S BROWS', title: '뒤로 갈수록 흐려지던 꼬리, **끝까지 이어서**', sub: 'From faint to connected, all the way to the tail.', labelSize: 20, titleSize: 36, subSize: 24, seamY: 50, band: 92, feather: 10, dim: 0, grain: 0 },
             paint: paintSeamStack
         }, {
-            id: 'browIndex',
-            nm: '브로우 인덱스',
-            ds: '여러 손님 눈썹을 경계 없이 한 장에',
-            slots: ['첫째 손님', '둘째 손님', '셋째 손님'],
-            fields: ['title', 'sub', 'label'],
-            lb: { title: '큰 글 · **굵게**는 아주 굵게, 나머지는 아주 가늘게', sub: '아랫줄', label: '오른쪽 아래 워드마크' },
-            note: '시술 직후 사진만, 보정 없이 넣으세요.',
-            sizes: ['labelSize', 'titleSize', 'subSize'],
-            pos: ['all', 'title', 'sub', 'label'],
-            fx: ['photo:dim,grain', 'blend'],
-            al: [],
-            d: { title: '보정 없이 **눈썹만**', sub: '시술 직후 그대로', label: 'SONGSHOP', labelSize: 16, titleSize: 108, subSize: 24, feather: 14, dim: 0, grain: 0 },
-            paint: paintBrowIndex
-        }, {
             id: 'didoneCover',
             nm: '디도 표지 · 사진 띠',
-            ds: '자간 좁힌 디도체 + 경계 없는 사진 띠',
-            slots: ['띠 1 · 눈썹 하나', '띠 2 · 눈썹 하나', '띠 3 · 눈썹 하나'],
+            ds: '자간 좁힌 디도체 + 눈썹 한 줄 띠(한 사람)',
+            slots: ['눈썹 사진 · 한 사람'],
             fields: ['title', 'sub', 'label'],
             lb: { title: '영문 제목 · **감싼 단어**는 기울임', sub: '한 줄 부제', label: '맨 아래 워드마크' },
             sizes: ['labelSize', 'titleSize', 'subSize'],
             pos: ['all', 'title', 'sub', 'label'],
-            fx: ['panel', 'blend'],
+            fx: ['panel'],
             al: [],
             d: { title: 'Notes on\n**Brows**', sub: '결 눈썹을 오래 예쁘게 두는 법', label: 'SONGSHOP', labelSize: 18, titleSize: 150, subSize: 30, feather: 22, panel: 'paper' },
             paint: paintDidoneCover
@@ -1883,6 +1881,93 @@
             al: [],
             d: { pi: 0, label: 'BEFORE', title: '같은 얼굴,\n**결** 하나 차이', sub: 'Same face. Only the strokes changed.', titleSize: 96, subSize: 30, feather: 12 },
             paint: paintOneLine
+        });
+        /* 두피문신(SMP): 모근처럼 작은 점을 쌓아 채우는 시술 → 디자인 요소도 점. 사진 칸은 늘 한 사람 */
+        TPL.push({
+            id: 'scalpMap',
+            nm: '두피 부위 지도',
+            ds: '위에서 본 머리 윤곽에 시술 부위만 점으로 채운 표지',
+            slots: [],
+            fields: ['label', 'title', 'sub'],
+            lb: { label: '맨 위 작은 글(예: SCALP · HOSOO STUDIO)', title: '큰 문장 · 핵심어 **굵게**', sub: '아랫줄 · 영문이면 기울인 세리프' },
+            note: '효과 탭 ‘두피’에서 부위(정수리·헤어라인·가르마·흉터·전체)를 골라요. 부위 이름은 그림 오른쪽에 저절로 붙어요.',
+            sizes: ['labelSize', 'titleSize', 'subSize'],
+            pos: ['all', 'label', 'title', 'sub', 'obj'],
+            posLb: { obj: '머리 그림' },
+            fx: ['photo:grain', 'panel', 'scalp:zone,mapSize'],
+            al: [],
+            d: { label: 'SCALP', title: '정수리\n**밀도**', sub: 'Crown density.', labelSize: 20, titleSize: 60, subSize: 26, panel: 'paper', zone: 'crown', mapSize: 100 },
+            paint: paintScalpMap
+        }, {
+            id: 'scalpDots',
+            nm: '점 밀도 표지',
+            ds: '촘촘한 점이 M자 헤어라인에서 흐려지는 질문·정보 표지',
+            slots: [],
+            fields: ['label', 'title', 'sub'],
+            lb: { label: '제목 위 작은 글', title: '큰 문장 · 핵심어 **굵게**', sub: '아랫줄 · 영문이면 기울인 세리프' },
+            note: '사진 없이 점만으로 두피문신을 보여 줘요. 효과 탭 ‘두피’에서 헤어라인 높이를 바꿔요.',
+            sizes: ['labelSize', 'titleSize', 'subSize'],
+            pos: ['all', 'label', 'title', 'sub'],
+            fx: ['photo:grain', 'panel', 'scalp:edge'],
+            al: [],
+            d: { label: 'SMP NOTE', title: '두피문신,\n**티 나나요?**', sub: 'Does it look drawn on?', labelSize: 18, titleSize: 64, subSize: 26, panel: 'paper', edge: 42 },
+            paint: paintScalpDots
+        }, {
+            id: 'scalpAngles',
+            nm: '네 방향 기록',
+            ds: '한 사람을 같은 날 위·앞·옆·뒤로',
+            slots: ['위', '앞', '옆', '뒤'],
+            fields: ['label', 'title', 'sub', 'body'],
+            lb: { label: '맨 위 작은 글', title: '한 줄 제목 · 핵심어 **굵게** · 비우면 사진만', sub: '아랫줄', body: '칸마다 작은 표시 · 한 줄에 하나(위·앞·옆·뒤 순서)' },
+            note: '한 사람 사진만 넣어요. 얼굴이 나오면 눈썹 위에서 자르거나 가려 주세요.',
+            sizes: ['labelSize', 'titleSize', 'subSize', 'bodySize'],
+            pos: ['all', 'label', 'title', 'sub'],
+            fx: ['photo:dim,grain', 'panel'],
+            al: [],
+            d: { label: '', title: '같은 날, **네 방향**', sub: 'One day, four angles.', body: 'TOP\nFRONT\nSIDE\nBACK', labelSize: 20, titleSize: 44, subSize: 22, bodySize: 17, panel: 'paper', dim: 0 },
+            paint: (c, s) => paintScalpGrid(c, s, 'four')
+        }, {
+            id: 'scalpPair',
+            nm: '같은 각도 전후',
+            ds: '한 사람을 같은 각도로 위(처음)·아래(지금)',
+            slots: ['처음', '지금'],
+            fields: ['label', 'title', 'sub', 'body'],
+            lb: { label: '맨 위 작은 글', title: '한 줄 제목 · 핵심어 **굵게** · 비우면 사진만', sub: '아랫줄', body: '칸마다 작은 표시 · 한 줄에 하나(위·아래 순서)' },
+            note: '같은 사람, 같은 각도·같은 거리로 찍은 사진만 넣어요. 얼굴은 눈썹 위에서 잘라요.',
+            sizes: ['labelSize', 'titleSize', 'subSize', 'bodySize'],
+            pos: ['all', 'label', 'title', 'sub'],
+            fx: ['photo:dim,grain', 'panel'],
+            al: [],
+            d: { label: '', title: '같은 자리, **같은 각도**', sub: 'Same spot, same angle.', body: '처음\n지금', labelSize: 20, titleSize: 44, subSize: 22, bodySize: 18, panel: 'paper', dim: 0 },
+            paint: (c, s) => paintScalpGrid(c, s, 'two')
+        }, {
+            id: 'scalpSessions',
+            nm: '회차 기록',
+            ds: '한 사람을 같은 각도로 회차마다(최근은 크게)',
+            slots: ['최근', '처음', '중간'],
+            fields: ['label', 'title', 'sub', 'body'],
+            lb: { label: '맨 위 작은 글', title: '한 줄 제목 · 핵심어 **굵게** · 비우면 사진만', sub: '아랫줄', body: '칸마다 작은 표시 · 한 줄에 하나(최근·처음·중간 순서)' },
+            note: '같은 사람, 같은 각도로 찍은 사진만 넣어요. 날짜·회차는 실제 기록대로 적어요.',
+            sizes: ['labelSize', 'titleSize', 'subSize', 'bodySize'],
+            pos: ['all', 'label', 'title', 'sub'],
+            fx: ['photo:dim,grain', 'panel'],
+            al: [],
+            d: { label: '', title: '회차마다 **쌓아서**', sub: 'Built up, session by session.', body: '지금\n처음\n중간', labelSize: 20, titleSize: 44, subSize: 22, bodySize: 18, panel: 'paper', dim: 0 },
+            paint: (c, s) => paintScalpGrid(c, s, 'three')
+        }, {
+            id: 'm3Scalp',
+            nm: '두피 오브제',
+            ds: '두피문신 점을 새긴 물체(회차 타일·헤어라인 판·피부층 단면)',
+            slots: [],
+            fields: ['label', 'title', 'sub'],
+            lb: { label: '맨 위 작은 글', title: '큰 문장 · 핵심어 **굵게**', sub: '아랫줄 · 영문이면 기울인 세리프' },
+            note: '효과 탭 ‘입체’에서 물체를 골라요. 회차 타일=한 번에 채우지 않고 쌓는 이야기, 헤어라인 판=끝을 흐리게, 피부층 단면=깊이 이야기.',
+            sizes: ['labelSize', 'titleSize', 'subSize'],
+            pos: ['all', 'label', 'title', 'sub', 'obj'],
+            fx: ['photo:grain', 'panel', 'r3d:mat,scalp,rot,size'],
+            al: [],
+            d: { label: 'SMP NOTE', title: '한 번에 채우지 않고\n**회차마다 쌓아요**', sub: 'Density, built in sessions.', labelSize: 20, titleSize: 54, subSize: 24, panel: 'ink', mat: 'ceramic', scalpObj: 'tiles', rot: 0, objSize: 100 },
+            paint: paint3D
         });
         /* 3D 오브제: three.js로 그린 물체를 배경 위에 깐다(재질·돌리기·크기는 효과 탭, 위치는 위치 탭) */
         TPL.push({
@@ -2001,7 +2086,8 @@
         const GROUP_OF = {
             oneLine: '내 패턴',
             m3Brand: '3D 오브제', m3News: '3D 오브제', m3Info: '3D 오브제', m3Type: '3D 오브제', m3Tools: '3D 오브제', m3Phone: '3D 오브제', m3Prints: '3D 오브제', m3Stage: '3D 오브제',
-            twoWeight: '새 제안', seamSplit: '새 제안', seamStack: '새 제안', browIndex: '새 제안', didoneCover: '새 제안', fadeCard: '새 제안', caseFile: '새 제안', statement: '새 제안', lockupEnd: '새 제안',
+            scalpMap: '두피문신', scalpDots: '두피문신', scalpAngles: '두피문신', scalpPair: '두피문신', scalpSessions: '두피문신', m3Scalp: '두피문신',
+            twoWeight: '새 제안', seamSplit: '새 제안', seamStack: '새 제안', didoneCover: '새 제안', fadeCard: '새 제안', caseFile: '새 제안', statement: '새 제안', lockupEnd: '새 제안',
             caseCover: '케이스 · 전후', caseBefore: '케이스 · 전후', caseAfter: '케이스 · 전후', caseDetail: '케이스 · 전후', splitSeam: '케이스 · 전후', caseReport: '케이스 · 전후', circlePair: '케이스 · 전후', zoomCircle: '케이스 · 전후',
             clientSays: '후기', selfieChip: '후기', testimonial: '후기', reviewCover: '후기', reviewCollage: '후기', gridCollage: '후기',
             qaCover: '질문 · 정보', infoCover: '질문 · 정보', captureCard: '질문 · 정보', infoCard: '질문 · 정보', compare: '질문 · 정보', splitLR: '질문 · 정보', textOnly: '질문 · 정보', stepCard: '질문 · 정보',
@@ -2137,7 +2223,7 @@
 
         function newPhoto(z) { return { img: null, src: null, zoom: z || 1, ox: 0, oy: 0 }; }
 
-        const DEF = { label: '', title: '', sub: '', body: '', capL: '', capR: '', foot1: '', foot2: '', labelSize: 40, titleSize: 36, subSize: 27, bodySize: 28, footSize: 26, align: 'left', bAlign: 'left', dim: 0, grain: 0, ghost: 60, gradA: 46, gradB: 61, seam: 'line', seamY: 50, band: 45, feather: 16, pi: 0, border: 1, mark: 0, markW: 118, markH: 58, panel: 'paper', accent: 'paper', photoFx: 'none', thr: 110, cells: '6', bandPos: 'top', mat: 'ink', rot: 0, objSize: 100, stageObj: 'arch', newsObj: 'question', infoObj: 'strands', brandObj: 'plaque' };
+        const DEF = { label: '', title: '', sub: '', body: '', capL: '', capR: '', foot1: '', foot2: '', labelSize: 40, titleSize: 36, subSize: 27, bodySize: 28, footSize: 26, align: 'left', bAlign: 'left', dim: 0, grain: 0, ghost: 60, gradA: 46, gradB: 61, seam: 'line', seamY: 50, band: 45, feather: 16, pi: 0, border: 1, mark: 0, markW: 118, markH: 58, panel: 'paper', accent: 'paper', photoFx: 'none', thr: 110, cells: '6', bandPos: 'top', mat: 'ink', rot: 0, objSize: 100, stageObj: 'arch', newsObj: 'question', infoObj: 'strands', brandObj: 'plaque', scalpObj: 'tiles', zone: 'crown', edge: 42, mapSize: 100 };
 
         function tplValues(t) { const v = Object.assign({}, DEF, t.d);
             delete v.insetZoom;
@@ -3590,7 +3676,7 @@
 
         /* ── 3D 오브제 ── */
         /* 맨 아래 module 스크립트가 window.R3D_RENDER를 채운다. 결과 그림은 배경색까지 같아서 크기·위치를 바꿔도 가장자리가 안 보인다 */
-        const R3D_TPL = { m3Phone: 'phone', m3Prints: 'prints', m3Tools: 'tools', m3News: 'news', m3Info: 'info', m3Brand: 'brand', m3Type: 'type', m3Stage: 'stage' };
+        const R3D_TPL = { m3Phone: 'phone', m3Prints: 'prints', m3Tools: 'tools', m3News: 'news', m3Info: 'info', m3Brand: 'brand', m3Scalp: 'scalp', m3Type: 'type', m3Stage: 'stage' };
         /* oy: 물체 가운데를 화면 높이 %만큼 내림, zone: 글 자리 */
         const LAY3D = {
             m3Phone: { oy: 12, zone: 'top', al: 'left' },
@@ -3599,6 +3685,7 @@
             m3News: { oy: 12, zone: 'top', al: 'left' },
             m3Info: { oy: 12, zone: 'top', al: 'left' },
             m3Brand: { oy: 10, zone: 'top', al: 'left' },
+            m3Scalp: { oy: 12, zone: 'top', al: 'left' },
             m3Type: { oy: -9, zone: 'bottom', al: 'left' },
             m3Stage: { oy: 12, zone: 'top', al: 'center' }
         };
@@ -3626,6 +3713,7 @@
                 o.imgs = [ph(0)]; }
             if (kind === 'type') o.text = String(s.title || '').replace(/\*\*/g, '').trim() || '01';
             if (kind === 'info') o.obj = s.infoObj || 'strands';
+            if (kind === 'scalp') o.obj = s.scalpObj || 'tiles';
             if (kind === 'brand') { o.obj = ({ arch: 'mirror' })[s.brandObj] || s.brandObj || 'plaque';
                 extra = 'logo:' + s.foot1 + '|' + s.foot2 + G.font; }
             if (kind === 'news') o.obj = ({ letter: 'question', calendar: 'exclaim', bell: 'check' })[s.newsObj] || s.newsObj || 'question';
@@ -3963,36 +4051,6 @@
             drawRich(c, s.sub, { x: W / 2 + os.x, y: sy + s.titleSize * .36 + s.subSize * 1.95 + os.y, size: s.subSize, w1: 'light', w2: 'regular', col1: 'rgba(246,244,239,.66)', align: 'center', ls: '-0.01em', maxW: W - 180 });
         }
 
-        /* 브로우 인덱스: 여러 손님 눈썹 띠를 경계 없이 이어 붙이고, 아래는 먹색으로 스며든다 */
-        function paintBrowIndex(c, s) {
-            c.fillStyle = INK;
-            c.fillRect(0, 0, W, H);
-            const n = 3,
-                bottom = H * .74,
-                bh = bottom / n,
-                f = bh * s.feather / 40;
-            for (let k = 0; k < n; k++) {
-                const r = { x: 0, y: k * bh - (k ? f / 2 : 0), w: W, h: bh + (k ? f / 2 : 0) + f / 2 };
-                if (!k) drawPhoto(c, s, k, r, { filter: TONE });
-                else feathered(c, x => drawPhoto(x, s, k, r, { filter: TONE }), maskFill(x => softMask(x, 0, r.y, 0, r.y + f, 0, 1)));
-                region(s, k, { x: 0, y: k * bh, w: W, h: bh });
-            }
-            const fy0 = bottom - bh * .5,
-                fy1 = bottom + f / 2;
-            c.fillStyle = rampGrad(c, fy0, fy1, 0, 1, INK_RGB);
-            c.fillRect(0, fy0, W, fy1 - fy0);
-            c.fillStyle = INK;
-            c.fillRect(0, fy1, W, H - fy1);
-            dimRect(c, s, { x: 0, y: 0, w: W, h: bottom });
-            grainAll(c, s);
-            const ot = pOff(s, 'title'),
-                os = pOff(s, 'sub'),
-                ol = pOff(s, 'label');
-            drawRich(c, s.title, { x: 100 + ot.x, y: Y(1190) + ot.y, size: s.titleSize, w1: 'hair', w2: 'black', fk: 'any', col1: PAPER, ls: '-0.02em', maxW: W - 160 });
-            drawRich(c, s.sub, { x: 106 + os.x, y: Y(1262) + os.y, size: s.subSize, w1: 'light', w2: 'medium', col1: 'rgba(246,244,239,.6)', ls: '-0.01em' });
-            brandMark(c, s.label, { x: W - 106 + ol.x, y: Y(1266) + ol.y, size: s.labelSize, h: s.labelSize * 2.4, col1: 'rgba(246,244,239,.88)', align: 'right' });
-        }
-
         /* 디도 표지: 자간을 좁힌 디도체 제목(한 단어 기울임) + 경계 없는 사진 띠 */
         function paintDidoneCover(c, s) {
             const bg = PANEL[s.panel] || PAPER,
@@ -4007,17 +4065,12 @@
                 ol = pOff(s, 'label');
             drawRich(c, s.title, { x: W / 2 + ot.x, y: Y(300) + ot.y, size: s.titleSize, w1: 'regular', w2: 'regular', fk: 'bodoni', it2: true, col1: ink, align: 'center', lh: .94, ls: '-0.05em' });
             drawRich(c, s.sub, { x: W / 2 + os.x, y: Y(548) + os.y, size: s.subSize, w1: 'light', w2: 'semibold', col1: sub, col2: ink, align: 'center', ls: '-0.01em' });
+            /* 한 편에 한 사람: 눈썹 하나를 가로 띠 전체에(눈썹 가운데가 띠 정중앙) */
             const y = Y(660),
                 h = Y(470),
-                n = 3,
-                cw = W / n,
-                f = cw * s.feather / 40;
-            for (let k = 0; k < n; k++) {
-                const r = { x: k * cw - (k ? f / 2 : 0), y, w: cw + (k ? f / 2 : 0) + f / 2, h };
-                if (!k) drawPhoto(c, s, k, r, { filter: TONE });
-                else feathered(c, x => drawPhoto(x, s, k, r, { filter: TONE }), maskFill(x => softMask(x, r.x, 0, r.x + f, 0, 0, 1)));
-                region(s, k, { x: k * cw, y, w: cw, h });
-            }
+                r = { x: 0, y, w: W, h };
+            drawPhoto(c, s, 0, r, { filter: TONE });
+            region(s, 0, r);
             const e = Y(90);
             c.fillStyle = rampGrad(c, y, y + e, 1, 0, rgb);
             c.fillRect(0, y, W, e);
@@ -4050,6 +4103,221 @@
                 drawRich(c, s.sub, { x: 104 + ot.x + tw + 16, y: Y(846) + ot.y, size: s.subSize, w1: 'light', w2: 'regular', col1: sub, ls: '-0.01em' });
             }
             drawRich(c, s.body, { x: 106 + ob.x, y: rT.bottom + Y(84) + ob.y, size: s.bodySize, w1: 'light', w2: 'semibold', col1: sub, col2: ink, lh: 1.62, ls: '-0.015em', maxW: W - 220 });
+        }
+
+        /* ── 두피문신(SMP): 모근처럼 작은 점을 쌓아 채우는 시술이라, 디자인 요소도 점으로 ── */
+        /* 고정 시드 난수: 같은 장은 늘 같은 자리에 점이 찍힌다 */
+        function seededRnd(seed) {
+            let a = seed >>> 0;
+            return () => { a = (a + 0x6D2B79F5) >>> 0;
+                let t = a;
+                t = Math.imul(t ^ (t >>> 15), t | 1);
+                t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+                return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+        }
+
+        /* 부드러운 값 잡음(0~1): 헤어라인 가장자리를 불규칙하게 */
+        function vnoise(rnd, n) {
+            const v = Array.from({ length: n + 2 }, () => rnd());
+            return u => { const x = Math.max(0, Math.min(.9999, u)) * n,
+                    i = Math.floor(x),
+                    f = x - i,
+                    e = f * f * (3 - 2 * f);
+                return v[i] * (1 - e) + v[i + 1] * e; };
+        }
+        const gauss = (u, m, w) => Math.exp(-((u - m) / w) * ((u - m) / w)),
+            smooth = t => t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t);
+
+        /* 점 뿌리기: 엇갈린 격자에 흔들림을 줘서 고르되 줄은 안 보이게. keep(x, y) = 남길 확률(0~1)
+           난수는 조건과 상관없이 같은 순서로 뽑는다 → 밀도만 올리면 앞의 점은 그대로 두고 새 점만 더해진다 */
+        function smpDots(c, r, keep, o) {
+            o = Object.assign({ gap: 11, r0: 1.7, r1: 2.7, a0: .7, a1: 1, seed: 7, col: INK }, o);
+            const rnd = seededRnd(o.seed),
+                gy = o.gap * .866;
+            c.save();
+            c.fillStyle = o.col;
+            let row = 0;
+            for (let y = r.y - gy; y < r.y + r.h + gy; y += gy, row++)
+                for (let x = r.x - o.gap + (row % 2) * o.gap / 2; x < r.x + r.w + o.gap; x += o.gap) {
+                    const jx = x + (rnd() - .5) * o.gap * .7,
+                        jy = y + (rnd() - .5) * gy * .7,
+                        q = rnd(),
+                        rad = o.r0 + (o.r1 - o.r0) * rnd(),
+                        al = o.a0 + (o.a1 - o.a0) * rnd();
+                    if (jx < r.x || jx > r.x + r.w || jy < r.y || jy > r.y + r.h || q >= keep(jx, jy)) continue;
+                    c.globalAlpha = al;
+                    c.beginPath();
+                    c.arc(jx, jy, rad, 0, Math.PI * 2);
+                    c.fill();
+                }
+            c.restore();
+        }
+
+        /* M자 헤어라인 밀도(영역 r 안): 가장자리 위는 촘촘, 아래로 흐리게 사라지고 몇 점만 흩어진다. line = 가장자리 높이(0~1) */
+        function hairlineKeep(r, line, seed) {
+            const nz = vnoise(seededRnd(seed || 11), 16),
+                soft = .075;
+            const edge = u => line - .115 * (gauss(u, .23, .12) + gauss(u, .77, .12)) + (nz(u) - .5) * .04;
+            return (x, y) => { const u = (x - r.x) / r.w,
+                    v = (y - r.y) / r.h,
+                    e = edge(u),
+                    t = (v - e + soft) / (2 * soft);
+                if (t <= 0) return .92;
+                if (t < 1) return .92 * (1 - smooth(t));
+                return .02 * Math.exp(-(v - e - soft) / .03); };
+        }
+
+        /* 점 밀도 표지: 위는 촘촘한 점(머리), M자 헤어라인에서 흐려지고 아래 여백에 글 */
+        function paintScalpDots(c, s) {
+            const bg = PANEL[s.panel] || PAPER,
+                dark = isDarkPanel(s),
+                ink = dark ? PAPER : INK,
+                sub = dark ? BODY_ON_INK : BODY_ON_PAPER;
+            c.fillStyle = bg;
+            c.fillRect(0, 0, W, H);
+            const r = { x: 0, y: 0, w: W, h: H };
+            smpDots(c, r, hairlineKeep(r, (s.edge || 42) / 100, 11), { col: ink, gap: 11, r0: 1.7, r1: 2.8, a0: dark ? .5 : .6, a1: dark ? .9 : 1, seed: 5 });
+            grainAll(c, s);
+            const ol = pOff(s, 'label'),
+                ot = pOff(s, 'title'),
+                os = pOff(s, 'sub'),
+                latin = t => !/[ㄱ-ㅎ가-힣]/.test(t || ''),
+                base = Y(1236);
+            const q = drawRich(c, s.sub, Object.assign({ x: 96 + os.x, y: base + os.y, size: s.subSize, col1: sub, anchor: 'bottom', maxW: W - 192 }, latin(s.sub) ? { fk: 'bodoni', it1: true, it2: true, w1: 'regular', w2: 'bold', lh: 1.5 } : { w1: 'regular', w2: 'bold', ls: '-0.01em', lh: 1.65 }));
+            const yh = q.n ? q.top - os.y - s.subSize * 1.25 : base;
+            const t = drawRich(c, s.title, { x: 96 + ot.x, y: yh + ot.y, size: s.titleSize, w1: 'light', w2: 'bold', col1: ink, lh: 1.26, ls: '-0.035em', anchor: 'bottom', maxW: W - 192 });
+            if (String(s.label || '').trim()) {
+                const ly = (t.n ? t.top - ot.y : yh) - s.labelSize * 1.9 + ol.y;
+                if (isLogoWord(s.label)) brandMark(c, s.label, { x: 96 + ol.x, y: ly, size: s.labelSize, h: s.labelSize * 2, col1: ink, align: 'left' });
+                else drawRich(c, s.label, { x: 98 + ol.x, y: ly, size: s.labelSize, w1: 'medium', w2: 'bold', fk: 'any', col1: sub, ls: '0.32em' });
+            }
+        }
+
+        /* 위에서 본 머리(앞이 위): 달걀꼴(앞이 조금 좁다) + 귀 + 코끝 */
+        const HEAD_E = .09;
+
+        function headPath(cx, cy, a, b) {
+            const p = new Path2D(),
+                N = 180;
+            for (let i = 0; i <= N; i++) { const t = i / N * Math.PI * 2,
+                    x = cx + a * Math.cos(t) * (1 + HEAD_E * Math.sin(t)),
+                    y = cy + b * Math.sin(t);
+                if (i) p.lineTo(x, y);
+                else p.moveTo(x, y); }
+            p.closePath();
+            return p;
+        }
+        /* 부위: 이름(영·한)과 이름표 선이 시작할 자리(머리 좌표, u는 가로 -1~1, v는 앞 -1 ~ 뒤 1) */
+        const SCALP_ZONE = {
+            crown: ['CROWN', '정수리', [.3, .3]],
+            hairline: ['HAIRLINE', '헤어라인', [.52, -.62]],
+            part: ['PART', '가르마', [.09, -.3]],
+            scar: ['SCAR', '흉터', [.5, .83]],
+            full: ['FULL', '두피 전체', [.56, .08]]
+        };
+
+        function scalpZoneKeep(zone) {
+            /* 헤어라인(앞 가장자리): 가운데는 앞으로, 관자놀이는 뒤로 들어간 M자 */
+            const hl = u => -.84 + .13 * (gauss(u, -.56, .2) + gauss(u, .56, .2));
+            return ({
+                crown: (u, v) => 1 - smooth((Math.hypot(u * 1.05, (v - .3) * 1.12) - .3) / .2),
+                hairline: (u, v) => smooth((v - hl(u)) / .1) * (1 - smooth((v + .52) / .18)),
+                part: (u, v) => smooth((.1 - Math.abs(u)) / .07) * smooth((v + .8) / .08) * (1 - smooth((v - .22) / .16)),
+                scar: (u, v) => (1 - smooth((Math.abs(v - .83) - .03) / .05)) * (1 - smooth((Math.abs(u) - .52) / .14)),
+                full: (u, v) => smooth((v - hl(u)) / .1)
+            })[zone];
+        }
+
+        /* 두피 부위 지도: 가는 선 머리 윤곽 + 시술 부위만 점 + 부위 이름 한 줄 */
+        function paintScalpMap(c, s) {
+            const bg = PANEL[s.panel] || PAPER,
+                dark = isDarkPanel(s),
+                ink = dark ? PAPER : INK,
+                sub = dark ? BODY_ON_INK : BODY_ON_PAPER;
+            c.fillStyle = bg;
+            c.fillRect(0, 0, W, H);
+            const oo = pOff(s, 'obj'),
+                k = (s.mapSize || 100) / 100,
+                a = 262 * k,
+                b = 334 * k,
+                cx = W / 2 - 44 * k + oo.x,
+                cy = Y(884) + oo.y,
+                zone = SCALP_ZONE[s.zone] ? s.zone : 'crown',
+                f = scalpZoneKeep(zone);
+            /* 머리 안에서 부위만(윤곽선 가까이는 비워 선과 겹치지 않게) */
+            const keep = (x, y) => { const u = (x - cx) / a,
+                    v = (y - cy) / b,
+                    q = Math.pow(u / (1 + HEAD_E * v), 2) + v * v;
+                if (q > .97) return 0;
+                return .9 * f(u, v) * (1 - smooth((q - .8) / .17)); };
+            smpDots(c, { x: cx - a * 1.1, y: cy - b, w: a * 2.2, h: b * 2 }, keep, { col: ink, gap: 9.6 * k, r0: 1.6 * k, r1: 2.6 * k, a0: .66, a1: 1, seed: 3 });
+            c.save();
+            c.strokeStyle = ink;
+            c.lineWidth = 2.4;
+            c.lineJoin = 'round';
+            c.lineCap = 'round';
+            c.stroke(headPath(cx, cy, a, b));
+            /* 귀(양옆 반원)와 코끝(앞의 작은 뾰족) — 어느 쪽이 앞인지 알게 */
+            const ey = cy - .02 * b,
+                hb = .13 * b;
+            [-1, 1].forEach(d => { const xs = cx + d * a * .998;
+                c.beginPath();
+                c.moveTo(xs, ey - hb);
+                c.bezierCurveTo(xs + d * .13 * a, ey - hb * .9, xs + d * .13 * a, ey + hb * .9, xs, ey + hb);
+                c.stroke(); });
+            const fy = cy - b;
+            c.beginPath();
+            c.moveTo(cx - .075 * a, fy + .012 * b);
+            c.quadraticCurveTo(cx, fy - .085 * b, cx + .075 * a, fy + .012 * b);
+            c.stroke();
+            /* 부위 이름: 점 영역에서 오른쪽으로 가는 가는 선 */
+            const [en, ko, [au, av]] = SCALP_ZONE[zone],
+                ax = cx + au * a,
+                ay = cy + av * b,
+                lx = cx + a * 1.36;
+            c.lineWidth = 1.2;
+            c.globalAlpha = .7;
+            c.beginPath();
+            c.moveTo(ax, ay);
+            c.lineTo(lx - 16, ay);
+            c.stroke();
+            c.restore();
+            drawRich(c, en, { x: lx, y: ay + 7, size: 17, w1: 'medium', w2: 'bold', fk: 'any', col1: ink, ls: '0.3em' });
+            drawRich(c, ko, { x: lx, y: ay + 40, size: 20, w1: 'light', w2: 'bold', col1: sub, ls: '-0.01em' });
+            grainAll(c, s);
+            text3D(c, s, { zone: 'top', al: 'left' });
+        }
+
+        /* 네 방향 기록·회차 기록: 한 사람 사진을 칸으로 나누고, 위에 짧은 제목, 칸마다 작은 표시 */
+        function paintScalpGrid(c, s, mode) {
+            const bg = PANEL[s.panel] || PAPER;
+            c.fillStyle = bg;
+            c.fillRect(0, 0, W, H);
+            const hasTop = ['label', 'title', 'sub'].some(k => String(s[k] || '').trim()),
+                g = 6,
+                y0 = hasTop ? Math.round(Y(318)) : 0,
+                gh = H - y0;
+            let cells;
+            if (mode === 'two') { const ch = (gh - g) / 2;
+                cells = [{ x: 0, y: y0, w: W, h: ch }, { x: 0, y: y0 + ch + g, w: W, h: ch }]; } else if (mode === 'three') { const bh = Math.round((gh - g) * .58),
+                    sw = (W - g) / 2;
+                cells = [{ x: 0, y: y0, w: W, h: bh }, { x: 0, y: y0 + bh + g, w: sw, h: gh - bh - g }, { x: sw + g, y: y0 + bh + g, w: sw, h: gh - bh - g }]; } else { const cw = (W - g) / 2,
+                    ch = (gh - g) / 2;
+                cells = [0, 1, 2, 3].map(k => ({ x: (k % 2) * (cw + g), y: y0 + Math.floor(k / 2) * (ch + g), w: cw, h: ch })); }
+            /* 칸 표시는 사진 위가 아니라 칸 아래 얇은 글자 줄에(밝은 벽·어두운 머리 어디서나 읽히게) */
+            const tags = String(s.body || '').split('\n').map(t => t.trim()),
+                capH = tags.some(Boolean) ? Math.round(s.bodySize * 2.5) : 0,
+                ko = t => /[ㄱ-ㅎ가-힣]/.test(t),
+                dark = isDarkPanel(s);
+            cells.forEach((r, k) => { const pr = { x: r.x, y: r.y, w: r.w, h: r.h - capH };
+                drawPhoto(c, s, k, pr, { filter: TONE });
+                dimRect(c, s, pr);
+                region(s, k, pr); });
+            grainAll(c, s);
+            cells.forEach((r, k) => { const t = tags[k];
+                if (!t) return;
+                drawRich(c, t, Object.assign({ x: r.x + 22, y: r.y + r.h - capH / 2 + s.bodySize * .36, size: s.bodySize, w1: 'medium', w2: 'bold', col1: dark ? BODY_ON_INK : BODY_ON_PAPER, col2: dark ? PAPER : INK }, ko(t) ? { ls: '0.02em' } : { fk: 'any', ls: '0.3em' })); });
+            if (hasTop) text3D(c, s, { zone: 'top', al: 'left' });
         }
 
         /* 케이스 파일: 큰 디도 숫자 + 오른쪽 기록표 + 아래에서 올라오는 사진 */
@@ -4790,7 +5058,9 @@
             markH: ['markH'],
             thr: ['thr'],
             rot: ['rot'],
-            objSize: ['objSize']
+            objSize: ['objSize'],
+            edge: ['edge'],
+            mapSize: ['mapSize']
         };
         Object.keys(R).forEach(id => {
             el(id).addEventListener('input', e => {
@@ -4853,7 +5123,7 @@
             const p = s.photos[S.slot];
             el('zoom').value = Math.round(p.zoom * 100);
             el('zoomV').textContent = p.zoom.toFixed(1) + '×';
-            ['labelSize', 'titleSize', 'subSize', 'bodySize', 'footSize', 'dim', 'grain', 'ghost', 'gradA', 'gradB', 'seamY', 'band', 'feather', 'markW', 'markH', 'thr', 'rot', 'objSize'].forEach(k => { el(k).value = s[k];
+            ['labelSize', 'titleSize', 'subSize', 'bodySize', 'footSize', 'dim', 'grain', 'ghost', 'gradA', 'gradB', 'seamY', 'band', 'feather', 'markW', 'markH', 'thr', 'rot', 'objSize', 'edge', 'mapSize'].forEach(k => { el(k).value = s[k];
                 el(k + 'V').textContent = s[k]; });
             document.querySelectorAll('.seg[data-opt], .seg[data-al]').forEach(seg => {
                 const v = String(s[seg.dataset.opt || seg.dataset.al]);
@@ -5036,7 +5306,7 @@
 
         /* ---------- 프리셋 갤러리 ---------- */
         /* 새 제안으로 엮은 캐러셀. 기존 묶음(BUNDLES)과 함께 보여준다 */
-        Object.assign(ROLE_NM, { guest1: '다른 손님 1', guest2: '다른 손님 2', guest3: '다른 손님 3', capture: '화면 캡처' });
+        Object.assign(ROLE_NM, { capture: '화면 캡처', sTop: '두피 · 위', sFront: '두피 · 앞', sSide: '두피 · 옆', sBack: '두피 · 뒤', sFirst: '두피 · 처음', sMid: '두피 · 중간', sNow: '두피 · 지금' });
         const ONE_PH = ['before', 'after', 'detail'];
         const NEW_PRESETS = [{
             id: 'oneLine', nm: '한 줄 캐러셀', ds: '여섯 장이 한 장처럼 이어지는 캐러셀', src: '내 패턴', pano: true,
@@ -5067,19 +5337,10 @@
                 { t: 'lockupEnd', r: '끝 장' }
             ]
         }, {
-            id: 'browIndexSet', nm: '브로우 인덱스', ds: '여러 손님 눈썹을 한 편에', src: '새 제안',
+            id: 'notes', nm: '브로우 노트', ds: '디도 표지로 여는 정보 시리즈 · 한 편에 한 사람 눈썹만', src: '새 제안',
             slides: [
-                { t: 'browIndex', r: '표지 · 세 손님', ph: ['guest1', 'guest2', 'guest3'] },
-                { t: 'photoOnly', r: '손님 1', ph: ['guest1'] },
-                { t: 'photoOnly', r: '손님 2', ph: ['guest2'] },
-                { t: 'photoOnly', r: '손님 3', ph: ['guest3'] },
-                { t: 'lockupEnd', r: '끝 장' }
-            ]
-        }, {
-            id: 'notes', nm: '브로우 노트', ds: '디도 표지로 여는 정보 시리즈', src: '새 제안',
-            slides: [
-                { t: 'didoneCover', r: '표지 · 눈썹 띠', ph: ['sw1', 'sw2', 'sw3'] },
-                { t: 'fadeCard', r: '노트 1 · 결 눈썹', ph: ['detail'] },
+                { t: 'didoneCover', r: '표지 · 눈썹 한 줄', ph: ['detail'] },
+                { t: 'fadeCard', r: '노트 1 · 결 눈썹', ph: ['detail2'] },
                 { t: 'fadeCard', r: '노트 2 · 직후와 그 뒤', ph: ['after'], o: { title: '직후와 그 뒤', sub: 'Healing', body: '직후에는 색이 **조금 진해** 보일 수 있어요.\n\n시간이 지나며 색이 가라앉고\n**결이 자연스럽게** 자리 잡아요.' } },
                 { t: 'fadeCard', r: '노트 3 · 디자인 먼저', ph: ['design'], o: { title: '디자인 먼저', sub: 'Design first', body: '시술 전에 **펜슬로 모양을 그려**\n거울로 함께 확인합니다.' } },
                 { t: 'lockupEnd', r: '끝 장' }
@@ -5164,10 +5425,45 @@
                 { t: 'lockupEnd', r: '끝 장' }
             ]
         });
+        /* 두피문신: 한 편에 한 사람. 표지는 사진 없이(부위 지도·점·두피 오브제), 사진은 안쪽 장에만 */
+        NEW_PRESETS.push({
+            id: 'scalpCaseSet', nm: '두피 케이스', ds: '부위 지도 표지 → 네 방향 → 같은 각도 전후 · 한 사람', src: '두피문신',
+            slides: [
+                { t: 'scalpMap', r: '표지 · 부위 지도', o: { panel: 'ink', label: 'HOSOO STUDIO' } },
+                { t: 'scalpAngles', r: '네 방향', ph: ['sTop', 'sFront', 'sSide', 'sBack'], o: { panel: 'ink' } },
+                { t: 'scalpPair', r: '같은 각도 처음·지금', ph: ['sFirst', 'sNow'], o: { panel: 'ink' } },
+                { t: 'lockupEnd', r: '끝 장 · 호수', o: { title: 'HOSOO STUDIO', sub: "MEN'S BROW & SCALP", body: '상담·예약 문의', foot1: '**hosoo** 검색', panel: 'ink' } }
+            ]
+        }, {
+            id: 'scalpRecordSet', nm: '두피 회차 기록', ds: '회차 타일 표지 → 같은 각도 회차 기록 · 한 사람', src: '두피문신',
+            slides: [
+                { t: 'm3Scalp', r: '표지 · 회차 타일' },
+                { t: 'scalpSessions', r: '회차 기록', ph: ['sNow', 'sFirst', 'sMid'], o: { panel: 'ink' } },
+                { t: 'textOnly', r: '설명', o: { label: '', body: '**회차마다 점을 더해**\n밀도를 맞춥니다.\n\n회차 간격과 횟수는\n실제 기준으로 적어 주세요.', sub: '', panel: 'ink' } },
+                { t: 'lockupEnd', r: '끝 장 · 호수', o: { title: 'HOSOO STUDIO', sub: "MEN'S BROW & SCALP", body: '상담·예약 문의', foot1: '**hosoo** 검색', panel: 'ink' } }
+            ]
+        }, {
+            id: 'scalpQASet', nm: '두피 Q&A', ds: '점 밀도 표지로 여는 질문 → 답 → 사진으로 확인', src: '두피문신',
+            slides: [
+                { t: 'scalpDots', r: '표지 · 점 밀도', o: { panel: 'ink' } },
+                { t: 'textOnly', r: '답', o: { label: '', body: '**질문 하나에 답 하나**를\n두세 줄로 적어 주세요.', sub: '', panel: 'ink' } },
+                { t: 'scalpAngles', r: '사진으로 확인', ph: ['sTop', 'sFront', 'sSide', 'sBack'], o: { panel: 'ink', title: '가까이서도 **점으로**', sub: 'Up close, still just dots.' } },
+                { t: 'lockupEnd', r: '끝 장 · 호수', o: { title: 'HOSOO STUDIO', sub: "MEN'S BROW & SCALP", body: '상담·예약 문의', foot1: '**hosoo** 검색', panel: 'ink' } }
+            ]
+        }, {
+            id: 'scalpHairlineSet', nm: '헤어라인', ds: '헤어라인 판 표지 → 네 방향 · 한 사람', src: '두피문신',
+            slides: [
+                { t: 'm3Scalp', r: '표지 · 헤어라인 판', o: { scalpObj: 'slab', title: '헤어라인은\n**끝을 흐리게**', sub: 'A soft edge reads as real.' } },
+                { t: 'scalpMap', r: '부위 지도 · 헤어라인', o: { zone: 'hairline', panel: 'ink', label: '', title: '헤어라인\n**디자인**', sub: 'Hairline design.' } },
+                { t: 'scalpAngles', r: '네 방향', ph: ['sTop', 'sFront', 'sSide', 'sBack'], o: { panel: 'ink' } },
+                { t: 'lockupEnd', r: '끝 장 · 호수', o: { title: 'HOSOO STUDIO', sub: "MEN'S BROW & SCALP", body: '상담·예약 문의', foot1: '**hosoo** 검색', panel: 'ink' } }
+            ]
+        });
         const PV_CATS = [
             ['내 패턴 · 한 줄 캐러셀', ['oneLine']],
             ['3D 오브제', ['set3Brand', 'set3BrandHosoo', 'set3Question', 'set3Exclaim', 'set3Check', 'set3Info', 'set3Type', 'set3Tools', 'set3Phone']],
-            ['새 제안', ['seamCase', 'twoWeightCase', 'browIndexSet', 'notes', 'caseFileSet']],
+            ['두피문신', ['scalpCaseSet', 'scalpRecordSet', 'scalpQASet', 'scalpHairlineSet']],
+            ['새 제안', ['seamCase', 'twoWeightCase', 'notes', 'caseFileSet']],
             ['케이스 · 후기', ['case', 'report', 'review']],
             ['설명 · 정보', ['qa', 'edu', 'info', 'process']],
             ['브랜드 · 알림', ['brand', 'lookbook', 'event', 'teaser']]
@@ -5176,7 +5472,7 @@
         const PRESET_BY = Object.fromEntries(PRESETS.map(p => [p.id, p]));
         const ROLE_IMG = {};
         /* 누운 정면 사진은 눈썹·눈이 위에서 45% 근처 */
-        const ROLE_FY = { detail: .5, detail2: .5, detail3: .5, design: .48, space: .5, sw1: .5, sw2: .5, sw3: .5, sw4: .5, capture: 0 };
+        const ROLE_FY = { detail: .5, detail2: .5, detail3: .5, design: .48, space: .5, sw1: .5, sw2: .5, sw3: .5, sw4: .5, capture: 0, sTop: .4, sFront: .4, sSide: .4, sBack: .4, sFirst: .4, sMid: .4, sNow: .4 };
         const PFRAME = {
             caseCover: { z: 1.15, ty: .5 }, caseBefore: { z: 1.25, ty: .26 }, caseAfter: { z: 1.25, ty: .66 }, clientSays: { z: 1.2, ty: .36 }, caseDetail: { z: 1, ty: .42 },
             splitSeam: { z: 1.3, ty: .38 }, caseReport: { z: 2, ty: .5 }, circlePair: { z: 2, ty: .5 }, zoomCircle: { z: 1.2, ty: .4 },
@@ -5185,10 +5481,11 @@
             brandCover: { z: 1.8, ty: .5 }, ghostWordmark: { z: 1.8, ty: .5 }, serifStatement: { z: 1.2, ty: .4 }, magazine: { z: 1.2, ty: .4 }, frameCard: { z: 1.3, ty: .42 },
             eventPoster: { z: 1.2, ty: .4 }, silhouette: { z: 1.1, ty: .45 }, lookbook: { z: 1.3, ty: .45 }, photoOnly: { z: 1.3, ty: .42 }, worryScatter: { z: 1.2, ty: .42 },
             noticeCover: { z: 1.2, ty: .4 }, gridCollage: { z: 1.6, ty: .5 },
-            twoWeight: { z: 1.4, ty: .36 }, seamSplit: { z: 1.5, ty: .5 }, seamStack: [{ z: 1.8, ty: .45 }, { z: 1.8, ty: .62 }], browIndex: { z: 1.5, ty: .58 },
+            twoWeight: { z: 1.4, ty: .36 }, seamSplit: { z: 1.5, ty: .5 }, seamStack: [{ z: 1.8, ty: .45 }, { z: 1.8, ty: .62 }],
             didoneCover: { z: 1.2, ty: .48 }, fadeCard: { z: 1.4, ty: .5 }, caseFile: { z: 1.9, ty: .52 }, statement: { z: 1.15, ty: .5 },
             oneLine: [{ z: 1.15, ty: .38 }, { z: 1.15, ty: .38 }, { z: 1.15, ty: .5, fx: .62 }],
-            m3Phone: { z: 1, ty: .5 }, m3Prints: { z: 1.25, ty: .5 }, m3Stage: { z: 1.15, ty: .5 }
+            m3Phone: { z: 1, ty: .5 }, m3Prints: { z: 1.25, ty: .5 }, m3Stage: { z: 1.15, ty: .5 },
+            scalpAngles: { z: 1.3, ty: .5 }, scalpPair: { z: 1.3, ty: .5 }, scalpSessions: { z: 1.3, ty: .5 }
         };
 
         /* 프리셋 한 장 → 슬라이드(역할 사진을 넣고 초점을 맞춘다) */
@@ -6357,7 +6654,122 @@
             return [sc, c];
         }
 
-        const SCENES = { phone: scenePhone, prints: scenePrints, tools: sceneTools, news: sceneNews, info: sceneInfo, type: sceneType, stage: sceneStage, brand: sceneBrand };
+        /* ---------- 두피 오브제: 두피문신 점을 새긴 물체(회차 타일·헤어라인 판·피부층 단면) ----------
+           점은 2D와 같은 smpDots(고정 시드)로 텍스처에 찍는다 */
+        function dotCv(w, h, base, col, keep, o) {
+            const cv = document.createElement('canvas');
+            cv.width = w;
+            cv.height = h;
+            const x = cv.getContext('2d');
+            x.fillStyle = base;
+            x.fillRect(0, 0, w, h);
+            window.smpDots(x, { x: 0, y: 0, w, h }, keep, Object.assign({ col }, o));
+            return cv;
+        }
+
+        function sceneScalp(o) {
+            const form = o.obj || 'tiles',
+                ink = o.mat === 'ink',
+                baseC = ink ? '#1f1e1c' : '#eeeae2',
+                dotC = ink ? '#e8e3d9' : '#262422',
+                sc = base(o, form === 'tiles' ? [-4, 11, 4] : null),
+                g = new T.Group(),
+                surf = map => new T.MeshPhysicalMaterial({ color: map ? '#ffffff' : baseC, map: map ? dataTex(map, true) : null, roughness: ink ? .36 : .58, clearcoat: ink ? .35 : .12, clearcoatRoughness: .3 });
+            let el = 30,
+                fh = .3,
+                fw = .86,
+                turn = -8;
+            if (form === 'slab') {
+                /* 헤어라인 판: 세운 석판 앞면에 M자 헤어라인 점(위는 촘촘, 가장자리는 흐리게) */
+                const w = 2.3,
+                    h = 1.62,
+                    d = .3,
+                    b = new T.Mesh(RB ? new RB(w, h, d, 4, .035) : new T.BoxGeometry(w, h, d), surf());
+                b.position.y = h / 2;
+                g.add(b);
+                const fw2 = w - .07,
+                    fh2 = h - .07,
+                    px = 1600,
+                    ph = Math.round(px * fh2 / fw2),
+                    r = { x: 0, y: 0, w: px, h: ph };
+                const face = new T.Mesh(new T.PlaneGeometry(fw2, fh2), surf(dotCv(px, ph, baseC, dotC, window.hairlineKeep(r, .52, 17), { gap: 14, r0: 2.4, r1: 3.8, a0: .75, a1: 1, seed: 9 })));
+                face.position.set(0, h / 2, d / 2 + .0008);
+                g.add(face);
+                el = 6;
+                fh = .4;
+                fw = .74;
+                turn = -20;
+            } else if (form === 'layers') {
+                /* 피부층 단면: 얇은 겉층 + 두꺼운 가운데층 + 아래층. 색소 점은 겉층 바로 아래 가는 띠 한 높이에만(자른 면 두 곳에 보인다) */
+                const w = 2.6,
+                    dd = 1.5,
+                    hs = [.46, .74, .07],
+                    tones = ink ? ['#1c1b1a', '#2a2826', '#3a3733'] : ['#ebe5da', '#ddd4c7', '#f7f4ef'],
+                    pig = ink ? '#efeae1' : '#27241f';
+                let y = 0;
+                hs.forEach((h, i) => { const m = new T.MeshPhysicalMaterial({ color: tones[i], roughness: .74, clearcoat: .05 }),
+                        bx = new T.Mesh(new T.BoxGeometry(w, h - .005, dd), m);
+                    bx.position.y = y + h / 2;
+                    g.add(bx);
+                    y += h; });
+                /* 가운데층 자른 면(앞·오른쪽)에 색소 띠: 위에서 14~30% 깊이, 가는 점 두세 줄 */
+                const band = (cw, ch) => { const y0 = ch * .14,
+                        y1 = ch * .3;
+                    return (x, yy) => (yy < y0 || yy > y1) ? 0 : .8 * Math.min(1, (yy - y0) / (ch * .03), (y1 - yy) / (ch * .03)); };
+                const hD = hs[1] - .005,
+                    yD = hs[0] + hs[1] / 2,
+                    pxF = 2000,
+                    phF = Math.round(pxF * hD / w),
+                    pxS = Math.round(pxF * dd / w);
+                const cut = cv => new T.MeshPhysicalMaterial({ color: '#ffffff', map: dataTex(cv, true), roughness: .74, clearcoat: .05 });
+                const front = new T.Mesh(new T.PlaneGeometry(w, hD), cut(dotCv(pxF, phF, tones[1], pig, band(pxF, phF), { gap: 15, r0: 2.4, r1: 3.6, a0: .75, a1: 1, seed: 41 })));
+                front.position.set(0, yD, dd / 2 + .0008);
+                g.add(front);
+                const side = new T.Mesh(new T.PlaneGeometry(dd, hD), cut(dotCv(pxS, phF, tones[1], pig, band(pxS, phF), { gap: 15, r0: 2.4, r1: 3.6, a0: .75, a1: 1, seed: 43 })));
+                side.rotation.y = Math.PI / 2;
+                side.position.set(w / 2 + .0008, yD, 0);
+                g.add(side);
+                /* 윗면: 겉에서 비쳐 보이는 옅은 점 */
+                const px = 1600,
+                    ph = Math.round(px * dd / w),
+                    top = new T.Mesh(new T.PlaneGeometry(w, dd), new T.MeshPhysicalMaterial({ color: '#ffffff', map: dataTex(dotCv(px, ph, tones[2], ink ? '#9a958c' : '#7a746b', () => .8, { gap: 22, r0: 2.8, r1: 4, a0: .4, a1: .65, seed: 13 }), true), roughness: .7 }));
+                top.rotation.x = -Math.PI / 2;
+                top.position.y = y + .0008;
+                g.add(top);
+                el = 20;
+                fh = .34;
+                fw = .84;
+                turn = -30;
+            } else {
+                /* 회차 타일: 둥근 도자기 판 셋. 같은 시드라 1회차 점은 2·3회차에도 그대로 있고 새 점만 늘어난다 */
+                const R0 = .64,
+                    t = .16,
+                    dens = [.22, .52, .92];
+                dens.forEach((dv, i) => {
+                    const tile = new T.Group();
+                    tile.add(new T.Mesh(new T.CylinderGeometry(R0, R0, t, 96), surf()));
+                    const px = 1100,
+                        top = new T.Mesh(new T.CircleGeometry(R0 - .004, 96), surf(dotCv(px, px, baseC, dotC, () => dv, { gap: 30, r0: 5, r1: 7.6, a0: .8, a1: 1, seed: 21 })));
+                    top.rotation.x = -Math.PI / 2;
+                    top.position.y = t / 2 + .001;
+                    tile.add(top);
+                    tile.position.set((i - 1) * 1.5, t / 2, (i - 1) * -.2);
+                    g.add(tile);
+                });
+                el = 34;
+                fh = .32;
+                fw = .88;
+                turn = -6;
+            }
+            const w = new T.Group();
+            w.add(g);
+            const c = fit(o, 22, el, w, fh, fw);
+            w.rotation.y = (turn + o.rot) * D2R;
+            sc.add(shade(w));
+            return [sc, c];
+        }
+
+        const SCENES = { phone: scenePhone, prints: scenePrints, tools: sceneTools, news: sceneNews, info: sceneInfo, type: sceneType, stage: sceneStage, brand: sceneBrand, scalp: sceneScalp };
 
         function dispose(sc) {
             sc.traverse(m => {
